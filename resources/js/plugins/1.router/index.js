@@ -12,6 +12,17 @@ function recursiveLayouts(route) {
   return setupLayouts([route])[0]
 }
 
+// Define custom routes
+const customRoutes = [
+  {
+    path: '/',
+    name: 'LoginView',
+    component: () => import('@/views/pages/authentication/LoginView.vue'),
+  },
+
+  // Add more custom routes as needed
+]
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior(to) {
@@ -21,7 +32,11 @@ const router = createRouter({
     return { top: 0 }
   },
   extendRoutes: pages => [
-    ...[...pages].map(route => recursiveLayouts(route)),
+    ...customRoutes,
+
+    // page based routes
+    // ...[...pages].map(route => recursiveLayouts(route)),
+
   ],
 })
 

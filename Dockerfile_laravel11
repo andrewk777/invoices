@@ -1,0 +1,105 @@
+FROM php:8.3-fpm
+
+# Set working directory
+WORKDIR /var/www
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    apt-utils \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    locales \
+    libzip-dev \
+    zip \
+    jpegoptim optipng pngquant gifsicle \
+    vim \
+    nano \
+    unzip \
+    wget \
+    git \
+    curl \
+    cron \
+    nginx \
+    supervisor \
+    pdftk-java \
+    qpdf \
+    sudo \
+    libxml2-dev \
+    default-mysql-client \
+    ghostscript \
+    libtidy-dev \
+    libreoffice \
+    openssh-server \
+    htop \
+    poppler-utils \
+    ncdu \
+    wkhtmltopdf \
+    net-tools \
+    zlib1g-dev \
+    libonig-dev \
+    libnss3 \
+    libgconf-2-4 \
+    xvfb \
+    libxi6 \
+    libxcomposite1 \
+    libxss1 \
+    libxtst6 \
+    --no-install-recommends
+
+#installing nom (requires curl)
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+RUN apt-get -y install nodejs
+RUN npm install -g pnpm
+
+#installing chrome libraries for dusk installing google chrome 114 specific version for dusk laravel 8
+RUN wget https://mirror.cs.uchicago.edu/google-chrome/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.90-1_amd64.deb
+RUN dpkg -i google-chrome-stable_114.0.5735.90-1_amd64.deb; apt-get -fy install
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# installing imap extension
+RUN apt update && apt install -y libc-client-dev libkrb5-dev && rm -r /var/lib/apt/
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && docker-php-ext-install imap
+
+RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install exif
+RUN docker-php-ext-install pcntl
+RUN docker-php-ext-install soap
+RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install gd
+RUN docker-php-ext-install -j$(nproc) tidy
+RUN docker-php-ext-install intl
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add user for laravel application
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
+
+# Copy existing application directory contents
+#COPY . /var/www
+
+# Copy existing application directory permissions
+RUN chown -R www:www /var/www
+
+#fix libre office sub user issue
+RUN mkdir -p /var/www/.config /var/www/.cache app/cache app/logs && chown -R www-data. app/cache app/logs /var/www/.config /var/www/.cache
+
+COPY ./supervisord.conf /etc/
+
+COPY ./.bashrc /root/
+COPY ./.bash_aliases /root/
+COPY ./cron/root ./cron/root
+COPY ./php.ini /usr/local/etc/php/php.ini
+
+RUN mkdir /run/sshd
+EXPOSE 22
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+
+CMD ["supervisord"]
