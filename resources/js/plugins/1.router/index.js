@@ -1,16 +1,16 @@
-import { setupLayouts } from 'virtual:generated-layouts'
+// import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router/auto'
 
-function recursiveLayouts(route) {
-  if (route.children) {
-    for (let i = 0; i < route.children.length; i++)
-      route.children[i] = recursiveLayouts(route.children[i])
-    
-    return route
-  }
-  
-  return setupLayouts([route])[0]
-}
+// function recursiveLayouts(route) {
+//   if (route.children) {
+//     for (let i = 0; i < route.children.length; i++)
+//       route.children[i] = recursiveLayouts(route.children[i])
+//
+//     return route
+//   }
+//
+//   return setupLayouts([route])[0]
+// }
 
 // Define custom routes
 const customRoutes = [

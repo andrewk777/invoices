@@ -85,7 +85,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@core-scss': fileURLToPath(new URL('./resources/styles/@core', import.meta.url)),
+
+      //'@': fileURLToPath(new URL('./resources/js', import.meta.url)),
       '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
+      '@assets': fileURLToPath(new URL('./resources/assets', import.meta.url)),
       '@themeConfig': fileURLToPath(new URL('./themeConfig.js', import.meta.url)),
       '@core': fileURLToPath(new URL('./resources/js/@core', import.meta.url)),
       '@layouts': fileURLToPath(new URL('./resources/js/@layouts', import.meta.url)),
