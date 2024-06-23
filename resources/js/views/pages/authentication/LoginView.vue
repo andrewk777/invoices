@@ -1,5 +1,64 @@
 <script setup>
-import { onBeforeMount } from 'vue'
+import { onBeforeMount, ref, reactive } from 'vue'
+import axios from 'axios';
+import validationService from '@/utils/validation-service'
+
+let errors = reactive({});
+const loading = ref(false);
+
+const form = reactive({
+  email: '',
+  password: '',
+});
+
+const submitLogin = async () => {
+
+  loading.value = true;
+  localStorage.removeItem("invoice-client-token");
+  validationService.deleteErrorsInObject(errors, null, true);
+
+  try {
+    const response = await axios.post('/api/login', form,
+      {
+        headers: {"Accept": "application/json"}
+      });
+
+    if(response.data.success) {
+      // Store relevant user details in local storage
+      const user = {
+        name: response.data.user.first_name + ' ' + response.data.user.last_name,
+        email: response.data.user.email,
+        token: response.data.token,
+        authenticated: true,
+      };
+      // Store logged-in user in local storage
+      localStorage.setItem('invoice-client-token', JSON.stringify(user));
+
+      console.log(response.data.user);
+      //window.location.href = '/customers';
+      router.push('/customers');
+    }
+
+  } catch (error) {
+
+    if (error?.response?.status === 401 || error?.response?.data.success === false) {
+      if(error.response.data.server_error) {
+        console.log("Server error", error.response.data.error_message);
+        console.log("Server error", error.response.data.error_message);
+        errors.server_error = 'Oh oh, error occurred. please contact the admin';
+      }
+
+      if (error.response?.data?.errors) {
+        console.log("Data Errors", error.response?.data?.errors);
+        // if errors exist in response, check if it's an object and convert to array
+        errors = error.response?.data?.errors;
+        console.log("Errors", errors);
+      }
+    }
+  }
+
+  loading.value = false;
+}
 
 onBeforeMount(() => {
   // Load relevant scripts
@@ -8,7 +67,7 @@ onBeforeMount(() => {
   // import('@assets/vendor/js/bootstrap.js');
   import('@assets/vendor/libs/node-waves/node-waves.js');
   import('@assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js');
-  import('@assets/vendor/libs/hammer/hammer.js');
+  import('@assets/vendor/libs/hammer/hammer.js')
   import('@assets/vendor/libs/i18n/i18n.js');
   // import('@assets/vendor/libs/typeahead-js/typeahead.js');
   import('@assets/vendor/js/menu.js');

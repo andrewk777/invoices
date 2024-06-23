@@ -14,10 +14,24 @@ import { createRouter, createWebHistory } from 'vue-router/auto'
 
 // Define custom routes
 const customRoutes = [
+
   {
     path: '/',
     name: 'LoginView',
     component: () => import('@/views/pages/authentication/LoginView.vue'),
+  },
+    
+  {
+    path: '/customers',
+    name: 'LoginView',
+    component: () => import('@/views/pages/authentication/LoginView.vue'),
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('token')) {
+        next()
+      } else {
+        next('/')
+      }
+    },
   },
 
   // Add more custom routes as needed
