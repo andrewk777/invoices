@@ -11,19 +11,32 @@ class CreateCreditCardsTable extends Migration
         Schema::create('credit_cards', function (Blueprint $table) {
             $table->id();
             $table->string('hash', 50)->unique();
-            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->string('cc_provider')->nullable();
-            $table->string('cc_provider_customer_id')->nullable();
-            $table->string('cc_provider_card_id')->nullable();
+            $table->string('cc_number')->nullable();
+            $table->string('cvv')->nullable();
+            $table->string('expiration_month')->nullable();
+            $table->string('expiration_year')->nullable();
+            $table->string('name_on_card')->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
+            $table->string('state')->nullable();
+
+//            $table->string('cc_provider_customer_id')->nullable();
+//            $table->string('cc_provider_card_id')->nullable();
             $table->enum('cc_currencies', ['CAD', 'USD'])->nullable();
             $table->timestamps();
 
-            $table->foreign('customer_id')->references('id')->on('clients');
+            $table->foreign('client_id')->references('id')->on('clients');
         });
     }
 
     public function down()
     {
+        Schema::table('subscriptions', function (Blueprint $table) {
+            $table->dropForeign('subscriptions_credit_card_id_foreign');
+        });
         Schema::dropIfExists('credit_cards');
     }
 }
