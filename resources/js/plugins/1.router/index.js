@@ -1,5 +1,6 @@
 // import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router/auto'
+import RouteService from "@/utils/route-service.js";
 
 // function recursiveLayouts(route) {
 //   if (route.children) {
@@ -22,16 +23,23 @@ const customRoutes = [
   },
     
   {
-    path: '/customers',
-    name: 'LoginView',
-    component: () => import('@/views/pages/authentication/LoginView.vue'),
-    beforeEnter: (to, from, next) => {
-      if (localStorage.getItem('token')) {
-        next()
-      } else {
-        next('/')
-      }
-    },
+    path: '/',
+    name: 'LayoutView',
+    component: () => import('@/views/pages/LayoutView.vue'),
+    children: [
+          {
+              name: "CustomersView",
+              path: "/customers",
+              component: () => import('@/views/pages/customers/CustomersView.vue'),
+              beforeEnter: (to, from, next) => {
+                  RouteService.authenticateUser(
+                      '/api/authenticate',
+                      next,
+                      '/',
+                  )
+              },
+          },
+    ]
   },
 
   // Add more custom routes as needed

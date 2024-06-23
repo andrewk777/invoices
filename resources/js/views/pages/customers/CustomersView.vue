@@ -3,7 +3,7 @@
 </script>
 
 <template>
-
+Customers
 </template>
 
 <style scoped lang="scss">

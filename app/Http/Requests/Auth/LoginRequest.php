@@ -52,7 +52,7 @@ class LoginRequest extends FormRequest
         //$message = $validator->errors()->getMessageBag();
         throw new HttpResponseException(response()->json([
             'success' => false,
-            'errors' => $message
-        ]));
+            'errors' => $message,
+        ], 422));
     }
 }

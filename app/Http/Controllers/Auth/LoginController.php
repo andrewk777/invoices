@@ -27,7 +27,7 @@ class LoginController extends Controller
             $data = $this->login->loginWithToken(
                 $request,
                 'web',
-                'api',
+                'sanctum',
                 $this->client->clientUser()
             );
 
@@ -36,8 +36,20 @@ class LoginController extends Controller
                 'user' => isset($data['user']) ? new ClientUserResource($data['user']) : null,
                 'token' => $data['token'] ?? null,
                 'errors' => $data['errors'] ?? null,
+                'error_code' => $data['error_code'] ?? null,
 
-            ], $data['success'] === true ? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED);
+            ], $data['success'] === true ? Response::HTTP_OK : $data['error_code']);
+
+        } catch (\Exception $e) {
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
+    public function authenticate(Request $request): JsonResponse
+    {
+        try {
+            $data = $this->login->authenticateUserWithToken($request->token);
+            return response()->json($data, Response::HTTP_OK);
 
         } catch (\Exception $e) {
             return BaseRepository::tryCatchException($e);

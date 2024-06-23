@@ -1,73 +1,39 @@
 import axios from "axios"
 
 const RouteService = {
+
+    getTokenFromLocalStorage(){
+        let user = JSON.parse(localStorage.getItem('invoice-client-token'));
+        return user ? user.token : null;
+    },
+
     // Authenticate each api request
-    authenticateUser(url, token, next, logout){
-        console.log("Authenticate user", token);
-        axios.get(url, {
-            headers: {
-                "Authorization" : "Bearer " + user_data.token,
-                'Accept' : 'application/json',
-            },
-            params: {
-                token: user_data.token
-            }
+    authenticateUser(url, next, logout){
 
-        }).then((response) => {
-            if(response.data.success){
-                localStorage.removeItem(local_storage);
-                window.location.href = logout;
-            }else{
-                window.location.href = logout;
-            }
-        });
-    },
+        console.log("Before auth", this.getTokenFromLocalStorage());
 
-    logoutUser(url, local_storage, user_data, logout){
-        console.log("ROUTE LOCALSTORAGE", user_data.token);
-        axios.get(url, {
-            headers: {
-                "Authorization" : "Bearer " + user_data.token,
-                'Accept' : 'application/json',
-            },
-            params: {
-                token: user_data.token
-            }
-
-        }).then((response) => {
-            if(response.data.success){
-                localStorage.removeItem(local_storage);
-                window.location.href = logout;
-            }else{
-                window.location.href = logout;
-            }
-        });
-    },
-
-    // check if diagnostic tool has been completed
-    // If not redirect to diagnostic tool
-    completedDiagnosticTool(pre_diagnostic_completed){
-        // Get token from local storage
-        if(pre_diagnostic_completed === false){
-            router.push({ path: '/diagnostic/user-details' });
-            window.location.href = '/diagnostic/user-details';
+        if(!this.getTokenFromLocalStorage()){
+            window.location.href = logout;
         }
 
-        // axios.get('/api/learning/diagnostic-tool/completed', {
-        //     headers: {
-        //         "Authorization" : "Bearer " + token,
-        //         'Accept' : 'application/json',
-        //     },
-        // }).then((response) => {
-        //     if(response.data.completed === false){
-        //         // router.push({ path: '/diagnostic/user-details' });
-        //         window.location.href = '/diagnostic/user-details';
-        //     }
-        //
-        // }).catch((error) => {
-        //     console.log(error)
-        // });
-    }
+        axios.get(url, {
+            headers: {
+                "Authorization" : "Bearer " + this.getTokenFromLocalStorage(),
+                'Accept' : 'application/json',
+            },
+            params: {
+                token: this.getTokenFromLocalStorage()
+            }
+
+        }).then((response) => {
+            if(response.data.success){
+                console.log("Authenticated user", this.getTokenFromLocalStorage());
+                next();
+            }else{
+                window.location.href = logout;
+            }
+        });
+    },
 
 }
 

@@ -28,19 +28,22 @@ class LoginRepository
             'password' => trim($request->password),
         ])){
             // get Session
-            $user = Auth::guard($webGuard)->user();
+            $user = Auth::user();
 
             if(!$user->system_access){
                 return [
                     'success' => false,
-                    'errors' => ['Unauthorized user'],
+                    'errors' => [
+                        'unauthorised' => 'Unauthorised.',
+                    ],
+                    'error_code' => 401,
                 ];
             }
 
             // Delete already existing tokens for user
             PersonalAccessToken::where('name', $request->email)->delete();
             // Create new token
-            $token = $user->createToken($request->email)->plainTextToken;
+            $token = $user->createToken($request->email, [$apiGuard])->plainTextToken;
             // Last login
             $queryBuilder->where('email', $request->email)->update([
                 'last_login' => Carbon::now()->format('Y-m-d h:i:s'),
@@ -55,7 +58,10 @@ class LoginRepository
 
         return [
             'success' => false,
-            'errors' => ['Incorrect credentials'],
+            'errors' => [
+                'unauthorised' => 'Unauthorised.',
+            ],
+            'error_code' => 401,
         ];
     }
 
