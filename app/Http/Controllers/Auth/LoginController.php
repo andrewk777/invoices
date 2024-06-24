@@ -7,7 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\Client\ClientUserResource;
 use App\Repositories\Auth\LoginRepository;
 use App\Repositories\Base\BaseRepository;
-use App\Repositories\Eloquent\Client\ClientRepository;
+use App\Repositories\Client\ClientRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;

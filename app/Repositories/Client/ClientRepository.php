@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Eloquent\Client;
+namespace App\Repositories\Client;
 
 use App\Models\Client;
 use App\Models\User;

@@ -3,7 +3,7 @@
 namespace App\Repositories\Auth;
 
 use App\Http\Resources\Client\ClientUserResource;
-use App\Repositories\Eloquent\Client\ClientRepository;
+use App\Repositories\Client\ClientRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\PersonalAccessToken;
