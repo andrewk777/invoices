@@ -26,8 +26,7 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/customers/credit-cards/{hash}', [CreditCardController::class, 'index']);
 
 
-    // Learning Logout
-//    Route::get('/learning/logout', [LearningLoginController::class, 'logout']);
+    Route::get('/logout', [LoginController::class, 'logout']);
 });
 
 Route::get('/test', function () {
