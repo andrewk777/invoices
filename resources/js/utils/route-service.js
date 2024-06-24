@@ -2,6 +2,11 @@ import axios from "axios"
 
 const RouteService = {
 
+    getUserFromLocalStorage(){
+        let user = JSON.parse(localStorage.getItem('invoice-client-token'));
+        return user ? user : null;
+    },
+
     getTokenFromLocalStorage(){
         let user = JSON.parse(localStorage.getItem('invoice-client-token'));
         return user ? user.token : null;

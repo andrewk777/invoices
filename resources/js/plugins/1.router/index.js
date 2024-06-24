@@ -39,6 +39,46 @@ const customRoutes = [
                   )
               },
           },
+
+         {
+            name: "InvoicesView",
+            path: "/invoices",
+            component: () => import('@/views/pages/invoices/InvoicesView.vue'),
+            beforeEnter: (to, from, next) => {
+                RouteService.authenticateUser(
+                    '/api/authenticate',
+                    next,
+                    '/',
+                )
+            },
+         },
+
+        {
+            name: "SubscriptionsView",
+            path: "/subscriptions",
+            component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
+            beforeEnter: (to, from, next) => {
+                RouteService.authenticateUser(
+                    '/api/authenticate',
+                    next,
+                    '/',
+                )
+            },
+        },
+
+        {
+            name: "UsersView",
+            path: "/users",
+            component: () => import('@/views/pages/users/UsersView.vue'),
+            beforeEnter: (to, from, next) => {
+                RouteService.authenticateUser(
+                    '/api/authenticate',
+                    next,
+                    '/',
+                )
+            },
+        },
+
     ]
   },
 
