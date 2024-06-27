@@ -1,5 +1,5 @@
 <script setup>
-import {ref, watch, onBeforeMount, computed, onMounted} from 'vue';
+import {ref, watch, reactive, computed, onMounted, onBeforeMount} from 'vue';
 import axios from "axios";
 
 // For routing with params
@@ -20,19 +20,37 @@ const submitted = ref(false);
 const errors = ref({});
 
 const form = reactive({
-  company_name: hash.value ? client.company_name : '',
-  company_email: hash.value ? client.company_email : '',
-  company_phone: hash.value ? client.company_phone : '',
-  company_address: hash.value ? client.company_address : '',
-  main_contact_first_name: hash.value ? client.main_contact_first_name : '',
-  main_contact_last_name: hash.value ? client.main_contact_last_name : '',
-  main_contact_phone: hash.value ? client.main_contact_phone : '',
-  main_contact_email: hash.value ? client.main_contact_email : '',
-  ap_first_name: hash.value ? client.ap_first_name : '',
-  ap_last_name: hash.value ? client.ap_last_name : '',
-  ap_phone: hash.value ? client.ap_phone : '',
-  ap_email: hash.value ? client.ap_email : '',
-  notes: hash.value ? client.notes : '',
+  company_name: 'None',
+  company_email: '',
+  company_phone: '',
+  company_address: '',
+  main_contact_first_name: '',
+  main_contact_last_name: '',
+  main_contact_phone: '',
+  main_contact_email: '',
+  ap_first_name: '',
+  ap_last_name: '',
+  ap_phone: '',
+  ap_email: '',
+  notes: '',
+});
+
+watch(client, (newClient) => {
+  if (hash.value && newClient) {
+    form.company_name = newClient.company_name || '';
+    form.company_email = newClient.company_email || '';
+    form.company_phone = newClient.company_phone || '';
+    form.company_address = newClient.company_address || '';
+    form.main_contact_first_name = newClient.main_contact_first_name || '';
+    form.main_contact_last_name = newClient.main_contact_last_name || '';
+    form.main_contact_phone = newClient.main_contact_phone || '';
+    form.main_contact_email = newClient.main_contact_email || '';
+    form.ap_first_name = newClient.ap_first_name || '';
+    form.ap_last_name = newClient.ap_last_name || '';
+    form.ap_phone = newClient.ap_phone || '';
+    form.ap_email = newClient.ap_email || '';
+    form.notes = newClient.notes || '';
+  }
 });
 
 const submitClient = async () => {
@@ -145,7 +163,7 @@ const updateClient = async (hash) => {
 
 const getClient = async (hash) => {
   // Get token from local storage
-  await axios.get('/api/client/show/'+hash, {
+  await axios.get('/api/clients/show/'+hash, {
     headers: {
       "Authorization" : "Bearer " + token.value,
       'Accept' : 'application/json',
@@ -154,9 +172,12 @@ const getClient = async (hash) => {
       hash: hash.value
     }
   }).then((response) => {
-
     if (response.data.success) {
       client.value = response.data.client;
+
+      if(import.meta.env.VITE_APP_ENV === 'local'){
+        console.log("Client SHow", client.value);
+      }
     }
 
   }).catch((error) => {
@@ -165,11 +186,30 @@ const getClient = async (hash) => {
   loading.value = false;
 }
 
-onBeforeMount(() => {
+onMounted(async () => {
   if(hash.value){
-    getClient(hash.value);
+    await getClient(hash.value);
   }
 });
+
+// Modal Popup
+const emit = defineEmits(['close']);
+
+const isModalVisible = ref(false);
+
+const openModal = () => {
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false;
+  emit('close');
+};
+
+defineExpose({
+  openModal,
+});
+
 </script>
 
 <template>
@@ -177,177 +217,171 @@ onBeforeMount(() => {
 
     <div class="row">
 
-      <div class="col-12 justify-content-first mb-3">
+      <div class="col-md-6 justify-content-first mb-3">
         <h3 class="card-header">Customers</h3>
       </div>
 
-      <div class="col-12">
+      <div class="col-md-6 text-right mb-3">
+        <router-link
+          v-if="hash"
+          class="btn btn-info waves-effect waves-light mr-2 btn-sm"
+          exact
+          :to="{name: 'ClientsCreate'}">
+          Add Customer
+        </router-link>
+        <router-link
+          class="btn btn-info waves-effect waves-light btn-sm"
+          exact
+          :to="{name: 'ClientsView'}">
+          All Customers
+        </router-link>
+      </div>
 
+      <div class="col-12">
         <div class="card">
 
           <h5 class="card-header">
             {{ hash ? 'Edit Customer' : 'Add Customer' }}
           </h5>
 
-          <div class="row p-3">
+          <form>
+            <div class="row p-3">
 
-            <div class="card-body col-md-6">
-              <div class="form-group">
-                <label for="defaultFormControlInput" class="form-label">Company Name</label>
-                <input v-model="client.company_name" type="text" class="form-control">
-                <span v-if="errors.company_name" class="text-danger text-center"></span>
+              <div class="card-body col-md-6">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Company Name</label>
+                  <input v-model="form.company_name" type="text" class="form-control">
+                  <span v-if="errors.company_name" class="text-danger text-center"></span>
+                </div>
               </div>
-            </div>
 
-            <div class="card-body col-md-6">
-              <div class="form-group">
-                <label for="defaultFormControlInput" class="form-label">Full Address</label>
-                <input v-model="client.company_address" type="text" class="form-control">
-                <span v-if="errors.company_address" class="text-danger text-center"></span>
+              <div class="card-body col-md-6">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Company Address</label>
+                  <input v-model="form.company_address" type="text" class="form-control">
+                  <span v-if="errors.company_address" class="text-danger text-center"></span>
+                </div>
               </div>
-            </div>
 
-            <div class="card-body col-md-6">
-              <div>
-                <label for="defaultFormControlInput" class="form-label">Name</label>
-                <input type="text" class="form-control" id="defaultFormControlInput" placeholder="John Doe" aria-describedby="defaultFormControlHelp">
-                <div id="defaultFormControlHelp" class="form-text">We'll never share your details with anyone else.</div>
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">First Name</label>
+                  <input v-model="form.main_contact_first_name" type="text" class="form-control"
+                  >
+                  <span v-if="errors.main_contact_first_name" class="text-danger text-center"></span>
+                </div>
               </div>
-            </div>
 
-          </div>
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Last Name</label>
+                  <input v-model="form.main_contact_last_name" type="text" class="form-control"
+                  >
+                  <span v-if="errors.main_contact_last_name" class="text-danger text-center"></span>
+                </div>
+              </div>
+
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Email</label>
+                  <input v-model="form.main_contact_email" type="text" class="form-control"
+                  >
+                  <span v-if="errors.main_contact_email" class="text-danger text-center"></span>
+                </div>
+              </div>
+
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Phone</label>
+                  <input v-model="form.main_contact_phone" type="text" class="form-control"
+                  >
+                  <span v-if="errors.main_contact_phone" class="text-danger text-center"></span>
+                </div>
+              </div>
+
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">AP First Name</label>
+                  <input v-model="form.ap_first_name" type="text" class="form-control"
+                  >
+                  <span v-if="errors.ap_first_name" class="text-danger text-center"></span>
+                </div>
+              </div>
+
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">AP Last Name</label>
+                  <input v-model="form.ap_last_name" type="text" class="form-control"
+                  >
+                  <span v-if="errors.ap_last_name" class="text-danger text-center"></span>
+                </div>
+              </div>
+
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">AP Email</label>
+                  <input v-model="form.ap_email" type="text" class="form-control"
+                  >
+                  <span v-if="errors.ap_email" class="text-danger text-center"></span>
+                </div>
+              </div>
+
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">AP Phone</label>
+                  <input v-model="form.ap_phone" type="text" class="form-control"
+                  >
+                  <span v-if="errors.ap_phone" class="text-danger text-center"></span>
+                </div>
+              </div>
+
+              <div class="card-body col-12">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Notes</label>
+                  <textarea v-model="form.notes" class="form-control" rows="3"></textarea>
+                  <span v-if="errors.notes" class="text-danger text-center"></span>
+                </div>
+              </div>
+
+              <div v-if="hash" class="card-body col-md-6">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Credit Cards</label><br>
+
+                  <button
+                    @click.prevent="isModalVisible = true"
+                    type="button"
+                          class="btn btn-primary waves-effect waves-light btn-sm">
+                    Add Credit Card
+                  </button>
+
+                  <transition name="modal">
+                    <div v-if="isModalVisible" class="modal">
+                      <div class="modal-overlay" @click="closeModal"></div>
+                      <div class="modal-content">
+                        <h2>Title</h2>
+                        <slot></slot>
+                        <button @click="closeModal">Close</button>
+                      </div>
+                    </div>
+                  </transition>
+
+
+
+                  <select v-if="client.credit_cards?.length > 0" class="form-control">
+                    <option value=""></option>
+                    <option v-for="card in client.credit_cards" :key="card.id">
+                      {{ card.cc_provider }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          </form>
 
         </div>
       </div>
 
-      <div class="col-md-6">
-        <div class="card">
-          <h5 class="card-header">Float label</h5>
-          <div class="card-body">
-            <div class="form-floating">
-              <input type="text" class="form-control" id="floatingInput" placeholder="John Doe" aria-describedby="floatingInputHelp">
-              <label for="floatingInput">Name</label>
-              <div id="floatingInputHelp" class="form-text">We'll never share your details with anyone else.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Form controls -->
-      <div class="col-md-6">
-        <div class="card">
-          <h5 class="card-header">Form Controls</h5>
-          <div class="card-body">
-            <div class="mb-4">
-              <label for="exampleFormControlInput1" class="form-label">Email address</label>
-              <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-            </div>
-            <div class="mb-4">
-              <label for="exampleFormControlReadOnlyInput1" class="form-label">Read only</label>
-              <input class="form-control" type="text" id="exampleFormControlReadOnlyInput1" placeholder="Readonly input here..." readonly="">
-            </div>
-            <div class="mb-4">
-              <label for="exampleFormControlReadOnlyInputPlain1" class="form-label">Read plain</label>
-              <input type="text" readonly="" class="form-control-plaintext" id="exampleFormControlReadOnlyInputPlain1" value="email@example.com">
-            </div>
-            <div class="mb-4">
-              <label for="exampleFormControlSelect1" class="form-label">Example select</label>
-              <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
-                <option selected="">Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-            </div>
-            <div class="mb-4">
-              <label for="exampleDataList" class="form-label">Datalist example</label>
-              <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search...">
-              <datalist id="datalistOptions">
-                <option value="San Francisco"></option>
-                <option value="New York"></option>
-                <option value="Seattle"></option>
-                <option value="Los Angeles"></option>
-                <option value="Chicago"></option>
-              </datalist>
-            </div>
-            <div class="mb-4">
-              <label for="exampleFormControlSelect2" class="form-label">Example multiple select</label>
-              <select multiple="" class="form-select" id="exampleFormControlSelect2" aria-label="Multiple select example">
-                <option selected="">Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-            </div>
-            <div>
-              <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-              <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Input Sizing -->
-      <div class="col-md-6">
-        <div class="card">
-          <h5 class="card-header">Input Sizing &amp; Shape</h5>
-          <div class="card-body">
-            <small class="text-light fw-medium">Input text</small>
-
-            <div class="mt-2 mb-4">
-              <label for="largeInput" class="form-label">Large input</label>
-              <input id="largeInput" class="form-control form-control-lg" type="text" placeholder=".form-control-lg">
-            </div>
-            <div class="mb-4">
-              <label for="defaultInput" class="form-label">Default input</label>
-              <input id="defaultInput" class="form-control" type="text" placeholder="Default input">
-            </div>
-            <div>
-              <label for="smallInput" class="form-label">Small input</label>
-              <input id="smallInput" class="form-control form-control-sm" type="text" placeholder=".form-control-sm">
-            </div>
-          </div>
-          <hr class="m-0">
-          <div class="card-body">
-            <small class="text-light fw-medium">Input select</small>
-            <div class="mt-2 mb-4">
-              <label for="largeSelect" class="form-label">Large select</label>
-              <select id="largeSelect" class="form-select form-select-lg">
-                <option>Large select</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-            </div>
-            <div class="mb-4">
-              <label for="defaultSelect" class="form-label">Default select</label>
-              <select id="defaultSelect" class="form-select">
-                <option>Default select</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-            </div>
-            <div>
-              <label for="smallSelect" class="form-label">Small select</label>
-              <select id="smallSelect" class="form-select form-select-sm">
-                <option>Small select</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-            </div>
-          </div>
-          <hr class="m-0">
-          <div class="card-body">
-            <small class="text-light fw-medium">Input Shape</small>
-            <div class="mt-2">
-              <label for="roundedInput" class="form-label">Rounded input</label>
-              <input id="roundedInput" class="form-control rounded-pill" type="text" placeholder="Default input">
-            </div>
-          </div>
-        </div>
-      </div>
 
     </div>
 
@@ -355,5 +389,55 @@ onBeforeMount(() => {
 </template>
 
 <style scoped lang="scss">
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  max-width: 500px;
+  z-index: 10000;
+}
+
+/* Enter and leave animations */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+/* Content transition */
+.modal-content {
+  transition: transform 0.3s ease;
+}
+
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: scale(0.8);
+}
 
 </style>
