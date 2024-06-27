@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::delete('/clients/destroy/{hash}', [ClientController::class, 'destroy']);
 
     Route::get('/clients/credit-cards/{hash}', [CreditCardController::class, 'index']);
+    Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
 
     Route::get('/logout', [LoginController::class, 'logout']);
 });

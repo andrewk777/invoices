@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Client;
 use App\Models\CreditCard;
 use App\Models\MyCompany;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ClientSeeder extends Seeder
@@ -16,7 +17,7 @@ class ClientSeeder extends Seeder
     {
         Client::class::factory(10)->create()->each(function ($client) {
             $client->creditCards()->saveMany(CreditCard::factory(2)->create());
-            $client->myCompany()->associate(MyCompany::factory()->create());
+            $client->users()->saveMany(User::factory(2)->create());
             $client->save();
         });
     }

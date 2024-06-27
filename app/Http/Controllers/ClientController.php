@@ -50,7 +50,9 @@ class ClientController extends Controller
     public function show($hash): JsonResponse
     {
         try {
-            $data = $this->client->client()->where('hash', $hash)->first();
+            $data = $this->client->client()
+                ->with('users', 'creditCards')
+                ->where('hash', $hash)->first();
             return response()->json([
                 'success' => true,
                 'client' => new ClientResource($data),

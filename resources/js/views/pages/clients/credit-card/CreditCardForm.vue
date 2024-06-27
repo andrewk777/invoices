@@ -1,74 +1,154 @@
-<script>
-import { defineComponent, toRefs } from 'vue';
+<script setup>
+import { defineProps, reactive, ref } from 'vue';
+import axios from "axios";
 
-export default defineComponent({
-  props: {
-    message: {
-      type: String,
-      default: 'Default message'
-    }
+const props = defineProps({
+  client: {
+    type: Object,
+    required: true,
   },
-  setup(props, { emit }) {
-    const { message } = toRefs(props);
-
-    const handleConfirm = () => {
-      emit('confirm');
-    };
-
-    return {
-      message,
-      handleConfirm
-    };
-  }
 });
+
+const token = computed(() => baseService.getTokenFromLocalStorage());
+const loading = ref(false);
+const submitted = ref(false);
+const errors = ref({});
+
+const form = reactive({
+  client_id: props.client.id,
+  cc_last_4_digits: '',
+  cc_exp_month: '',
+  cc_exp_year: '',
+});
+
+const submitCreditCard = async () => {
+  // Delete all errors
+  Object.keys(errors.value).forEach(function(key) {
+    delete errors.value[key];
+  });
+
+  submitted.value = false;
+  loading.value = true;
+
+  const formData = new FormData();
+  // iterate and add form data
+  Object.keys(form).forEach(function(key) {
+    console.log(key); // key
+    if(form[key] !== null && form[key] !== ''){
+      formData.append(key, form[key]);
+    }
+  });
+
+  await axios.post('/api/clients/credit-cards/store', formData, {
+    headers: {
+      'content-type': 'multipart/form-data',
+      'Accept' : 'application/json',
+      "Authorization" : "Bearer " + token.value,
+    }
+  }).then((response) => {
+
+    if (response.data.success){
+      submitted.value = true;
+    }
+
+  }).catch((error) => {
+    if([401, 402, 422].includes(error.response.status)){
+      console.log(error.response);
+
+      if(Object.keys(error.response?.data?.errors).length > 0){
+        errors.value = error.response?.data?.errors;
+        if(import.meta.env.VITE_APP_ENV === 'local'){
+          console.log("Validation errors", errors.value);
+        }
+      }
+
+      if(error.response?.data?.server_error){
+        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
+      }
+    }
+
+    console.log(error);
+  });
+  loading.value = false;
+}
+
 </script>
 
 <template>
-  <div class="modal fade" id="addNewCCModal" tabindex="-1" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
-      <div class="modal-content">
-        <div class="modal-body">
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          <div class="text-center mb-6">
-            <h4 class="mb-2">Add New Card</h4>
-            <p>Add new card to complete payment</p>
-          </div>
-          <form id="addNewCCForm" class="row g-6 fv-plugins-bootstrap5 fv-plugins-framework" onsubmit="return false" novalidate="novalidate">
-            <div class="col-12 fv-plugins-icon-container">
-              <label class="form-label w-100" for="modalAddCard">Card Number</label>
-              <div class="input-group input-group-merge has-validation">
-                <input id="modalAddCard" name="modalAddCard" class="form-control credit-card-mask" type="text" placeholder="1356 3215 6548 7898" aria-describedby="modalAddCard2">
-                <span class="input-group-text cursor-pointer p-1" id="modalAddCard2"><span class="card-type"></span></span>
-              </div><div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="form-label" for="modalAddCardName">Name</label>
-              <input type="text" id="modalAddCardName" class="form-control" placeholder="John Doe">
-            </div>
-            <div class="col-6 col-md-3">
-              <label class="form-label" for="modalAddCardExpiryDate">Exp. Date</label>
-              <input type="text" id="modalAddCardExpiryDate" class="form-control expiry-date-mask" placeholder="MM/YY">
-            </div>
-            <div class="col-6 col-md-3">
-              <label class="form-label" for="modalAddCardCvv">CVV Code</label>
-              <div class="input-group input-group-merge">
-                <input type="text" id="modalAddCardCvv" class="form-control cvv-code-mask" maxlength="3" placeholder="654">
-                <span class="input-group-text cursor-pointer ps-0" id="modalAddCardCvv2"><i class="text-muted ti ti-help" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Card Verification Value" data-bs-original-title="Card Verification Value"></i></span>
-              </div>
-            </div>
-            <div class="col-12">
-              <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" id="futureAddress">
-                <label for="futureAddress" class="switch-label">Save card for future billing?</label>
-              </div>
-            </div>
-            <div class="col-12 text-center">
-              <button type="submit" class="btn btn-primary me-3 waves-effect waves-light">Submit</button>
-              <button type="reset" class="btn btn-label-secondary btn-reset waves-effect" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-            </div>
-            <input type="hidden"></form>
-        </div>
+  <div class="modal-content">
+    <div class="modal-body">
+
+      <div class="text-center mb-6">
+        <h4 class="mb-2">Add New Card</h4>
       </div>
+
+      <form
+        @submit.prevent="submitCreditCard"
+        class="row g-6 fv-plugins-bootstrap5 fv-plugins-framework"
+        novalidate="novalidate">
+
+        <div class="col-12 text-center text-info">
+          <p v-if="submitted" class="text-success font-weight-bold">Card added successfully.</p>
+          <p v-if="errors.server_error" class="text-danger">{{ errors.server_error }}</p>
+        </div>
+
+        <div class="col-md-4 fv-plugins-icon-container">
+          <label
+            class="form-label w-100"
+            for="modalAddCard">
+            Last 4 Digits</label>
+          <div class="input-group input-group-merge has-validation">
+            <input v-model="form.cc_last_4_digits"
+                   class="form-control credit-card-mask"
+                   type="number"
+                   maxlength="4"
+                   placeholder="0000"
+                   >
+          </div>
+          <small v-if="errors.cc_last_4_digits" class="text-danger ">
+            {{ errors.cc_last_4_digits[0] }}
+          </small>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label" for="modalAddCardName">Expiry Month</label>
+          <input
+            v-model="form.cc_exp_month"
+            type="number"
+            maxlength="2"
+            class="form-control"
+            placeholder="00"
+          >
+          <small v-if="errors.cc_exp_month" class="text-danger">
+            {{ errors.cc_exp_month[0] }}
+          </small>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label" for="modalAddCardExpiryDate">Expiry Year</label>
+          <input
+            v-model="form.cc_exp_year"
+            type="number"
+            maxlength="4"
+            class="form-control expiry-date-mask"
+          >
+          <small v-if="errors.cc_exp_year" class="text-danger">
+            {{ errors.cc_exp_year[0] }}
+          </small>
+        </div>
+
+        <div class="col-12 text-center mt-2">
+          <button v-if="!loading" type="submit" class="btn btn-primary me-3 waves-effect waves-light">Submit</button>
+          <button v-else type="submit" disabled class="btn btn-primary me-3 waves-effect waves-light">
+            <i class="fa fa-circle-notch fa-spin"></i>
+          </button>
+          <button
+            @click.prevent="$emit('emit-close-modal')"
+            type="reset"
+            class="btn btn-dark btn-reset waves-effect" data-bs-dismiss="modal" aria-label="Close">Close</button>
+        </div>
+
+      </form>
     </div>
   </div>
 </template>

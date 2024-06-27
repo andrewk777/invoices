@@ -1,6 +1,7 @@
 <script setup>
-import {ref, watch, reactive, computed, onMounted, onBeforeMount} from 'vue';
+import {ref, watch, reactive, computed, onMounted} from 'vue';
 import axios from "axios";
+import CreditCardForm from "@/views/pages/clients/credit-card/CreditCardForm.vue";
 
 // For routing with params
 const hash = ref('');
@@ -194,8 +195,13 @@ const openModal = () => {
 
 const closeModal = () => {
   isModalVisible.value = false;
-  emit('close');
 };
+
+
+// const closeModal = () => {
+//   isModalVisible.value = false;
+//   emit('close');
+// };
 
 defineExpose({
   openModal,
@@ -235,7 +241,7 @@ defineExpose({
           </h5>
 
           <form>
-            <div class="row p-3">
+            <div class="row p-2">
 
               <div class="card-body col-md-6">
                 <div class="form-group">
@@ -260,8 +266,7 @@ defineExpose({
               <div class="card-body col-md-3">
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">First Name</label>
-                  <input v-model="form.main_contact_first_name" type="text" class="form-control"
-                  >
+                  <input v-model="form.main_contact_first_name" type="text" class="form-control">
                   <span v-if="errors.main_contact_first_name" class="text-danger text-center">
                     {{ errors.main_contact_first_name[0] }}
                   </span>
@@ -271,8 +276,7 @@ defineExpose({
               <div class="card-body col-md-3">
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">Last Name</label>
-                  <input v-model="form.main_contact_last_name" type="text" class="form-control"
-                  >
+                  <input v-model="form.main_contact_last_name" type="text" class="form-control">
                   <span v-if="errors.main_contact_last_name" class="text-danger text-center">
                     {{ errors.main_contact_last_name[0] }}
                   </span>
@@ -282,8 +286,7 @@ defineExpose({
               <div class="card-body col-md-3">
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">Email</label>
-                  <input v-model="form.main_contact_email" type="text" class="form-control"
-                  >
+                  <input v-model="form.main_contact_email" type="text" class="form-control">
                   <span v-if="errors.main_contact_email" class="text-danger text-center">
                     {{ errors.main_contact_email[0] }}
                   </span>
@@ -315,8 +318,7 @@ defineExpose({
               <div class="card-body col-md-3">
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">AP Last Name</label>
-                  <input v-model="form.ap_last_name" type="text" class="form-control"
-                  >
+                  <input v-model="form.ap_last_name" type="text" class="form-control">
                   <span v-if="errors.ap_last_name" class="text-danger text-center">
                     {{ errors.ap_last_name[0] }}
                   </span>
@@ -326,8 +328,7 @@ defineExpose({
               <div class="card-body col-md-3">
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">AP Email</label>
-                  <input v-model="form.ap_email" type="text" class="form-control"
-                  >
+                  <input v-model="form.ap_email" type="text" class="form-control">
                   <span v-if="errors.ap_email" class="text-danger text-center">
                     {{ errors.ap_email[0] }}
                   </span>
@@ -347,7 +348,7 @@ defineExpose({
 
               <div class="card-body col-12">
                 <div class="form-group">
-                  <label for="defaultFormControlInput" class="form-label">Notes</label>
+                  <label class="form-label">Notes</label>
                   <textarea v-model="form.notes" class="form-control" rows="3"></textarea>
                   <span v-if="errors.notes" class="text-danger text-center">
                     {{ errors.notes[0] }}
@@ -355,75 +356,36 @@ defineExpose({
                 </div>
               </div>
 
-              <div v-if="hash" class="card-body col-md-6">
+              <div v-if="hash" class="col-md-4">
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">Credit Cards</label><br>
 
-                  <button
-                    @click.prevent="isModalVisible = true"
-                    type="button"
-                          class="btn btn-primary waves-effect waves-light btn-sm">
+                  <a href=""
+                    @click.prevent="isModalVisible = true" class="">
                     Add Credit Card
-                  </button>
+                  </a>
 
                   <transition name="modal">
                     <div v-if="isModalVisible" class="modal">
                       <div class="modal-overlay" @click="closeModal"></div>
-                        <div class="modal-content">
-                          <div class="modal-body">
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            <div class="text-center mb-6">
-                              <h4 class="mb-2">Add New Card</h4>
-                              <p>Add new card to complete payment</p>
-                            </div>
-                            <form id="addNewCCForm" class="row g-6 fv-plugins-bootstrap5 fv-plugins-framework" onsubmit="return false" novalidate="novalidate">
-                              <div class="col-12 fv-plugins-icon-container">
-                                <label class="form-label w-100" for="modalAddCard">Card Number</label>
-                                <div class="input-group input-group-merge has-validation">
-                                  <input id="modalAddCard" name="modalAddCard" class="form-control credit-card-mask" type="text" placeholder="1356 3215 6548 7898" aria-describedby="modalAddCard2">
-                                  <span class="input-group-text cursor-pointer p-1" id="modalAddCard2"><span class="card-type"></span></span>
-                                </div><div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                              </div>
-                              <div class="col-12 col-md-6">
-                                <label class="form-label" for="modalAddCardName">Name</label>
-                                <input type="text" id="modalAddCardName" class="form-control" placeholder="John Doe">
-                              </div>
-                              <div class="col-6 col-md-3">
-                                <label class="form-label" for="modalAddCardExpiryDate">Exp. Date</label>
-                                <input type="text" id="modalAddCardExpiryDate" class="form-control expiry-date-mask" placeholder="MM/YY">
-                              </div>
-                              <div class="col-6 col-md-3">
-                                <label class="form-label" for="modalAddCardCvv">CVV Code</label>
-                                <div class="input-group input-group-merge">
-                                  <input type="text" id="modalAddCardCvv" class="form-control cvv-code-mask" maxlength="3" placeholder="654">
-                                  <span class="input-group-text cursor-pointer ps-0" id="modalAddCardCvv2"><i class="text-muted ti ti-help" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Card Verification Value" data-bs-original-title="Card Verification Value"></i></span>
-                                </div>
-                              </div>
-                              <div class="col-12">
-                                <div class="form-check form-switch">
-                                  <input type="checkbox" class="form-check-input" id="futureAddress">
-                                  <label for="futureAddress" class="switch-label">Save card for future billing?</label>
-                                </div>
-                              </div>
-                              <div class="col-12 text-center">
-                                <button type="submit" class="btn btn-primary me-3 waves-effect waves-light">Submit</button>
-                                <button type="reset" class="btn btn-label-secondary btn-reset waves-effect" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                              </div>
-                              <input type="hidden"></form>
-                          </div>
-                        </div>
-                        <button @click="closeModal">Close</button>
+
+                        <credit-card-form
+                          :client="client"
+                          :token="token.value"
+                          @emit-close-modal="closeModal"
+                        ></credit-card-form>
+
                     </div>
                   </transition>
-
-
-                  <select v-if="client.credit_cards?.length > 0" class="form-control">
-                    <option value=""></option>
-                    <option v-for="card in client.credit_cards" :key="card.id">
-                      {{ card.cc_provider }}
-                    </option>
-                  </select>
                 </div>
+
+                <select v-if="client.credit_cards?.length > 0" class="form-control mt-2">
+                  <option value="">Select Credit Card</option>
+                  <option v-for="card in client.credit_cards" :key="card.id">
+                    {{ card.cc_last_4_digits+' - '+card.cc_type }}
+                  </option>
+                </select>
+
               </div>
 
               <transition name="modal">
@@ -455,8 +417,45 @@ defineExpose({
 
         </div>
       </div>
+    </div>
 
+    <div v-if="hash && client.users" class="row border-top-dashed">
+      <div class="card">
+        <h5 class="card-header">Users</h5>
+        <div class="table-responsive text-nowrap">
+          <table class="table">
+            <thead class="table-light">
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Role</th>
+                <th>Last Login</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
 
+            <tr v-for="user in client.users" :key="user">
+              <td>
+                <span class="fw-medium">{{ user.first_name }}</span>
+              </td>
+              <td>
+                {{ user.last_name }}
+              </td>
+              <td>
+
+              </td>
+              <td>
+                {{ user.role }}
+              </td>
+              <td>
+                {{ user.last_login }}
+              </td>
+            </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
   </div>

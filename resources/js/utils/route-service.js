@@ -21,9 +21,13 @@ const RouteService = {
             }
 
         }).then((response) => {
-            if(response.data.success){
+            if(response.data.success === true && response.status === 200){
                 next();
             }else{
+                window.location.href = logout;
+            }
+        }).catch((error) => {
+            if(error.response.status === 401){
                 window.location.href = logout;
             }
         });

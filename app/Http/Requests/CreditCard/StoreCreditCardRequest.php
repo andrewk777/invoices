@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\CreditCard;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreCreditCardRequest extends FormRequest
 {
@@ -11,18 +13,30 @@ class StoreCreditCardRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            //
+            'cc_last_4_digits' => 'required|string|max:4',
+            'cc_exp_month' => 'required|string|max:2',
+            'cc_exp_year' => 'required|string|max:4',
         ];
+    }
+
+    protected function failedValidation(Validator $validator){
+        // return errors in json object/array
+        //$message = $validator->errors()->all();
+        $message = $validator->errors()->getMessages();
+        throw new HttpResponseException(response()->json([
+            'success' => false,
+            'errors' => $message
+        ], 422));
     }
 }

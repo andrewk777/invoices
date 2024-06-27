@@ -17,9 +17,13 @@ class CreditCard extends Model
         'hash',
         'client_id',
         'cc_provider',
+        'cc_last_4_digits',
+        'cc_exp_month',
+        'cc_exp_year',
         'cc_provider_customer_id',
-        'cc_provider_client_id',
+        'cc_provider_card_id',
         'cc_currencies',
+        'cc_type',
     ];
 
     public function client(): BelongsTo

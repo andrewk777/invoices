@@ -15,7 +15,7 @@ class MyCompanySeeder extends Seeder
     public function run(): void
     {
         MyCompany::class::factory()->count(10)->create()->each(function ($myCompany) {
-            $myCompany->clients()->saveMany(Client::factory()->count(5)->create());
+//            $myCompany->clients()->saveMany(Client::factory()->count(5)->create());
         });
     }
 }
