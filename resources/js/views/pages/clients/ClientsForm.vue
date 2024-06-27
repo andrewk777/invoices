@@ -10,6 +10,11 @@ watch(
   () => route.params.hash,
   () => {
     hash.value = route.params.hash;
+    if (hash.value) {
+      getClient(hash.value);
+    } else {
+      resetForm();
+    }
   },
 );
 
@@ -20,7 +25,7 @@ const submitted = ref(false);
 const errors = ref({});
 
 const form = reactive({
-  company_name: 'None',
+  company_name: '',
   company_email: '',
   company_phone: '',
   company_address: '',
@@ -35,23 +40,19 @@ const form = reactive({
   notes: '',
 });
 
-watch(client, (newClient) => {
-  if (hash.value && newClient) {
-    form.company_name = newClient.company_name || '';
-    form.company_email = newClient.company_email || '';
-    form.company_phone = newClient.company_phone || '';
-    form.company_address = newClient.company_address || '';
-    form.main_contact_first_name = newClient.main_contact_first_name || '';
-    form.main_contact_last_name = newClient.main_contact_last_name || '';
-    form.main_contact_phone = newClient.main_contact_phone || '';
-    form.main_contact_email = newClient.main_contact_email || '';
-    form.ap_first_name = newClient.ap_first_name || '';
-    form.ap_last_name = newClient.ap_last_name || '';
-    form.ap_phone = newClient.ap_phone || '';
-    form.ap_email = newClient.ap_email || '';
-    form.notes = newClient.notes || '';
+const populateForm = (clientData) => {
+  for (const key in form) {
+    if (clientData.hasOwnProperty(key)) {
+      form[key] = clientData[key] || '';
+    }
   }
-});
+};
+
+const resetForm = () => {
+  for (const key in form) {
+    form[key] = '';
+  }
+};
 
 const submitClient = async () => {
   // Delete all errors
@@ -67,7 +68,7 @@ const submitClient = async () => {
   Object.keys(form).forEach(function(key) {
     console.log(key); // key
     if(form[key] !== null && form[key] !== ''){
-        formData.append(key, form[key]);
+      formData.append(key, form[key]);
     }
   });
 
@@ -80,25 +81,17 @@ const submitClient = async () => {
   }).then((response) => {
     if (response.data.success){
       submitted.value = true;
-
-      // Empty form fields
-      Object.keys(form).forEach(function(key) {
-
-        if(import.meta.env.VITE_APP_ENV === 'local'){
-          console.log(key); // key
-          console.log(form[key]); // value
-        }
-
-          form[key] = '';
-      });
+      resetForm();
     }
-
   }).catch((error) => {
     if([401, 402, 422].includes(error.response.status)){
       console.log(error.response);
 
       if(Object.keys(error.response?.data?.errors).length > 0){
         errors.value = error.response?.data?.errors;
+        if(import.meta.env.VITE_APP_ENV === 'local'){
+          console.log("Validation errors", errors.value);
+        }
       }
 
       if(error.response?.data?.server_error){
@@ -112,7 +105,6 @@ const submitClient = async () => {
 }
 
 const updateClient = async (hash) => {
-
   // Delete all errors
   Object.keys(errors.value).forEach(function(key) {
     delete errors.value[key];
@@ -126,7 +118,7 @@ const updateClient = async (hash) => {
   Object.keys(form).forEach(function(key) {
     console.log(key); // key
     if(form[key] !== null && form[key] !== ''){
-        formData.append(key, form[key]);
+      formData.append(key, form[key]);
     }
   });
 
@@ -140,9 +132,7 @@ const updateClient = async (hash) => {
     if (response.data.success){
       submitted.value = true;
     }
-
   }).catch((error) => {
-
     if(error.response && [401, 402, 422].includes(error.response.status)){
       console.log(error.response);
 
@@ -158,7 +148,6 @@ const updateClient = async (hash) => {
     console.log(error);
   });
   loading.value = false;
-
 }
 
 const getClient = async (hash) => {
@@ -174,12 +163,12 @@ const getClient = async (hash) => {
   }).then((response) => {
     if (response.data.success) {
       client.value = response.data.client;
+      populateForm(client.value);
 
       if(import.meta.env.VITE_APP_ENV === 'local'){
-        console.log("Client SHow", client.value);
+        console.log("Client Show", client.value);
       }
     }
-
   }).catch((error) => {
     console.log(error);
   });
@@ -189,6 +178,8 @@ const getClient = async (hash) => {
 onMounted(async () => {
   if(hash.value){
     await getClient(hash.value);
+  }else{
+    resetForm();
   }
 });
 
@@ -209,7 +200,6 @@ const closeModal = () => {
 defineExpose({
   openModal,
 });
-
 </script>
 
 <template>
@@ -251,7 +241,9 @@ defineExpose({
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">Company Name</label>
                   <input v-model="form.company_name" type="text" class="form-control">
-                  <span v-if="errors.company_name" class="text-danger text-center"></span>
+                  <span v-if="errors.company_name" class="text-danger text-center">
+                    {{ errors.company_name[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -259,7 +251,9 @@ defineExpose({
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">Company Address</label>
                   <input v-model="form.company_address" type="text" class="form-control">
-                  <span v-if="errors.company_address" class="text-danger text-center"></span>
+                  <span v-if="errors.company_address" class="text-danger text-center">
+                    {{ errors.company_address[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -268,7 +262,9 @@ defineExpose({
                   <label for="defaultFormControlInput" class="form-label">First Name</label>
                   <input v-model="form.main_contact_first_name" type="text" class="form-control"
                   >
-                  <span v-if="errors.main_contact_first_name" class="text-danger text-center"></span>
+                  <span v-if="errors.main_contact_first_name" class="text-danger text-center">
+                    {{ errors.main_contact_first_name[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -277,7 +273,9 @@ defineExpose({
                   <label for="defaultFormControlInput" class="form-label">Last Name</label>
                   <input v-model="form.main_contact_last_name" type="text" class="form-control"
                   >
-                  <span v-if="errors.main_contact_last_name" class="text-danger text-center"></span>
+                  <span v-if="errors.main_contact_last_name" class="text-danger text-center">
+                    {{ errors.main_contact_last_name[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -286,7 +284,9 @@ defineExpose({
                   <label for="defaultFormControlInput" class="form-label">Email</label>
                   <input v-model="form.main_contact_email" type="text" class="form-control"
                   >
-                  <span v-if="errors.main_contact_email" class="text-danger text-center"></span>
+                  <span v-if="errors.main_contact_email" class="text-danger text-center">
+                    {{ errors.main_contact_email[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -295,7 +295,9 @@ defineExpose({
                   <label for="defaultFormControlInput" class="form-label">Phone</label>
                   <input v-model="form.main_contact_phone" type="text" class="form-control"
                   >
-                  <span v-if="errors.main_contact_phone" class="text-danger text-center"></span>
+                  <span v-if="errors.main_contact_phone" class="text-danger text-center">
+                    {{ errors.main_contact_phone[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -304,7 +306,9 @@ defineExpose({
                   <label for="defaultFormControlInput" class="form-label">AP First Name</label>
                   <input v-model="form.ap_first_name" type="text" class="form-control"
                   >
-                  <span v-if="errors.ap_first_name" class="text-danger text-center"></span>
+                  <span v-if="errors.ap_first_name" class="text-danger text-center">
+                    {{ errors.ap_first_name[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -313,7 +317,9 @@ defineExpose({
                   <label for="defaultFormControlInput" class="form-label">AP Last Name</label>
                   <input v-model="form.ap_last_name" type="text" class="form-control"
                   >
-                  <span v-if="errors.ap_last_name" class="text-danger text-center"></span>
+                  <span v-if="errors.ap_last_name" class="text-danger text-center">
+                    {{ errors.ap_last_name[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -322,7 +328,9 @@ defineExpose({
                   <label for="defaultFormControlInput" class="form-label">AP Email</label>
                   <input v-model="form.ap_email" type="text" class="form-control"
                   >
-                  <span v-if="errors.ap_email" class="text-danger text-center"></span>
+                  <span v-if="errors.ap_email" class="text-danger text-center">
+                    {{ errors.ap_email[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -331,7 +339,9 @@ defineExpose({
                   <label for="defaultFormControlInput" class="form-label">AP Phone</label>
                   <input v-model="form.ap_phone" type="text" class="form-control"
                   >
-                  <span v-if="errors.ap_phone" class="text-danger text-center"></span>
+                  <span v-if="errors.ap_phone" class="text-danger text-center">
+                    {{ errors.ap_phone[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -339,7 +349,9 @@ defineExpose({
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">Notes</label>
                   <textarea v-model="form.notes" class="form-control" rows="3"></textarea>
-                  <span v-if="errors.notes" class="text-danger text-center"></span>
+                  <span v-if="errors.notes" class="text-danger text-center">
+                    {{ errors.notes[0] }}
+                  </span>
                 </div>
               </div>
 
@@ -357,14 +369,52 @@ defineExpose({
                   <transition name="modal">
                     <div v-if="isModalVisible" class="modal">
                       <div class="modal-overlay" @click="closeModal"></div>
-                      <div class="modal-content">
-                        <h2>Title</h2>
-                        <slot></slot>
+                        <div class="modal-content">
+                          <div class="modal-body">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="text-center mb-6">
+                              <h4 class="mb-2">Add New Card</h4>
+                              <p>Add new card to complete payment</p>
+                            </div>
+                            <form id="addNewCCForm" class="row g-6 fv-plugins-bootstrap5 fv-plugins-framework" onsubmit="return false" novalidate="novalidate">
+                              <div class="col-12 fv-plugins-icon-container">
+                                <label class="form-label w-100" for="modalAddCard">Card Number</label>
+                                <div class="input-group input-group-merge has-validation">
+                                  <input id="modalAddCard" name="modalAddCard" class="form-control credit-card-mask" type="text" placeholder="1356 3215 6548 7898" aria-describedby="modalAddCard2">
+                                  <span class="input-group-text cursor-pointer p-1" id="modalAddCard2"><span class="card-type"></span></span>
+                                </div><div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                              </div>
+                              <div class="col-12 col-md-6">
+                                <label class="form-label" for="modalAddCardName">Name</label>
+                                <input type="text" id="modalAddCardName" class="form-control" placeholder="John Doe">
+                              </div>
+                              <div class="col-6 col-md-3">
+                                <label class="form-label" for="modalAddCardExpiryDate">Exp. Date</label>
+                                <input type="text" id="modalAddCardExpiryDate" class="form-control expiry-date-mask" placeholder="MM/YY">
+                              </div>
+                              <div class="col-6 col-md-3">
+                                <label class="form-label" for="modalAddCardCvv">CVV Code</label>
+                                <div class="input-group input-group-merge">
+                                  <input type="text" id="modalAddCardCvv" class="form-control cvv-code-mask" maxlength="3" placeholder="654">
+                                  <span class="input-group-text cursor-pointer ps-0" id="modalAddCardCvv2"><i class="text-muted ti ti-help" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Card Verification Value" data-bs-original-title="Card Verification Value"></i></span>
+                                </div>
+                              </div>
+                              <div class="col-12">
+                                <div class="form-check form-switch">
+                                  <input type="checkbox" class="form-check-input" id="futureAddress">
+                                  <label for="futureAddress" class="switch-label">Save card for future billing?</label>
+                                </div>
+                              </div>
+                              <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-3 waves-effect waves-light">Submit</button>
+                                <button type="reset" class="btn btn-label-secondary btn-reset waves-effect" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                              </div>
+                              <input type="hidden"></form>
+                          </div>
+                        </div>
                         <button @click="closeModal">Close</button>
-                      </div>
                     </div>
                   </transition>
-
 
 
                   <select v-if="client.credit_cards?.length > 0" class="form-control">
@@ -373,6 +423,30 @@ defineExpose({
                       {{ card.cc_provider }}
                     </option>
                   </select>
+                </div>
+              </div>
+
+              <transition name="modal">
+                <div v-if="submitted" class="col-12 justify-content-center d-flex">
+                  <p class="p-2 bg-success text-white justify-center text-center w-50">
+                    {{ hash ? 'Customer Updated' : 'Customer Added' }}
+                  </p>
+                </div>
+              </transition>
+
+              <div class="col-12 justify-content-center d-flex">
+                <div class="d-flex">
+                  <button
+                    @click.prevent="hash ? updateClient(hash) : submitClient()"
+                    v-if="!loading"
+                    class="btn btn-sm btn-success"
+                  >
+                    {{ hash ? 'Update Customer' : 'Add Customer' }}
+                  </button>
+                  <button v-else class="btn btn-sm btn-success" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                  </button>
                 </div>
               </div>
 
