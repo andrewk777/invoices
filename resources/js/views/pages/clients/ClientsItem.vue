@@ -47,15 +47,22 @@ const emittedClient = (event) => {
     </td>
 
     <td>
-      <a v-if="client.credit_cards" href="" class="btn btn-info waves-effect waves-light">
+      <router-link
+        v-if="client.credit_cards"
+        class="btn btn-info waves-effect waves-light"
+        exact
+        :to="{name: 'ClientsEdit', params: { hash: client.hash }}">
         <i class="fa fa-credit-card"></i>
-      </a>
+      </router-link>
     </td>
 
     <td>
-      <a href="" class="btn btn-warning waves-effect waves-light">
+      <router-link
+        class="btn btn-warning waves-effect waves-light"
+        exact
+        :to="{name: 'ClientsEdit', params: { hash: client.hash }}">
         <i class="fa fa-edit"></i>
-      </a>
+      </router-link>
     </td>
   </tr>
 </template>

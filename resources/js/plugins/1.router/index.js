@@ -41,6 +41,18 @@ const customRoutes = [
         },
 
         {
+            name: "ClientsCreate",
+            path: '/clients/create',
+            component: () => import('@/views/pages/clients/ClientsForm.vue'),
+        },
+
+        {
+            name: "ClientsEdit",
+            path: '/clients/edit/:hash',
+            component: () => import('@/views/pages/clients/ClientsForm.vue'),
+        },
+
+        {
             name: "InvoicesView",
             path: "/invoices",
             component: () => import('@/views/pages/invoices/InvoicesView.vue'),
