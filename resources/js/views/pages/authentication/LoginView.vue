@@ -36,9 +36,12 @@ const submitLogin = async () => {
       // Store logged-in user in local storage
       localStorage.setItem('invoice-client-token', JSON.stringify(user));
 
-      console.log(response.data);
+      if(import.meta.env.VITE_APP_ENV === 'local') {
+        console.log(response.data);
+      }
+
       //window.location.href = '/customers';
-      router.push('/customers');
+      router.push('/clients');
     }
 
   } catch (error) {

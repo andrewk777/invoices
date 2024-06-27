@@ -1,10 +1,10 @@
-
 <?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CreditCard extends Model
@@ -17,14 +17,13 @@ class CreditCard extends Model
         'hash',
         'client_id',
         'cc_provider',
-        'cc_number',
-        'cvv',
-        'expiration_month',
-        'expiration_year',
-        'name_on_card',
-        'address',
-        'state',
-        'country',
-        'cc_currencies'
+        'cc_provider_customer_id',
+        'cc_provider_client_id',
+        'cc_currencies',
     ];
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class, 'client_id', 'id');
+    }
 }

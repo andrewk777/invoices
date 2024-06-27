@@ -17,14 +17,13 @@ Route::middleware('auth:sanctum')->group(static function (){
     // Learning Dashboard
     Route::get('/authenticate', [LoginController::class, 'authenticate']);
 
-    Route::get('/customers', [ClientController::class, 'index']);
-    Route::post('/customers/store', [ClientController::class, 'store']);
-    Route::get('/customers/show/{hash}', [ClientController::class, 'show']);
-    Route::put('/customers/update/{hash}', [ClientController::class, 'update']);
-    Route::delete('/customers/destroy/{hash}', [ClientController::class, 'destroy']);
+    Route::get('/clients', [ClientController::class, 'index']);
+    Route::post('/clients/store', [ClientController::class, 'store']);
+    Route::get('/clients/show/{hash}', [ClientController::class, 'show']);
+    Route::post('/clients/update/{hash}', [ClientController::class, 'update']);
+    Route::delete('/clients/destroy/{hash}', [ClientController::class, 'destroy']);
 
-    Route::get('/customers/credit-cards/{hash}', [CreditCardController::class, 'index']);
-
+    Route::get('/clients/credit-cards/{hash}', [CreditCardController::class, 'index']);
 
     Route::get('/logout', [LoginController::class, 'logout']);
 });

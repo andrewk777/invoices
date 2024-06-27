@@ -27,4 +27,14 @@ class BaseRepository
             'server_error' => "Line ".$e->getLine()." of ".$e->getFile().", ".$e->getMessage(),
         ], 500);
     }
+
+    public static function randomCharacters(int $length, string $characters, string $staticChar = ''): string
+    {
+        $charactersLength = strlen($characters);
+        $randomString = $staticChar;
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
 }

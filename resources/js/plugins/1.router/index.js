@@ -26,57 +26,36 @@ const customRoutes = [
     path: '/',
     name: 'LayoutView',
     component: () => import('@/views/pages/LayoutView.vue'),
+    beforeEnter: (to, from, next) => {
+          RouteService.authenticateUser(
+              '/api/authenticate',
+              next,
+              '/',
+          )
+    },
     children: [
-          {
-              name: "CustomersView",
-              path: "/customers",
-              component: () => import('@/views/pages/customers/CustomersView.vue'),
-              beforeEnter: (to, from, next) => {
-                  RouteService.authenticateUser(
-                      '/api/authenticate',
-                      next,
-                      '/',
-                  )
-              },
-          },
+        {
+              name: "ClientsView",
+              path: "/clients",
+              component: () => import('@/views/pages/clients/ClientsView.vue'),
+        },
 
-         {
+        {
             name: "InvoicesView",
             path: "/invoices",
             component: () => import('@/views/pages/invoices/InvoicesView.vue'),
-            beforeEnter: (to, from, next) => {
-                RouteService.authenticateUser(
-                    '/api/authenticate',
-                    next,
-                    '/',
-                )
-            },
-         },
+        },
 
         {
             name: "SubscriptionsView",
             path: "/subscriptions",
             component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
-            beforeEnter: (to, from, next) => {
-                RouteService.authenticateUser(
-                    '/api/authenticate',
-                    next,
-                    '/',
-                )
-            },
         },
 
         {
             name: "UsersView",
             path: "/users",
             component: () => import('@/views/pages/users/UsersView.vue'),
-            beforeEnter: (to, from, next) => {
-                RouteService.authenticateUser(
-                    '/api/authenticate',
-                    next,
-                    '/',
-                )
-            },
         },
 
     ]

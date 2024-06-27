@@ -81,7 +81,7 @@ let dropdowns = document.querySelectorAll(".menu-item");
             <router-link
               exact
               class="menu-link"
-              :to="{name: 'CustomersView'}">
+              :to="{name: 'ClientsView'}">
               <i class="menu-icon fa fa-user-friends fa-2x"></i>
               <div data-i18n="Dashboards">Customers</div>
             </router-link>
