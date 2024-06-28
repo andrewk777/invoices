@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\CreditCardController;
 use App\Http\Controllers\InvoiceController;
 use Illuminate\Http\Request;
@@ -24,10 +25,13 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::post('/clients/update/{hash}', [ClientController::class, 'update']);
     Route::delete('/clients/destroy/{hash}', [ClientController::class, 'destroy']);
 
+    Route::get('/companies', [CompanyController::class, 'index']);
+
     Route::get('/clients/credit-cards/{hash}', [CreditCardController::class, 'index']);
     Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
 
     Route::get('/invoices', [InvoiceController::class, 'index']);
+
 
     Route::get('/logout', [LoginController::class, 'logout']);
 });

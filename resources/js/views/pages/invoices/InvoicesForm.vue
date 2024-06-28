@@ -2,6 +2,7 @@
 import {ref, watch, reactive, computed, onMounted} from 'vue';
 import axios from "axios";
 import {router} from "@/plugins/1.router/index.js";
+import SearchSelect from "@/components/SearchSelect.vue";
 
 // For routing with params
 const hash = ref('');
@@ -22,6 +23,7 @@ const token = computed(() => baseService.getTokenFromLocalStorage());
 const loading = ref(false);
 const submitted = ref(false);
 const errors = ref({});
+const companies = ref([]);
 
 const form = reactive({
   'company_id': '',
@@ -173,13 +175,36 @@ const getInvoice = async (hash) => {
   }).catch((error) => {
     console.log(error);
   });
-  loading.value = false;
+}
+
+const getCompanies = async () => {
+  // Get token from local storage
+  await axios.get('/api/companies', {
+    headers: {
+      "Authorization" : "Bearer " + token.value,
+      'Accept' : 'application/json',
+    },
+
+  }).then((response) => {
+    if (response.data.success) {
+      companies.value = response.data.companies;
+
+      if(import.meta.env.VITE_APP_ENV === 'local'){
+        console.log("Get Companies", companies.value);
+      }
+    }
+
+  }).catch((error) => {
+    console.log(error);
+  });
 }
 
 onMounted(async () => {
   if(hash.value){
     await getInvoice(hash.value);
   }
+
+  await getCompanies();
 });
 
 // Modal Popup
@@ -193,6 +218,22 @@ const openModal = () => {
 
 const closeModal = () => {
   isModalVisible.value = false;
+};
+
+const searchQuery = ref('');
+const filteredOptions = ref([]);
+
+const filterOptions = () => {
+  const query = searchQuery.value.toLowerCase();
+  filteredOptions.value = companies.value.filter(option =>
+    option.name.toLowerCase().includes(query)
+  );
+};
+
+const selectOption = (option) => {
+  form.company_id = option.id;
+  searchQuery.value = option.name;
+  filteredOptions.value = [];
 };
 
 </script>
@@ -226,11 +267,41 @@ const closeModal = () => {
         <div class="card">
 
           <h5 class="card-header">
-            {{ hash ? 'Edit Customer' : 'Add Customer' }}
+            {{ hash ? 'Edit Invoice' : 'Add Invoice' }}
           </h5>
 
           <form>
-            <div class="row p-2">
+            <div class="row p-1">
+
+              <div class="col-md-1">
+                <div class="form-group">
+                  <label class="form-label">Invoice #</label>
+                  <input type="number" readonly class="form-control">
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="dropdown form-group">
+                  <label class="form-label">Select Company</label>
+                  <input
+                    type="text"
+                    v-model="searchQuery"
+                    @click="filterOptions"
+                    @input="filterOptions"
+                    placeholder="Search..."
+                    class="dropdown-input form-control"
+                  />
+                  <ul v-show="filteredOptions.length" class="dropdown-list">
+                    <li v-for="option in filteredOptions"
+                        :key="option"
+                        @click="selectOption(option)" class="dropdown-item">
+                      {{ option.name }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+
 
               <div class="card-body col-md-6">
                 <div class="form-group">
@@ -502,4 +573,32 @@ const closeModal = () => {
   transform: scale(0.8);
 }
 
+/* select search dropdown */
+.dropdown {
+  position: relative;
+  width: 200px;
+}
+.dropdown-input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.dropdown-list {
+  position: absolute;
+  width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background: white;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.dropdown-item {
+  padding: 8px;
+  cursor: pointer;
+}
+.dropdown-item:hover {
+  background: #f0f0f0;
+}
 </style>
