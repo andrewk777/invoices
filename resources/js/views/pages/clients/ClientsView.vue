@@ -38,11 +38,6 @@ const getClients = (page = 1) => {
   });
 }
 
-const emittedClient = (event) => {
-  clients.value.unshift(event);
-  total.value++;
-}
-
 onBeforeMount(() => {
   getClients();
 });
@@ -72,7 +67,6 @@ onBeforeMount(() => {
             v-for="client in clients.data"
             :key="client.id"
             :client="client"
-            @emittedClient="emittedClient"
          >
          </clients-item>
 

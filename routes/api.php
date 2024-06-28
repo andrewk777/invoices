@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CreditCardController;
+use App\Http\Controllers\InvoiceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,8 @@ Route::middleware('auth:sanctum')->group(static function (){
 
     Route::get('/clients/credit-cards/{hash}', [CreditCardController::class, 'index']);
     Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
+
+    Route::get('/invoices', [InvoiceController::class, 'index']);
 
     Route::get('/logout', [LoginController::class, 'logout']);
 });

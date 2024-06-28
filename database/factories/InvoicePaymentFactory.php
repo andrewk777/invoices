@@ -19,10 +19,10 @@ class InvoicePaymentFactory extends Factory
     {
         return [
             'hash' => $this->faker->uuid(),
-            'invoice_id' => Invoice::factory()->create()->id,
+            //'invoice_id' => Invoice::factory()->create()->id,
             'amount' => $this->faker->randomFloat(2),
             'date' => $this->faker->dateTime(),
-            'type' => $this->faker->randomElement(['cash', 'check', 'credit_card']),
+            'type' => $this->faker->randomElement(['cheque', 'credit_card', 'cash', 'eft', 'crypto']),
             'note' => $this->faker->sentence(),
         ];
     }

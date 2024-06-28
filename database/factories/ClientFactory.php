@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\MyCompany;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,7 @@ class ClientFactory extends Factory
     {
         return [
             'hash' => $this->faker->unique()->regexify('[A-Za-z0-9]{50}'),
-            'my_company_id' => $this->faker->numberBetween(1, 10),
+            'my_company_id' => MyCompany::factory()->create()->id,
             'company_name' => $this->faker->company,
             'company_address' => $this->faker->address,
             'company_phone' => $this->faker->phoneNumber,
