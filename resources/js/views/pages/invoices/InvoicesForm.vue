@@ -271,7 +271,7 @@ const selectOption = (option) => {
           </h5>
 
           <form>
-            <div class="row p-1">
+            <div class="row p-2">
 
               <div class="col-md-1">
                 <div class="form-group">

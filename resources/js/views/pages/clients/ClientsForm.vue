@@ -243,7 +243,7 @@ defineExpose({
           <form>
             <div class="row p-2">
 
-              <div class="card-body col-md-6">
+              <div class="card-body col-md-3">
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">Company Name</label>
                   <input v-model="form.company_name" type="text" class="form-control">
@@ -253,12 +253,32 @@ defineExpose({
                 </div>
               </div>
 
-              <div class="card-body col-md-6">
+              <div class="card-body col-md-3">
                 <div class="form-group">
                   <label for="defaultFormControlInput" class="form-label">Company Address</label>
                   <input v-model="form.company_address" type="text" class="form-control">
                   <span v-if="errors.company_address" class="text-danger text-center">
                     {{ errors.company_address[0] }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Company Email</label>
+                  <input v-model="form.company_email" type="text" class="form-control">
+                  <span v-if="errors.company_email" class="text-danger text-center">
+                    {{ errors.company_email[0] }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="card-body col-md-3">
+                <div class="form-group">
+                  <label for="defaultFormControlInput" class="form-label">Company Phone No.</label>
+                  <input v-model="form.company_phone" type="text" class="form-control">
+                  <span v-if="errors.company_phone" class="text-danger text-center">
+                    {{ errors.company_phone[0] }}
                   </span>
                 </div>
               </div>
