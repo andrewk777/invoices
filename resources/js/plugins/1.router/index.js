@@ -59,9 +59,33 @@ const customRoutes = [
         },
 
         {
+            name: "InvoicesCreate",
+            path: "/invoices/create",
+            component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
+        },
+
+        {
+            name: "InvoicesEdit",
+            path: "/invoices/edit/:hash",
+            component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
+        },
+
+        {
             name: "SubscriptionsView",
             path: "/subscriptions",
             component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
+        },
+
+        {
+            name: "SubscriptionsCreate",
+            path: "/subscriptions/create",
+            component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
+        },
+
+        {
+            name: "SubscriptionsEdit",
+            path: "/subscriptions/edit/:hash",
+            component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
         },
 
         {

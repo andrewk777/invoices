@@ -46,7 +46,20 @@ onBeforeMount(() => {
 <template>
   <div class="card">
 
-    <h5 class="card-header">Customers</h5>
+    <div class="row">
+      <div class="col-md-6 justify-content-first my-auto">
+        <h3 class="card-header">Customers</h3>
+      </div>
+
+      <div class="col-md-6 text-right mt-4">
+        <router-link
+          class="btn btn-info waves-effect waves-light mr-2 btn-sm"
+          exact
+          :to="{name: 'ClientsCreate'}">
+          Add Customer
+        </router-link>
+      </div>
+    </div>
 
     <div class="table-responsive text-nowrap">
       <table class="table">
