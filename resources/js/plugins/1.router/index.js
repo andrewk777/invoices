@@ -1,123 +1,165 @@
-// import { setupLayouts } from 'virtual:generated-layouts'
+import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import RouteService from "@/utils/route-service.js";
 
-// function recursiveLayouts(route) {
-//   if (route.children) {
-//     for (let i = 0; i < route.children.length; i++)
-//       route.children[i] = recursiveLayouts(route.children[i])
-//
-//     return route
-//   }
-//
-//   return setupLayouts([route])[0]
-// }
+function recursiveLayouts(route) {
+    if (route.children) {
+        for (let i = 0; i < route.children.length; i++)
+            route.children[i] = recursiveLayouts(route.children[i])
+
+        return route
+    }
+
+    return setupLayouts([route])[0]
+}
 
 // Define custom routes
-const customRoutes = [
+const authenticatedRoutes = [
 
-  {
-    path: '/',
-    name: 'LoginView',
-    component: () => import('@/views/pages/authentication/LoginView.vue'),
-  },
-    
-  {
-    path: '/',
-    name: 'LayoutView',
-    component: () => import('@/views/pages/LayoutView.vue'),
-    beforeEnter: (to, from, next) => {
-          RouteService.authenticateUser(
-              '/api/authenticate',
-              next,
-              '/',
-          )
+    {
+        path: '/clients',
+        name: 'ClientsView',
+        component: () => import('@/views/pages/clients/ClientsView.vue'),
     },
-    children: [
-        {
-              name: "ClientsView",
-              path: "/clients",
-              component: () => import('@/views/pages/clients/ClientsView.vue'),
-        },
 
-        {
-            name: "ClientsCreate",
-            path: '/clients/create',
-            component: () => import('@/views/pages/clients/ClientsForm.vue'),
-        },
+    {
+        path: '/clients/create',
+        name: 'ClientsCreate',
+        component: () => import('@/views/pages/clients/ClientsForm.vue'),
+    },
 
-        {
-            name: "ClientsEdit",
-            path: '/clients/edit/:hash',
-            component: () => import('@/views/pages/clients/ClientsForm.vue'),
-        },
+    {
+        path: '/clients/edit/:hash',
+        name: 'ClientsEdit',
+        component: () => import('@/views/pages/clients/ClientsForm.vue'),
+    },
 
-        {
-            name: "InvoicesView",
-            path: "/invoices",
-            component: () => import('@/views/pages/invoices/InvoicesView.vue'),
-        },
+    {
+        path: '/invoices',
+        name: 'InvoicesView',
+        component: () => import('@/views/pages/invoices/InvoicesView.vue'),
+    },
 
-        {
-            name: "InvoicesCreate",
-            path: "/invoices/create",
-            component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
-        },
+    {
+        path: '/subscriptions',
+        name: 'SubscriptionsView',
+        component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
+    },
 
-        {
-            name: "InvoicesEdit",
-            path: "/invoices/edit/:hash",
-            component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
-        },
+    {
+        path: '/users',
+        name: 'UsersView',
+        component: () => import('@/views/pages/users/UsersView.vue'),
+    },
 
-        {
-            name: "SubscriptionsView",
-            path: "/subscriptions",
-            component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
-        },
+    // {
+    //   path: '/',
+    //   name: 'LayoutView',
+    //   component: () => import('@/layouts/components/DefaultLayoutWithHorizontalNav.vue'),
+    //   beforeEnter: (to, from, next) => {
+    //         RouteService.authenticateUser(
+    //             '/api/authenticate',
+    //             next,
+    //             '/',
+    //         )
+    //   },
+    //   children: [
+    //       {
+    //             name: "ClientsView",
+    //             path: "/clients",
+    //             component: () => import('@/views/pages/clients/ClientsViewNew.vue'),
+    //       },
+    //
+    //       {
+    //           name: "ClientsCreate",
+    //           path: '/clients/create',
+    //           component: () => import('@/views/pages/clients/ClientsForm.vue'),
+    //       },
+    //
+    //       {
+    //           name: "ClientsEdit",
+    //           path: '/clients/edit/:hash',
+    //           component: () => import('@/views/pages/clients/ClientsForm.vue'),
+    //       },
+    //
+    //       {
+    //           name: "InvoicesView",
+    //           path: "/invoices",
+    //           component: () => import('@/views/pages/invoices/InvoicesView.vue'),
+    //       },
+    //
+    //       {
+    //           name: "InvoicesCreate",
+    //           path: "/invoices/create",
+    //           component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
+    //       },
+    //
+    //       {
+    //           name: "InvoicesEdit",
+    //           path: "/invoices/edit/:hash",
+    //           component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
+    //       },
+    //
+    //       {
+    //           name: "SubscriptionsView",
+    //           path: "/subscriptions",
+    //           component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
+    //       },
+    //
+    //       {
+    //           name: "SubscriptionsCreate",
+    //           path: "/subscriptions/create",
+    //           component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
+    //       },
+    //
+    //       {
+    //           name: "SubscriptionsEdit",
+    //           path: "/subscriptions/edit/:hash",
+    //           component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
+    //       },
+    //
+    //       {
+    //           name: "UsersView",
+    //           path: "/users",
+    //           component: () => import('@/views/pages/users/UsersView.vue'),
+    //       },
+    //
+    //   ]
+    // },
 
-        {
-            name: "SubscriptionsCreate",
-            path: "/subscriptions/create",
-            component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
-        },
+    // Add more custom routes as needed
+];
 
-        {
-            name: "SubscriptionsEdit",
-            path: "/subscriptions/edit/:hash",
-            component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
-        },
-
-        {
-            name: "UsersView",
-            path: "/users",
-            component: () => import('@/views/pages/users/UsersView.vue'),
-        },
-
-    ]
-  },
-
-  // Add more custom routes as needed
-]
+// unauthenticated routes
+const unauthenticatedRoutes = [
+    {
+        path: '/',
+        name: 'LoginView',
+        component: () => import('@/views/pages/authentication/LoginView.vue'),
+    },
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior(to) {
-    if (to.hash)
-      return { el: to.hash, behavior: 'smooth', top: 60 }
-    
-    return { top: 0 }
-  },
-  extendRoutes: pages => [
-    ...customRoutes,
+    history: createWebHistory(import.meta.env.BASE_URL),
+    scrollBehavior(to) {
+        if (to.hash)
+            return { el: to.hash, behavior: 'smooth', top: 60 }
 
-    // page based routes
-    // ...[...pages].map(route => recursiveLayouts(route)),
+        return { top: 0 }
+    },
+    extendRoutes: pages => [
+        // unauthenticated routes
+        ...unauthenticatedRoutes,
 
-  ],
+        // authenticated routes
+        ...authenticatedRoutes.map(route => recursiveLayouts(route)),
+
+        // page-based routes
+        ...[...pages].map(route => recursiveLayouts(route)),
+    ],
 })
 
 export { router }
 export default function (app) {
-  app.use(router)
+    app.use(router)
 }

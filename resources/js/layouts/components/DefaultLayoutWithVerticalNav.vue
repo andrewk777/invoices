@@ -9,7 +9,9 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
 import NavBarI18n from '@core/components/I18n.vue'
 
 // @layouts plugin
-import { VerticalNavLayout } from '@layouts'
+// import { VerticalNavLayout } from '@layouts'
+import AppLoadingIndicator from "@/components/AppLoadingIndicator.vue";
+import CustomVerticalNavLayout from "@layouts/components/CustomVerticalNavLayout.vue";
 
 // SECTION: Loading Indicator
 const isFallbackStateActive = ref(false)
@@ -25,10 +27,12 @@ watch([
     refLoadingIndicator.value.resolveHandle()
 }, { immediate: true })
 // !SECTION
+
+
 </script>
 
 <template>
-  <VerticalNavLayout :nav-items="navItems">
+  <CustomVerticalNavLayout :nav-items="navItems">
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
@@ -43,14 +47,15 @@ watch([
           />
         </IconBtn>
 
-        <NavbarThemeSwitcher />
-
         <VSpacer />
 
         <NavBarI18n
           v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
           :languages="themeConfig.app.i18n.langConfig"
         />
+
+        <NavbarThemeSwitcher />
+
         <UserProfile />
       </div>
     </template>
@@ -75,5 +80,5 @@ watch([
 
     <!-- 👉 Customizer -->
     <!-- <TheCustomizer /> -->
-  </VerticalNavLayout>
+  </CustomVerticalNavLayout>
 </template>

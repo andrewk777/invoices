@@ -7,8 +7,9 @@ import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import NavBarI18n from '@core/components/I18n.vue'
-import { HorizontalNavLayout } from '@layouts'
+import { CustomHorizontalNavLayout } from '@layouts/components'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import AppLoadingIndicator from "@/components/AppLoadingIndicator.vue";
 
 // SECTION: Loading Indicator
 const isFallbackStateActive = ref(false)
@@ -27,7 +28,7 @@ watch([
 </script>
 
 <template>
-  <HorizontalNavLayout :nav-items="navItems">
+  <CustomHorizontalNavLayout :nav-items="navItems">
     <!-- 👉 navbar -->
     <template #navbar>
       <RouterLink
@@ -35,11 +36,11 @@ watch([
         class="app-logo d-flex align-center gap-x-3"
       >
         <VNodeRenderer :nodes="themeConfig.app.logo" />
-
         <h1 class="app-title font-weight-bold leading-normal text-xl text-capitalize">
           {{ themeConfig.app.title }}
         </h1>
       </RouterLink>
+
       <VSpacer />
 
       <NavBarI18n
@@ -71,5 +72,5 @@ watch([
 
     <!-- 👉 Customizer -->
     <!-- <TheCustomizer /> -->
-  </HorizontalNavLayout>
+  </CustomHorizontalNavLayout>
 </template>

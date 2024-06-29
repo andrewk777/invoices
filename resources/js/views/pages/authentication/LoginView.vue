@@ -1,8 +1,13 @@
 <script setup>
+definePage({
+  meta: {
+    layout: 'blank',
+  },
+});
+
 import { ref, reactive, onBeforeMount } from 'vue';
 import axios from 'axios';
 import validationService from '@/utils/validation-service'
-import {router} from "@/plugins/1.router/index.js";
 
 let errors = reactive({});
 const loading = ref(false);
@@ -40,8 +45,7 @@ const submitLogin = async () => {
         console.log(response.data);
       }
 
-      //window.location.href = '/customers';
-      router.push('/clients');
+      window.location.href = '/clients';
     }
 
   } catch (error) {
@@ -68,24 +72,8 @@ const submitLogin = async () => {
 }
 
 onBeforeMount(() => {
-  // Load relevant scripts
-  import('@assets/vendor/libs/jquery/jquery.js');
-  // import('@assets/vendor/libs/popper/popper.js');
-  // import('@assets/vendor/js/bootstrap.js');
-  import('@assets/vendor/libs/node-waves/node-waves.js');
-  import('@assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js');
-  import('@assets/vendor/libs/hammer/hammer.js');
-  import('@assets/vendor/libs/i18n/i18n.js');
-  // import('@assets/vendor/libs/typeahead-js/typeahead.js');
-  import('@assets/vendor/js/menu.js');
 
-  import('@assets/vendor/libs/@form-validation/popular.js');
-  import('@assets/vendor/libs/@form-validation/bootstrap5.js');
-  import('@assets/vendor/libs/@form-validation/auto-focus.js');
-
-  import('@assets/js/main.js');
-  import('@assets/js/pages-auth.js');
-})
+});
 </script>
 
 <template>

@@ -1,18 +1,25 @@
 export default [
     {
-      title: 'Home',
-      to: { name: 'root' },
-      icon: { icon: 'tabler-smart-home' },
+      title: 'Clients',
+      to: { name: 'ClientsView' },
+      icon: { icon: 'tabler-user-dollar' },
     },
+
     {
-      title: 'Second page',
-      to: { name: 'second-page' },
-      icon: { icon: 'tabler-file' },
+      title: 'Invoices',
+      to: { name: 'InvoicesView' },
+      icon: { icon: 'tabler-credit-card-pay' },
     },
+
     {
-      title: 'Login',
-      to: { name: 'login' },
-      icon: { icon: 'user' },
+      title: 'Subscriptions',
+      to: { name: 'SubscriptionsView' },
+      icon: { icon: 'tabler-cash' },
+    },
+
+    {
+        title: 'Users',
+        to: { name: 'UsersView' },
+        icon: { icon: 'tabler-user-circle' },
     },
   ]
-  

@@ -9,22 +9,83 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-
+import { RouterLink } from 'vue-router'
+import { ref, reactive, onBeforeMount } from 'vue';
 definePage({ meta: { layout: 'blank' } })
-
-const form = ref({
-  email: '',
-  password: '',
-  remember: false,
-})
 
 const isPasswordVisible = ref(false)
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
-const onSubmit = () => {
-  console.log('Form submitted')
+import axios from 'axios';
+import validationService from '@/utils/validation-service'
+import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
+
+const form = reactive({
+  email: '',
+  password: '',
+  remember: false,
+})
+
+let errors = reactive({});
+const loading = ref(false);
+
+const submitLogin = async () => {
+  loading.value = true;
+  localStorage.removeItem("invoice-client-token");
+
+  validationService.deleteErrorsInObject(errors, null, true);
+
+  try {
+    const response = await axios.post('/api/login', form,
+      {
+        headers: {"Accept": "application/json"}
+      });
+
+    if(response.data.success) {
+      // Store relevant user details in local storage
+      const user = {
+        name: response.data.user.first_name + ' ' + response.data.user.last_name,
+        email: response.data.user.email,
+        token: response.data.token,
+        authenticated: true,
+      };
+      // Store logged-in user in local storage
+      localStorage.setItem('invoice-client-token', JSON.stringify(user));
+
+      if(import.meta.env.VITE_APP_ENV === 'local') {
+        console.log(response.data);
+      }
+
+      window.location.href = '/clients';
+    }
+
+  } catch (error) {
+
+    console.log("Error Response", error?.response);
+
+    if (error?.response?.data.success === false) {
+      if(error.response.data.server_error) {
+        console.log("Server error", error.response.data.error_message);
+        console.log("Server error", error.response.data.error_message);
+        errors.server_error = 'Oh oh, error occurred. please contact the admin';
+      }
+
+      if (error.response?.data?.errors) {
+        console.log("Data Errors", error.response?.data?.errors);
+        // if errors exist in response, check if it's an object and convert to array
+        errors = error.response?.data?.errors;
+        console.log("Errors", errors);
+      }
+    }
+  }
+
+  loading.value = false;
 }
+
+onBeforeMount(() => {
+
+});
 </script>
 
 <template>
@@ -85,22 +146,18 @@ const onSubmit = () => {
             Please sign-in to your account and start the adventure
           </p>
         </VCardText>
+
         <VCardText>
-          <VAlert
-            color="primary"
-            variant="tonal"
-          >
-            <p class="text-sm mb-2">
-              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
-            </p>
-            <p class="text-sm mb-0">
-              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
-            </p>
-          </VAlert>
-        </VCardText>
-        <VCardText>
-          <VForm @submit.prevent="onSubmit">
+          <VForm @submit.prevent="submitLogin">
             <VRow>
+
+              <!-- loading -->
+              <VCol cols="12">
+                <p v-if="loading" class="text-center">
+                  <i class="fa fa-circle-notch fa-spin fa-2x"></i>
+                </p>
+              </VCol>
+
               <!-- email -->
               <VCol cols="12">
                 <AppTextField
@@ -108,8 +165,14 @@ const onSubmit = () => {
                   autofocus
                   label="Email"
                   type="email"
-                  placeholder="johndoe@email.com"
                 />
+                <VAlert
+                  v-if="errors.email"
+                  type="error"
+                  class="mt-2"
+                >
+                  {{ errors.email[0] }}
+                </VAlert>
               </VCol>
 
               <!-- password -->
@@ -117,63 +180,65 @@ const onSubmit = () => {
                 <AppTextField
                   v-model="form.password"
                   label="Password"
-                  placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <div class="d-flex align-center flex-wrap justify-space-between mt-2 mb-4">
-                  <VCheckbox
-                    v-model="form.remember"
-                    label="Remember me"
-                  />
-                  <a
-                    class="text-primary ms-2 mb-1"
-                    href="#"
-                  >
-                    Forgot Password?
-                  </a>
-                </div>
+<!--                <div class="d-flex align-center flex-wrap justify-space-between mt-2 mb-4">-->
+<!--                  <VCheckbox-->
+<!--                    v-model="form.remember"-->
+<!--                    label="Remember me"-->
+<!--                  />-->
+<!--                  <a-->
+<!--                    class="text-primary ms-2 mb-1"-->
+<!--                    href="#"-->
+<!--                  >-->
+<!--                    Forgot Password?-->
+<!--                  </a>-->
+<!--                </div>-->
 
                 <VBtn
+                  class="mt-4"
                   block
                   type="submit"
                 >
                   Login
                 </VBtn>
+
               </VCol>
 
-              <!-- create account -->
-              <VCol
-                cols="12"
-                class="text-center"
-              >
-                <span>New on our platform?</span>
+<!--              &lt;!&ndash; create account &ndash;&gt;-->
+<!--              <VCol-->
+<!--                cols="12"-->
+<!--                class="text-center"-->
+<!--              >-->
+<!--                <span>New on our platform?</span>-->
 
-                <a
-                  class="text-primary ms-2"
-                  href="#"
-                >
-                  Create an account
-                </a>
-              </VCol>
-              <VCol
-                cols="12"
-                class="d-flex align-center"
-              >
-                <VDivider />
-                <span class="mx-4">or</span>
-                <VDivider />
-              </VCol>
+<!--                <a-->
+<!--                  class="text-primary ms-2"-->
+<!--                  href="#"-->
+<!--                >-->
+<!--                  Create an account-->
+<!--                </a>-->
+<!--              </VCol>-->
+<!--              <VCol-->
+<!--                cols="12"-->
+<!--                class="d-flex align-center"-->
+<!--              >-->
+<!--                <VDivider />-->
+<!--                <span class="mx-4">or</span>-->
+<!--                <VDivider />-->
+<!--              </VCol>-->
 
-              <!-- auth providers -->
-              <VCol
-                cols="12"
-                class="text-center"
-              >
-                <AuthProvider />
-              </VCol>
+<!--              &lt;!&ndash; auth providers &ndash;&gt;-->
+<!--              <VCol-->
+<!--                cols="12"-->
+<!--                class="text-center"-->
+<!--              >-->
+<!--                <AuthProvider />-->
+<!--              </VCol>-->
+
             </VRow>
           </VForm>
         </VCardText>

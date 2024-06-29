@@ -9,9 +9,9 @@ export default [
     to: { name: 'second-page' },
     icon: { icon: 'tabler-file' },
   },
-  {
-    title: 'Third page',
-    to: { name: 'second-page' },
-    icon: { icon: 'tabler-file' },
-  },
+  // {
+  //   title: 'Third page',
+  //   to: { name: 'second-page' },
+  //   icon: { icon: 'tabler-file' },
+  // },
 ]

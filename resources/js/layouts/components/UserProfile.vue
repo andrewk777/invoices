@@ -48,9 +48,9 @@ import avatar1 from '@images/avatars/avatar-1.png'
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              Jane Doe
             </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemSubtitle>Master Admin</VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />
@@ -65,7 +65,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
               />
             </template>
 
-            <VListItemTitle>Profile</VListItemTitle>
+            <VListItemTitle>Sudo Profile</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Settings -->
