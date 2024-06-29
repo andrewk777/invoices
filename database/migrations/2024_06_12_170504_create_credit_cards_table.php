@@ -12,9 +12,7 @@ class CreateCreditCardsTable extends Migration
             $table->id();
             $table->string('hash', 50)->unique();
             $table->unsignedBigInteger('customer_id')->nullable();
-            $table->string('cc_provider')->nullable();
-            $table->string('cc_provider_customer_id')->nullable();
-            $table->string('cc_provider_card_id')->nullable();
+            $table->string('stripe_id')->nullable();
             $table->enum('cc_currencies', ['CAD', 'USD'])->nullable();
             $table->timestamps();
 

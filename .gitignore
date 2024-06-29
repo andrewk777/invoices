@@ -65,3 +65,4 @@ todo.txt
 /.history
 /.vscode
 /.pnpm-store
+vite.config.js

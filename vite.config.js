@@ -106,12 +106,12 @@ export default defineConfig({
       './resources/js/**/*.vue',
     ],
   },
-//   server: {
-//     host: '0.0.0.0',
-//     port: 5173,
-//     hmr: {
-//         host: 'invoices.local',
-//         clientPort: 5176
-//     }
-//   },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    hmr: {
+        host: 'invoices.local',
+        clientPort: 5176
+    }
+  },
 })

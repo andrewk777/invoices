@@ -24,6 +24,7 @@ class CreateClientsTable extends Migration
             $table->string('ap_last_name')->nullable();
             $table->string('ap_phone')->nullable();
             $table->string('ap_email')->nullable();
+            $table->string('stripe_id')->nullable();
             $table->text('notes')->nullable();
             $table->softDeletes();
             $table->timestamps();
