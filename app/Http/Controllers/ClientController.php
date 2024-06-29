@@ -25,11 +25,11 @@ class ClientController extends Controller
     {
         try {
             $data = $this->client->client()->with('creditCards:hash,client_id,cc_provider')
-                ->orderBy('id', 'desc')->paginate(6);
+                ->orderBy('id', 'desc')->get();
             return response()->json([
                 'success' => true,
-                'clients' => ClientResource::collection($data)->response()->getData(true),
-                'total' => $data->total(),
+                'clients' => ClientResource::collection($data),
+                'total' => $data->count(),
             ]);
 
         }catch (\Exception $e) {
