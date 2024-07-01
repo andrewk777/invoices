@@ -21,7 +21,7 @@ class InvoiceFactory extends Factory
     {
         return [
             'hash' => $this->faker->uuid(),
-            'company_id' => MyCompany::factory()->create()->id,
+            'company_id' => MyCompany::inRandomOrder()->first()->id,
             'client_id' => Client::factory()->create()->id,
             'invoice_num' => $this->faker->randomNumber(),
             'invoice_type' => $this->faker->randomElement(['standard', 'credit_memo']),

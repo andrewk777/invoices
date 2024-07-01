@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Client;
 use App\Models\MyCompany;
+use App\Repositories\Base\BaseRepository;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,8 +15,20 @@ class MyCompanySeeder extends Seeder
      */
     public function run(): void
     {
-        MyCompany::class::factory()->count(10)->create()->each(function ($myCompany) {
-//            $myCompany->clients()->saveMany(Client::factory()->count(5)->create());
-        });
+        $myCompanies = [
+            [
+                'name' => 'SWS eMarketing Inc',
+                'hash' => BaseRepository::randomCharacters(50, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'),
+            ],
+
+            [
+                'name' => 'OAD Soft',
+                'hash' => BaseRepository::randomCharacters(50, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'),
+            ],
+        ];
+
+        foreach ($myCompanies as $myCompany) {
+            MyCompany::create($myCompany);
+        }
     }
 }

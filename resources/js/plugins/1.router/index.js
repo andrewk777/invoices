@@ -13,6 +13,23 @@ function recursiveLayouts(route) {
     return setupLayouts([route])[0]
 }
 
+function authenticateRoute(authUrl, redirectUrl) {
+    return (to, from, next) => {
+        RouteService.authenticateUser(authUrl, next, redirectUrl);
+    };
+}
+
+function applyAuthGuard(routes) {
+    routes.forEach(route => {
+        if (!route.beforeEnter) {
+            route.beforeEnter = authenticateRoute('/api/authenticate', '/');
+        }
+        if (route.children) {
+            applyAuthGuard(route.children);
+        }
+    });
+}
+
 // Define custom routes
 const authenticatedRoutes = [
 
@@ -20,18 +37,39 @@ const authenticatedRoutes = [
         path: '/clients',
         name: 'ClientsView',
         component: () => import('@/views/pages/clients/ClientsView.vue'),
+        BeforeEnter: (to, from, next) => {
+            RouteService.authenticateUser(
+                '/api/authenticate',
+                next,
+                '/',
+            )
+        }
     },
 
     {
         path: '/clients/create',
         name: 'ClientsCreate',
         component: () => import('@/views/pages/clients/ClientsForm.vue'),
+        BeforeEnter: (to, from, next) => {
+            RouteService.authenticateUser(
+                '/api/authenticate',
+                next,
+                '/',
+            )
+        }
     },
 
     {
         path: '/clients/edit/:hash',
         name: 'ClientsEdit',
         component: () => import('@/views/pages/clients/ClientsForm.vue'),
+        BeforeEnter: (to, from, next) => {
+            RouteService.authenticateUser(
+                '/api/authenticate',
+                next,
+                '/',
+            )
+        }
     },
 
     {
@@ -41,9 +79,33 @@ const authenticatedRoutes = [
     },
 
     {
+        path: '/invoices/create',
+        name: 'InvoicesCreate',
+        component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
+    },
+
+    {
+        path: '/invoices/edit/:hash',
+        name: 'InvoicesCreate',
+        component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
+    },
+
+    {
         path: '/subscriptions',
         name: 'SubscriptionsView',
         component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
+    },
+
+    {
+        path: '/subscriptions/create',
+        name: 'SubscriptionsCreate',
+        component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
+    },
+
+    {
+        path: '/subscriptions/edit/:hash',
+        name: 'SubscriptionsEdit',
+        component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
     },
 
     {
@@ -52,82 +114,17 @@ const authenticatedRoutes = [
         component: () => import('@/views/pages/users/UsersView.vue'),
     },
 
-    // {
-    //   path: '/',
-    //   name: 'LayoutView',
-    //   component: () => import('@/layouts/components/DefaultLayoutWithHorizontalNav.vue'),
-    //   beforeEnter: (to, from, next) => {
-    //         RouteService.authenticateUser(
-    //             '/api/authenticate',
-    //             next,
-    //             '/',
-    //         )
-    //   },
-    //   children: [
-    //       {
-    //             name: "ClientsView",
-    //             path: "/clients",
-    //             component: () => import('@/views/pages/clients/ClientsViewNew.vue'),
-    //       },
-    //
-    //       {
-    //           name: "ClientsCreate",
-    //           path: '/clients/create',
-    //           component: () => import('@/views/pages/clients/ClientsForm.vue'),
-    //       },
-    //
-    //       {
-    //           name: "ClientsEdit",
-    //           path: '/clients/edit/:hash',
-    //           component: () => import('@/views/pages/clients/ClientsForm.vue'),
-    //       },
-    //
-    //       {
-    //           name: "InvoicesView",
-    //           path: "/invoices",
-    //           component: () => import('@/views/pages/invoices/InvoicesView.vue'),
-    //       },
-    //
-    //       {
-    //           name: "InvoicesCreate",
-    //           path: "/invoices/create",
-    //           component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
-    //       },
-    //
-    //       {
-    //           name: "InvoicesEdit",
-    //           path: "/invoices/edit/:hash",
-    //           component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
-    //       },
-    //
-    //       {
-    //           name: "SubscriptionsView",
-    //           path: "/subscriptions",
-    //           component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
-    //       },
-    //
-    //       {
-    //           name: "SubscriptionsCreate",
-    //           path: "/subscriptions/create",
-    //           component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
-    //       },
-    //
-    //       {
-    //           name: "SubscriptionsEdit",
-    //           path: "/subscriptions/edit/:hash",
-    //           component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
-    //       },
-    //
-    //       {
-    //           name: "UsersView",
-    //           path: "/users",
-    //           component: () => import('@/views/pages/users/UsersView.vue'),
-    //       },
-    //
-    //   ]
-    // },
+    {
+        path: '/users/create',
+        name: 'UsersCreate',
+        component: () => import('@/views/pages/users/UsersForm.vue'),
+    },
 
-    // Add more custom routes as needed
+    {
+        path: '/users/edit/:hash',
+        name: 'UsersEdit',
+        component: () => import('@/views/pages/users/UsersForm.vue'),
+    }
 ];
 
 // unauthenticated routes
@@ -138,6 +135,8 @@ const unauthenticatedRoutes = [
         component: () => import('@/views/pages/authentication/LoginView.vue'),
     },
 ];
+
+applyAuthGuard(authenticatedRoutes);
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

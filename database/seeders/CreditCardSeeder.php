@@ -12,6 +12,6 @@ class CreditCardSeeder extends Seeder
      */
     public function run(): void
     {
-        CreditCard::class::factory()->count(10)->create();
+        CreditCard::class::factory()->count(5)->create();
     }
 }

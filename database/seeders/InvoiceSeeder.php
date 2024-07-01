@@ -15,7 +15,7 @@ class InvoiceSeeder extends Seeder
      */
     public function run(): void
     {
-        Invoice::class::factory(10)->create()->each(function ($invoice) {
+        Invoice::class::factory(5)->create()->each(function ($invoice) {
             $invoice->items()->saveMany(InvoiceItem::factory(2)->create());
             $invoice->items()->saveMany(InvoicePayment::factory(2)->create());
             $invoice->save();
