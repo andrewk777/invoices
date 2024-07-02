@@ -131,10 +131,10 @@ const authenticatedRoutes = [
 const unauthenticatedRoutes = [
     {
         path: '/',
-        Redirect: '/login',
+        redirect: '/login',
         name: 'LoginView',
         component: () => import('@/views/pages/authentication/LoginView.vue'),
-    },
+    }
 ];
 
 applyAuthGuard(authenticatedRoutes);

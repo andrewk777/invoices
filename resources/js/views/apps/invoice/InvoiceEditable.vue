@@ -107,6 +107,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
+
   <VCard class="pa-6 pa-sm-12">
     <!-- SECTION Header -->
     <div class="d-flex flex-wrap justify-space-between flex-column rounded bg-var-theme-background flex-sm-row gap-6 pa-6 mb-6">
@@ -383,4 +384,5 @@ onBeforeMount(() => {
       />
     </div>
   </VCard>
+
 </template>
