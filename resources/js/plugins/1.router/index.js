@@ -131,6 +131,7 @@ const authenticatedRoutes = [
 const unauthenticatedRoutes = [
     {
         path: '/',
+        Redirect: '/login',
         name: 'LoginView',
         component: () => import('@/views/pages/authentication/LoginView.vue'),
     },
