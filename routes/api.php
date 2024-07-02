@@ -31,6 +31,10 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
 
     Route::get('/invoices', [InvoiceController::class, 'index']);
+    Route::post('/invoices/store', [InvoiceController::class, 'store']);
+    Route::get('/invoices/show/{hash}', [InvoiceController::class, 'show']);
+    Route::post('/invoices/update/{hash}', [InvoiceController::class, 'update']);
+    Route::delete('/invoices/destroy/{hash}', [InvoiceController::class, 'destroy']);
 
 
     Route::get('/logout', [LoginController::class, 'logout']);

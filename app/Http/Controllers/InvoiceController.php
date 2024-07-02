@@ -26,11 +26,11 @@ class InvoiceController extends Controller
                 ->with(
                     'company:id,name',
                     'client:main_contact_first_name,main_contact_last_name,id',
-                )->latest()->paginate(12);
+                )->latest()->get();
             return response()->json([
                 'success' => true,
                 'invoices' => $data,
-                'total' => $data->total(),
+                'total' => $data->count(),
             ]);
 
         }catch (\Exception $e){

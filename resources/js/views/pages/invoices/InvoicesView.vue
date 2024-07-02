@@ -5,6 +5,7 @@ import axios from 'axios'
 import InvoicesItem from "@/views/pages/invoices/InvoicesItem.vue";
 import LaravelVuePagination from 'laravel-vue-pagination';
 import baseService from '@/utils/base-service.js'
+import ClientsItem from "@/views/pages/clients/ClientsItem.vue";
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 
@@ -41,73 +42,99 @@ const getInvoices = (page = 1) => {
   });
 }
 
+const headers = [
+  {
+    title: 'Invoice #',
+    key: 'invoiceNumber',
+  },
+  {
+    title: 'From Company',
+    key: 'fromCompany',
+  },
+  {
+    title: 'Status',
+    key: 'status',
+  },
+  {
+    title: 'Customer',
+    key: 'customer',
+  },
+  {
+    title: 'Invoice Date',
+    key: 'invoiceDate',
+  },
+  {
+    title: 'Payment Due',
+    key: 'paymentDue',
+  },
+  {
+    title: 'Total',
+    key: 'total',
+  },
+  {
+    title: 'Currency',
+    key: 'currency',
+  },
+  {
+    title: 'Outstanding',
+    key: 'outstanding',
+  },
+  {
+    title: 'Actions',
+    key: 'actions',
+    sortable: false,
+  },
+]
+
 onBeforeMount(() => {
   getInvoices();
 });
 </script>
 
 <template>
+
   <div class="card">
 
-    <div class="row">
-      <div class="col-md-6 justify-content-first my-auto">
+    <VRow>
+      <VCol col="6" class="justify-content-first my-auto">
         <h3 class="card-header">Invoices</h3>
-      </div>
+      </VCol>
 
-      <div class="col-md-6 text-right mt-4">
+      <VCol col="6" class="text-right mt-4">
         <router-link
           class="btn btn-info waves-effect waves-light mr-2 btn-sm"
           exact
           :to="{name: 'InvoicesCreate'}">
-          Add Invoice
+          <VBtn variant="flat">
+            Create Invoice
+          </VBtn>
         </router-link>
-      </div>
-    </div>
+      </VCol>
+    </VRow>
 
-    <div class="table-responsive text-nowrap">
-      <table class="table">
-
-        <thead class="table-dark">
-        <tr>
-          <th>Invoice #</th>
-          <th>From Company</th>
-          <th>Status</th>
-          <th>Customer</th>
-          <th>Invoice Date</th>
-          <th>Payment Due</th>
-          <th>Total</th>
-          <th>Currency</th>
-          <th>Outstanding</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-
-        <tbody class="table-border-bottom-0">
-
-        <invoices-item
-          v-for="invoice in invoices.data"
-          :key="invoice.id"
-          :invoice="invoice"
-        >
-        </invoices-item>
-
-        </tbody>
-      </table>
-    </div>
-
-    <laravel-vue-pagination
-      class="justify-content-center"
-      :limit="3"
-      :data="invoices"
-      @pagination-change-page="getInvoices"
+    <VDataTable
+      :headers="headers"
+      :items="invoices"
+      :items-per-page="25"
     >
-      <template #prev-nav>
-        <span>&lt; Previous</span>
+      <template v-slot:item="{ item: invoice }">
+        <InvoicesItem :invoice="invoice" />
       </template>
-      <template #next-nav>
-        <span>Next &gt;</span>
-      </template>
-    </laravel-vue-pagination>
+    </VDataTable>
+
+<!--    <laravel-vue-pagination-->
+<!--      class="justify-content-center"-->
+<!--      :limit="3"-->
+<!--      :data="invoices"-->
+<!--      @pagination-change-page="getInvoices"-->
+<!--    >-->
+<!--      <template #prev-nav>-->
+<!--        <span>&lt; Previous</span>-->
+<!--      </template>-->
+<!--      <template #next-nav>-->
+<!--        <span>Next &gt;</span>-->
+<!--      </template>-->
+<!--    </laravel-vue-pagination>-->
 
   </div>
 

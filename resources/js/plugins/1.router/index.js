@@ -86,7 +86,7 @@ const authenticatedRoutes = [
 
     {
         path: '/invoices/edit/:hash',
-        name: 'InvoicesCreate',
+        name: 'InvoicesEdit',
         component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
     },
 
