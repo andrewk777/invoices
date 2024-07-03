@@ -12,7 +12,10 @@ import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 
-// 👉 Default Blank Data
+const loading = ref(false);
+const submitted = ref(false);
+const errors = ref({});
+
 const invoiceData = reactive({
   invoice: {
     company_id: '',
@@ -46,7 +49,27 @@ const invoiceData = reactive({
     note: '',
   }],
 
-})
+});
+
+const submitInvoice = () => {
+  axios.post('/api/invoices', invoiceData, {
+    headers: {
+      "Authorization" : "Bearer " + token.value,
+      'Accept' : 'application/json',
+    },
+  }).then((response) => {
+    if(response.data.success === true){
+      console.log("Invoice Created", response.data.invoice);
+    }
+
+    if(import.meta.env.VITE_APP_ENV === 'local'){
+      console.log("Invoice Data", invoiceData);
+    }
+
+  }).catch((error) => {
+    console.log(error);
+  });
+}
 
 const isSendPaymentSidebarVisible = ref(false)
 
@@ -564,30 +587,30 @@ onBeforeMount(() => {
       </VCol>
 
       <VCol cols="12" md="2">
-        <VCol
-          cols="12"
-          md="12"
-        >
-          <!-- 👉 Send Invoice -->
-          <router-link to="/apps/invoice/send-invoice">
-            <VBtn
-              block
-              color="primary"
-              variant="tonal"
-              @click="isSendPaymentSidebarVisible = true"
-            >
-              Send Invoice
-            </VBtn>
 
-          <!-- 👉 Save -->
+        <VBtn
+          block
+          color="success"
+          variant="tonal"
+          class="mb-2"
+          @click="submitInvoice"
+        >
+          Submit Invoice
+        </VBtn>
+
+        <router-link
+          :to="{ name: 'InvoicesView'}"
+        >
           <VBtn
             block
-            color="success"
+            color="primary"
             variant="tonal"
+            @click=""
           >
-            Save Invoice
+            All Invoices
           </VBtn>
-        </VCol>
+        </router-link>
+
       </VCol>
 
       <!-- 👉 Right Column: Invoice Action -->
