@@ -34,6 +34,9 @@ class InvoiceRepository
     public function storeInvoice($request): array
     {
         $inputs = $request->all();
+
+        dd($request);
+
         $inputs['invoice'] = $request->invoice;
 
         DB::beginTransaction();

@@ -55,6 +55,9 @@ const invoiceData = reactive({
 });
 
 const submitInvoice = async () => {
+
+  console.log("Before FormData", invoiceData);
+
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
     delete errors.value[key];
@@ -98,14 +101,14 @@ const submitInvoice = async () => {
   try {
     let response;
     if (hash.value) {
-      response = await axios.post('/api/invoices/update/' + hash.value, formData, {
+      response = await axios.post('/api/invoices/update/' + hash.value, invoiceData, {
         headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer " + token.value,
         }
       });
     } else {
-      response = await axios.post('/api/invoices/store', formData, {
+      response = await axios.post('/api/invoices/store', invoiceData, {
         headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer " + token.value,
@@ -116,6 +119,7 @@ const submitInvoice = async () => {
     if (response.data.success) {
       submitted.value = true;
     }
+
   } catch (error) {
     if ([401, 402, 422].includes(error.response.status)) {
       if (Object.keys(error.response?.data?.errors).length > 0) {
@@ -422,7 +426,6 @@ onBeforeMount(async () => {
                 item-title="name"
                 item-value="id"
                 placeholder="Select Client"
-                return-object
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
@@ -450,7 +453,6 @@ onBeforeMount(async () => {
                 item-title="company_name"
                 item-value="id"
                 placeholder="Select Client"
-                return-object
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
@@ -474,7 +476,6 @@ onBeforeMount(async () => {
                 item-title="name"
                 item-value="name"
                 placeholder="Select Client"
-                return-object
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
@@ -494,7 +495,6 @@ onBeforeMount(async () => {
                 item-title="name"
                 item-value="name"
                 placeholder="Select Client"
-                return-object
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
@@ -618,7 +618,7 @@ onBeforeMount(async () => {
                 cols="12"
                 md="2"
               >
-                <AppTextField
+                <AppDateTimePicker
                   v-model="payment.date"
                   label="Date"
                   placeholder="Date"
@@ -676,7 +676,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ invoiceData.invoice.sub_total.toFixed(2) }}
+                      {{ parseFloat(invoiceData.invoice.sub_total).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -698,7 +698,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ invoiceData.invoice.taxes.toFixed(2) }}
+                      {{ parseFloat(invoiceData.invoice.taxes).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -716,7 +716,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ invoiceData.invoice.total.toFixed(2) }}
+                      {{ parseFloat(invoiceData.invoice.total).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -733,7 +733,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ invoiceData.invoice.balance.toFixed(2) }}
+                      {{ invoiceData.invoice.balance }}
                     </h6>
                   </td>
                 </tr>
@@ -749,6 +749,7 @@ onBeforeMount(async () => {
       <VCol cols="12" md="2">
 
         <VBtn
+          v-if="!loading"
           block
           color="success"
           variant="tonal"
@@ -756,6 +757,17 @@ onBeforeMount(async () => {
           @click="submitInvoice"
         >
           Submit Invoice
+        </VBtn>
+
+        <VBtn
+          v-else
+          block
+          color="success"
+          variant="tonal"
+          class="mb-2"
+          disabled
+        >
+          <i class="fa fa-circle-notch fa-spin fa-2x"></i>
         </VBtn>
 
         <router-link
