@@ -75,7 +75,13 @@
 <body>
 <div class="invoice">
     <div class="header">
-        <img src="{{ public_path('images/logo.png') }}" alt="Company Logo">
+
+        @if($invoice->company->name === 'SWS eMarketing Inc')
+            <img src="{{ public_path('images/sws-emarketing.png') }}" alt="{{ $invoice->company_name }}">
+        @else
+            <img src="{{ public_path('images/oad-soft.png') }}" alt="{{ $invoice->company_name }}">
+        @endif
+
         <h1>INVOICE</h1>
         <p>SWS eMarketing Inc</p>
         <p>203-125 Commerce Valley Dr. W.,</p>
@@ -84,20 +90,20 @@
     </div>
     <div class="bill-to">
         <h2>BILL TO</h2>
-        <p>{{ $invoice->customer_name }}</p>
-        <p>{{ $invoice->customer_address }}</p>
+        <p>{{ $invoice->client->company_name }}</p>
+        <p>{{ $invoice->client->company_address }}</p>
     </div>
     <div class="invoice-details">
-        <p>Invoice Number: {{ $invoice->number }}</p>
-        <p>Invoice Date: {{ $invoice->date->format('M d, Y') }}</p>
-        <p>Payment Due: {{ $invoice->due_date->format('M d, Y') }}</p>
-        <p>Amount Due (USD): ${{ $invoice->total_amount }}</p>
+        <p><strong>Invoice Number:</strong> {{ $invoice->invoice_num }}</p>
+        <p><strong>Invoice Date:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('M d, Y') }}</p>
+        <p><strong>Payment Due:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_due)->format('M d, Y') }}</p>
+        <p><strong>Amount Due (USD):</strong> $-{{ $invoice->balance }}</p>
     </div>
     <table class="invoice-items">
         <thead>
         <tr>
-            <th>Service</th>
-            <th>Price</th>
+            <th>Description</th>
+            <th>Rate</th>
             <th>Quantity</th>
             <th>Amount</th>
             <th>Tax</th>
@@ -106,23 +112,23 @@
         <tbody>
         @foreach ($invoice->items as $item)
             <tr>
-                <td>{{ $item->service }}</td>
-                <td>${{ $item->price }}</td>
-                <td>{{ $item->quantity }}</td>
-                <td>${{ $item->amount }}</td>
+                <td>{{ $item->description }}</td>
+                <td>${{ $item->rate }}</td>
+                <td>{{ $item->qty }}</td>
+                <td>${{ ($item->rate * $item->qty) }}</td>
                 <td>${{ $item->tax }}</td>
             </tr>
         @endforeach
         </tbody>
     </table>
     <div class="invoice-summary">
-        <p>Subtotal: ${{ $invoice->subtotal }}</p>
-        <p>HST 13% (801143694RT0001): ${{ $invoice->tax }}</p>
-        <p>Total: ${{ $invoice->total }} USD</p>
+        <p><strong>Subtotal:</strong> ${{ $invoice->subtotal }}</p>
+        <p><strong>HST 13% (801143594RT0001):</strong> ${{ $invoice->taxes }}</p>
+        <p><strong>Total:</strong> ${{ $invoice->total }} USD</p>
     </div>
     <div class="invoice-payments">
         @foreach ($invoice->payments as $payment)
-            <p>Payment on {{ $payment->date->format('M d, Y') }} by {{ $payment->method }}: ${{ $payment->amount }} USD</p>
+            <p>Payment on {{ \Carbon\Carbon::parse($payment->date)->format('M d, Y') }} by {{ $payment->type }}: ${{ $payment->amount }} USD</p>
         @endforeach
     </div>
 </div>

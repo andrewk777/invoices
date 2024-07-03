@@ -8,6 +8,9 @@ use App\Models\InvoiceItem;
 use App\Models\InvoicePayment;
 use App\Repositories\Base\BaseRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
@@ -114,7 +117,7 @@ class InvoiceRepository
             return [
                 'success' => true,
                 'message' => 'Invoice updated successfully',
-                'invoice' => new InvoiceResource::($invoice),
+                'invoice' => new InvoiceResource($invoice),
             ];
 
         }catch (\Exception $e){
@@ -161,10 +164,21 @@ class InvoiceRepository
         }
     }
 
-    public function generateInvoiceReceipt($hash): Response
-    {
-        $invoice = Invoice::with('items', 'payments')->where('hash', $hash)->first();
+    // InvoiceController.php
 
-        return PDF::loadView('pdf.invoice', compact('invoice'))->download('invoice_receipt.pdf');
+    public function generateInvoiceReceipt($hash): Response|string
+    {
+        $invoice = Invoice::with(
+            'items',
+            'payments',
+            'client:id,company_name,company_address',
+            'company:id,name'
+        )->where('hash', $hash)->first();
+
+        if (!$invoice) {
+            return "Invoice not found";
+        }
+
+        return PDF::loadView('pdf.invoice', compact('invoice'))->download('invoice_receipt_'.time().'.pdf');
     }
 }

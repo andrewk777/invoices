@@ -7,6 +7,7 @@ use App\Repositories\Base\BaseRepository;
 use App\Repositories\Invoice\InvoiceRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class InvoiceController extends Controller
 {
@@ -77,11 +78,10 @@ class InvoiceController extends Controller
         }
     }
 
-    public function receipt($hash): JsonResponse
+    public function receipt($hash): Response|JsonResponse
     {
         try {
-            $data = $this->invoice->generateInvoiceReceipt($hash);
-            return response()->json($data);
+            return $this->invoice->generateInvoiceReceipt($hash);
 
         }catch (\Exception $e){
             return BaseRepository::tryCatchException($e);
