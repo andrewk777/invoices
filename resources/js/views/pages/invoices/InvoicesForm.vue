@@ -1,13 +1,16 @@
 <script setup>
-import { ref, reactive } from 'vue'
-import InvoiceEditable from '@/views/apps/invoice/InvoiceEditable.vue'
+import { ref, reactive, onBeforeMount } from 'vue'
 import InvoiceSendInvoiceDrawer from '@/views/apps/invoice/InvoiceSendInvoiceDrawer.vue'
 import {themeConfig} from "@themeConfig";
 import {VNodeRenderer} from "@layouts/components/VNodeRenderer.jsx";
-import InvoiceProductEdit from "@/views/apps/invoice/InvoiceProductEdit.vue";
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
 import axios from "axios";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
+import TrashIcon from "@/components/icons/TrashIcon.vue";
+import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.vue";
+import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
+
+const token = computed(() => baseService.getTokenFromLocalStorage());
 
 // 👉 Default Blank Data
 const invoiceData = reactive({
@@ -48,19 +51,19 @@ const invoiceData = reactive({
 const isSendPaymentSidebarVisible = ref(false)
 
 const addPayment = value => {
-  invoiceData.value?.invoice_payments.push(value)
+  invoiceData?.invoice_payments.push(value)
 }
 
-const removePayment = id => {
-  invoiceData.value?.invoice_payments.splice(id, 1)
+const removePayment = index => {
+  invoiceData?.invoice_payments.splice(index, 1)
 }
 
 const addCharge = value => {
-  invoiceData.value?.invoice_items.push(value)
+  invoiceData?.invoice_items.push(value)
 }
 
-const removeCharge = id => {
-  invoiceData.value?.invoice_items.splice(id, 1)
+const removeCharge = index => {
+  invoiceData?.invoice_items.splice(index, 1)
 }
 
 const myCompanies = ref([])
@@ -69,6 +72,7 @@ const clients = ref([])
 const getCompanies = () => {
   axios.get('/api/companies', {
     headers: {
+      "Authorization" : "Bearer " + token.value,
       'Accept' : 'application/json',
     },
   }).then((response) => {
@@ -86,13 +90,14 @@ const getCompanies = () => {
 }
 
 const getClients = () => {
-  axios.get('/api/clients', {
+  axios.get('/api/clients/min', {
     headers: {
+      "Authorization" : "Bearer " + token.value,
       'Accept' : 'application/json',
     },
   }).then((response) => {
     if(response.data.success === true){
-      myCompanies.value = response.data.companies;
+      clients.value = response.data.clients;
     }
 
     if(import.meta.env.VITE_APP_ENV === 'local'){
@@ -104,24 +109,40 @@ const getClients = () => {
   });
 }
 
+const calculateSubTotal = () => {
+  let subTotal = 0;
+  let tax = 0;
+  invoiceData.invoice_items.forEach((item) => {
+    if(item.qty && item.rate){
+      subTotal += (item.qty * item.rate);
+      if(item.tax === 'HST'){
+        tax += (item.qty * item.rate) * 0.13;
+      }
+    }
+
+  });
+
+  invoiceData.invoice.sub_total = subTotal;
+  invoiceData.invoice.taxes = tax;
+  invoiceData.invoice.total = subTotal + tax;
+}
+
+watch(invoiceData.invoice_items, () => {
+  calculateSubTotal();
+}, { deep: true });
+
 onBeforeMount(() => {
-  getCompanies()
+  getCompanies();
+  getClients();
+  console.log(myCompanies.value);
+  console.log("Token", token.value);
+
 })
 </script>
 
 <template>
 
   <VForm>
-    <!-- 👉 Invoice Editable -->
-<!--    <InvoiceEditable-->
-<!--      v-model:invoice="invoiceData.invoice"-->
-<!--      v-model:invoice_items="invoiceData.invoice_items"-->
-<!--      v-model:invoice_payments="invoiceData.invoice_payments"-->
-<!--      @add-payment="addPayment"-->
-<!--      @remove-payment="removePayment"-->
-<!--      @add-charge="addCharge"-->
-<!--      @remove-charge="removeCharge"-->
-<!--    />-->
 
     <VRow>
 
@@ -207,12 +228,12 @@ onBeforeMount(() => {
           <!-- !SECTION -->
 
           <VRow>
-            <VCol class="text-no-wrap">
+            <VCol cols="3" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Invoice From:
               </h6>
 
-              <VSelect
+              <AppAutocomplete
                 v-model="invoiceData.invoice.company_id"
                 :items="myCompanies"
                 item-title="name"
@@ -222,17 +243,28 @@ onBeforeMount(() => {
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
+
+<!--              <VSelect-->
+<!--                v-model="invoiceData.invoice.company_id"-->
+<!--                :items="myCompanies"-->
+<!--                item-title="name"-->
+<!--                item-value="id"-->
+<!--                placeholder="Select Client"-->
+<!--                return-object-->
+<!--                class="mb-4"-->
+<!--                style="inline-size: 11.875rem;"-->
+<!--              />-->
             </VCol>
 
-            <VCol class="text-no-wrap">
+            <VCol cols="3" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Invoice To:
               </h6>
 
-              <VSelect
+              <AppAutocomplete
                 v-model="invoiceData.invoice.client_id"
                 :items="clients"
-                item-title="name"
+                item-title="company_name"
                 item-value="id"
                 placeholder="Select Client"
                 return-object
@@ -241,7 +273,7 @@ onBeforeMount(() => {
               />
             </VCol>
 
-            <VCol class="text-no-wrap">
+            <VCol cols="3" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Status:
               </h6>
@@ -265,7 +297,7 @@ onBeforeMount(() => {
               />
             </VCol>
 
-            <VCol class="text-no-wrap">
+            <VCol cols="3" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Currency:
               </h6>
@@ -286,7 +318,7 @@ onBeforeMount(() => {
             </VCol>
           </VRow>
 
-          <VDivider class="my-6 border-dashed" />
+          <VDivider class="my-6 border-dashed" thickness="4" />
 
           <!-- 👉 Add purchased products -->
           <div class="add-products-form">
@@ -300,8 +332,8 @@ onBeforeMount(() => {
               >
                 <AppTextField
                   v-model="item.description"
-                  label="Item"
-                  placeholder="Enter item name"
+                  label="Description"
+                  placeholder="Description"
                 />
               </VCol>
 
@@ -310,59 +342,67 @@ onBeforeMount(() => {
                 md="3"
               >
                 <AppTextField
+                  @input="calculateSubTotal"
                   v-model="item.qty"
-                  label="Item"
-                  placeholder="Enter item name"
+                  label="Quantity"
+                  placeholder="Quantity"
                 />
               </VCol>
 
               <VCol
                 cols="12"
-                md="3"
+                md="2"
               >
                 <AppTextField
+                  @input="calculateSubTotal"
                   v-model="item.rate"
-                  label="Item"
-                  placeholder="Enter item name"
+                  label="Rate"
+                  placeholder="Rate"
                 />
               </VCol>
 
               <VCol
                 cols="12"
-                md="3"
+                md="2"
               >
-                <AppTextField
+                <AppSelect
+                  @change="calculateSubTotal"
                   v-model="item.tax"
-                  label="Item"
-                  placeholder="Enter item name"
+                  label="Tax"
+                  :items="[
+                   'HST',
+                   'None',
+                  ]"
                 />
               </VCol>
 
               <VCol
                 cols="12"
-                md="1"
+                md="2"
               >
-                <VBtn
-                  size="small"
-                  prepend-icon="tabler-trash"
-                  @click="removeCharge(index)"
-                >
-                  Remove
-                </VBtn>
+                <a href="">
+                  <TrashIcon
+                    @click.prevent="removeCharge(index)"
+                    :width="25" :height="25"
+                    :color="'#f84444'"
+                    class="mt-md-5"
+                  />
+                </a>
               </VCol>
 
             </VRow>
 
             <VBtn
+              class="mt-2"
               size="small"
               prepend-icon="tabler-plus"
-              @click="addItem"
+              @click="addCharge"
             >
               Add Item
             </VBtn>
           </div>
 
-          <VDivider class="my-6 border-dashed" />
+          <VDivider class="my-6 border-dashed" thickness="4" />
 
           <div class="add-products-form">
             <h6 class="text-h6 mb-4">
@@ -376,7 +416,7 @@ onBeforeMount(() => {
                 <AppTextField
                   v-model="payment.item"
                   label="Item"
-                  placeholder="Enter item name"
+                  placeholder="Item"
                 />
               </VCol>
 
@@ -386,49 +426,51 @@ onBeforeMount(() => {
               >
                 <AppTextField
                   v-model="payment.amount"
-                  label="Item"
-                  placeholder="Enter item name"
+                  label="Amount"
+                  placeholder="Amount"
                 />
               </VCol>
 
               <VCol
                 cols="12"
-                md="3"
+                md="2"
               >
                 <AppTextField
                   v-model="payment.date"
-                  label="Item"
-                  placeholder="Enter item name"
+                  label="Date"
+                  placeholder="Date"
                 />
               </VCol>
 
               <VCol
                 cols="12"
-                md="3"
+                md="2"
               >
                 <AppTextField
                   v-model="payment.note"
-                  label="Item"
-                  placeholder="Enter item name"
+                  label="Note"
+                  placeholder="Note"
                 />
               </VCol>
 
               <VCol
                 cols="12"
-                md="1"
+                md="2"
               >
-                <VBtn
-                  size="small"
-                  prepend-icon="tabler-trash"
-                  @click="removePayment(index)"
-                >
-                  Remove
-                </VBtn>
+                <a href="">
+                  <TrashIcon
+                    @click.prevent="removePayment(index)"
+                    :width="25" :height="25"
+                    :color="'#f84444'"
+                    class="mt-md-5"
+                  />
+                </a>
               </VCol>
 
             </VRow>
 
             <VBtn
+              class="mt-2"
               size="small"
               prepend-icon="tabler-plus"
               @click="addPayment"
@@ -437,43 +479,47 @@ onBeforeMount(() => {
             </VBtn>
           </div>
 
-          <VDivider class="my-6 border-dashed" />
+          <VDivider class="my-6 border-dashed" thickness="4" />
 
           <!-- 👉 Total Amount -->
           <div class="d-flex justify-space-between flex-wrap flex-column flex-sm-row">
             <div>
               <table class="w-100">
                 <tbody>
+
                 <tr>
                   <td class="pe-16">
                     Subtotal:
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      $1800
+                      {{ invoiceData.invoice.sub_total.toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
-                <tr>
-                  <td class="pe-16">
-                    Discount:
-                  </td>
-                  <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
-                    <h6 class="text-h6">
-                      $28
-                    </h6>
-                  </td>
-                </tr>
+
+<!--                <tr>-->
+<!--                  <td class="pe-16">-->
+<!--                    Discount:-->
+<!--                  </td>-->
+<!--                  <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">-->
+<!--                    <h6 class="text-h6">-->
+<!--                      $28-->
+<!--                    </h6>-->
+<!--                  </td>-->
+<!--                </tr>-->
+
                 <tr>
                   <td class="pe-16">
                     Tax:
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      21%
+                      {{ invoiceData.invoice.taxes.toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
+
                 </tbody>
               </table>
 
@@ -487,12 +533,30 @@ onBeforeMount(() => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      $1690
+                      {{ invoiceData.invoice.total.toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
                 </tbody>
               </table>
+
+              <VDivider class="mt-4 mb-3" />
+
+              <table class="w-100">
+                <tbody>
+                <tr>
+                  <td class="pe-16">
+                    Balance:
+                  </td>
+                  <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
+                    <h6 class="text-h6">
+                      {{ invoiceData.invoice.balance.toFixed(2) }}
+                    </h6>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+
             </div>
           </div>
 
@@ -504,43 +568,27 @@ onBeforeMount(() => {
           cols="12"
           md="12"
         >
-          <VCard class="mb-8">
-            <VCardText>
-              <!-- 👉 Send Invoice -->
-              <VBtn
-                block
-                prepend-icon="tabler-send"
-                class="mb-4"
-              >
-                All Invoices
-              </VBtn>
+          <!-- 👉 Send Invoice -->
+          <router-link to="/apps/invoice/send-invoice">
+            <VBtn
+              block
+              color="primary"
+              variant="tonal"
+              @click="isSendPaymentSidebarVisible = true"
+            >
+              Send Invoice
+            </VBtn>
 
-              <!-- 👉 Save -->
-              <VBtn
-                block
-                color="success"
-                variant="tonal"
-              >
-                Save Invoice
-              </VBtn>
-            </VCardText>
-          </VCard>
+          <!-- 👉 Save -->
+          <VBtn
+            block
+            color="success"
+            variant="tonal"
+          >
+            Save Invoice
+          </VBtn>
         </VCol>
       </VCol>
-
-
-      <!-- 👉 InvoiceEditable -->
-<!--      <VCol-->
-<!--        cols="12"-->
-<!--        md="9"-->
-<!--      >-->
-<!--        <InvoiceEditable-->
-<!--          :data="invoiceData"-->
-<!--          @push="addCharge"-->
-<!--          @remove="removeCharge"-->
-<!--        />-->
-
-<!--      </VCol>-->
 
       <!-- 👉 Right Column: Invoice Action -->
     </VRow>

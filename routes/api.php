@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/authenticate', [LoginController::class, 'authenticate']);
 
     Route::get('/clients', [ClientController::class, 'index']);
+    Route::get('/clients/min', [ClientController::class, 'indexMin']);
     Route::post('/clients/store', [ClientController::class, 'store']);
     Route::get('/clients/show/{hash}', [ClientController::class, 'show']);
     Route::post('/clients/update/{hash}', [ClientController::class, 'update']);

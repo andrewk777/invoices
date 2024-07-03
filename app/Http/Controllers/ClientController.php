@@ -37,6 +37,22 @@ class ClientController extends Controller
         }
     }
 
+    public function indexMin(): JsonResponse
+    {
+        try {
+            $data = $this->client->client()->select('id', 'company_name')
+                ->orderBy('id', 'desc')->get();
+            return response()->json([
+                'success' => true,
+                'clients' => $data,
+                'total' => $data->count(),
+            ]);
+
+        }catch (\Exception $e) {
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
     public function store(StoreClientRequest $request): JsonResponse
     {
         try {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company;
 use App\Http\Controllers\Controller;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\Company\CompanyRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller
@@ -15,7 +16,7 @@ class CompanyController extends Controller
         $this->company = $company;
     }
 
-    public function index(Request $request)
+    public function index(): JsonResponse
     {
         try {
             $data = $this->company->company()->orderBy('name')->get();
