@@ -33,7 +33,9 @@ class InvoiceResource extends JsonResource
 
             'company' => $this->company ?? '',
             'client' => $this->client ?? '',
+
             'items' => $this->items ?? [],
+            'payments' => $this->payments ?? [],
         ];
     }
 }

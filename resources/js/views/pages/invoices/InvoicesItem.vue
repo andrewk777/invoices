@@ -87,7 +87,7 @@ const invoice = ref(props.invoice);
       </router-link>
 
       <router-link
-        to=""
+        :to="'/invoices/receipt/' + invoice.hash"
         class="btn btn-info btn-sm"
       >
         <svg

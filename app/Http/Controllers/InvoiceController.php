@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Invoice\InvoiceResource;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\Invoice\InvoiceRepository;
 use Illuminate\Http\JsonResponse;
@@ -41,32 +42,79 @@ class InvoiceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        try {
+            $data = $this->invoice->storeInvoice($request);
+            return response()->json($data, $data['success'] ? 200 : 500);
+
+        }catch (\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($hash): JsonResponse
     {
-        //
+        try {
+            $data = $this->invoice->invoice()->where('hash', $hash)
+                ->with(
+                    'company:id,name',
+                    'client:main_contact_first_name,main_contact_last_name,id',
+                    'items',
+                    'payments',
+                )->first();
+
+            return response()->json([
+                'success' => true,
+                'invoice' => new InvoiceResource($data),
+            ]);
+
+        }catch (\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
+    public function receipt($hash): JsonResponse
+    {
+        try {
+            $data = $this->invoice->generateInvoiceReceipt($hash);
+            return response()->json($data);
+
+        }catch (\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $hash): JsonResponse
     {
-        //
+        try {
+            $data = $this->invoice->updateInvoice($request, $hash);
+            return response()->json($data, $data['success'] ? 200 : 500);
+
+        }catch (\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $hash): JsonResponse
     {
-        //
+        try {
+            $this->invoice->deleteInvoice($hash);
+            return response()->json([
+                'success' => true,
+                'message' => 'Invoice deleted successfully'
+            ]);
+        }catch(\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
     }
 }

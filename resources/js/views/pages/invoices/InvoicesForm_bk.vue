@@ -1,18 +1,30 @@
 <script setup>
-import { ref, reactive, onBeforeMount, watch } from 'vue'
+import { ref, reactive, onBeforeMount } from 'vue'
 import InvoiceSendInvoiceDrawer from '@/views/apps/invoice/InvoiceSendInvoiceDrawer.vue'
-import { themeConfig } from "@themeConfig";
-import { VNodeRenderer } from "@layouts/components/VNodeRenderer.jsx";
+import {themeConfig} from "@themeConfig";
+import {VNodeRenderer} from "@layouts/components/VNodeRenderer.jsx";
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
 import axios from "axios";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 import TrashIcon from "@/components/icons/TrashIcon.vue";
 import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.vue";
 import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
-import { useRoute } from 'vue-router';
 
+// For routing with params
+const hash = ref('');
 const route = useRoute();
-const hash = ref(route.params.hash);
+hash.value = route.params.hash;
+watch(
+  () => route.params.hash,
+  () => {
+    hash.value = route.params.hash;
+    if (hash.value) {
+      getInvoice(hash.value);
+    } else {
+      resetInvoiceForm();
+    }
+  },
+);
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 
@@ -52,6 +64,7 @@ const invoiceData = reactive({
     date: '',
     note: '',
   }],
+
 });
 
 const submitInvoice = async () => {
@@ -66,17 +79,21 @@ const submitInvoice = async () => {
   const formData = new FormData();
   // iterate and add form data
   Object.keys(invoiceData).forEach(function (form_key) {
-    if (form_key === 'invoice') {
+    console.log(form_key); // key
+
+    if (form_key === 'invoice' ) {
       Object.keys(invoiceData[form_key]).forEach(function (key) {
+        console.log(key); // key
         if (invoiceData[form_key][key] !== null && invoiceData[form_key][key] !== '') {
           formData.append(key, invoiceData[form_key][key]);
         }
       });
     }
 
-    if (form_key === 'invoice_items') {
+    if (form_key === 'invoice_items' ) {
       invoiceData[form_key].forEach(function (item, index) {
         Object.keys(item).forEach(function (key) {
+          console.log(key); // key
           if (item[key] !== null && item[key] !== '') {
             formData.append(key + '[' + index + ']', item[key]);
           }
@@ -84,40 +101,32 @@ const submitInvoice = async () => {
       });
     }
 
-    if (form_key === 'invoice_payments') {
+    if (form_key === 'invoice_payments' ) {
       invoiceData[form_key].forEach(function (payment, index) {
         Object.keys(payment).forEach(function (key) {
+          console.log(key); // key
           if (payment[key] !== null && payment[key] !== '') {
             formData.append(key + '[' + index + ']', payment[key]);
           }
         });
       });
     }
+
   });
 
-  try {
-    let response;
-    if (hash.value) {
-      response = await axios.post('/api/invoices/update/' + hash.value, formData, {
-        headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer " + token.value,
-        }
-      });
-    } else {
-      response = await axios.post('/api/invoices/store', formData, {
-        headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer " + token.value,
-        }
-      });
+  await axios.post('/api/invoices/store', formData, {
+    headers: {
+      'Accept': 'application/json',
+      "Authorization": "Bearer " + token.value,
     }
-
+  }).then((response) => {
     if (response.data.success) {
       submitted.value = true;
     }
-  } catch (error) {
+  }).catch((error) => {
     if ([401, 402, 422].includes(error.response.status)) {
+      console.log(error.response);
+
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
         if (import.meta.env.VITE_APP_ENV === 'local') {
@@ -131,8 +140,7 @@ const submitInvoice = async () => {
     }
 
     console.log(error);
-  }
-
+  });
   loading.value = false;
 }
 
@@ -166,38 +174,114 @@ const populateInvoicePayment = (invoice_payments) => {
 
 const resetInvoiceForm = () => {
   Object.keys(invoiceData).forEach(function (master_key) {
-    if (master_key === 'invoice') {
-      Object.keys(invoiceData[master_key]).forEach(function (key) {
-        invoiceData.invoice[key] = '';
+    if(master_key === 'invoice'){
+      Object.keys(invoiceData[master_key]).forEach(function (master_key) {
+        invoiceData[master_key] = '';
       });
-    } else if (master_key === 'invoice_items') {
+
+    }else if(master_key === 'invoice_items'){
       invoiceData[master_key].forEach(function (item, index) {
         Object.keys(item).forEach(function (key) {
           invoiceData[master_key][index][key] = '';
         });
       });
-    } else if (master_key === 'invoice_payments') {
+
+    }else if (master_key === 'invoice_payments'){
       invoiceData[master_key].forEach(function (payment, index) {
         Object.keys(payment).forEach(function (key) {
           invoiceData[master_key][index][key] = '';
         });
       });
     }
+
+});
+
+const updateInvoice = async (hash) => {
+  // Delete all errors
+  Object.keys(errors.value).forEach(function (key) {
+    delete errors.value[key];
   });
+
+  submitted.value = false;
+  loading.value = true;
+
+  const formData = new FormData();
+
+  // iterate and add form data
+  Object.keys(invoiceData).forEach(function (form_key) {
+    console.log(form_key); // key
+
+    if (form_key === 'invoice' ) {
+      Object.keys(invoiceData[form_key]).forEach(function (key) {
+        console.log(key); // key
+        if (invoiceData[form_key][key] !== null && invoiceData[form_key][key] !== '') {
+          formData.append(key, invoiceData[form_key][key]);
+        }
+      });
+    }
+
+    if (form_key === 'invoice_items' ) {
+      invoiceData[form_key].forEach(function (item, index) {
+        Object.keys(item).forEach(function (key) {
+          console.log(key); // key
+          if (item[key] !== null && item[key] !== '') {
+            formData.append(key + '[' + index + ']', item[key]);
+          }
+        });
+      });
+    }
+
+    if (form_key === 'invoice_payments' ) {
+      invoiceData[form_key].forEach(function (payment, index) {
+        Object.keys(payment).forEach(function (key) {
+          console.log(key); // key
+          if (payment[key] !== null && payment[key] !== '') {
+            formData.append(key + '[' + index + ']', payment[key]);
+          }
+        });
+      });
+    }
+
+  });
+
+  await axios.post('/api/invoices/update/' + hash, formData, {
+    headers: {
+      'Accept': 'application/json',
+      "Authorization": "Bearer " + token.value,
+    }
+  }).then((response) => {
+    if (response.data.success) {
+      submitted.value = true;
+    }
+  }).catch((error) => {
+    if (error.response && [401, 402, 422].includes(error.response.status)) {
+      console.log(error.response);
+
+      if (Object.keys(error.response?.data?.errors).length > 0) {
+        errors.value = error.response?.data?.errors;
+      }
+
+      if (error.response?.data?.server_error) {
+        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
+      }
+    }
+
+    console.log(error);
+  });
+  loading.value = false;
 }
 
 const getInvoice = async (hash) => {
-  try {
-    const response = await axios.get('/api/invoice/show/' + hash, {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-      params: {
-        hash: hash
-      }
-    });
-
+  // Get token from local storage
+  await axios.get('/api/invoice/show/' + hash, {
+    headers: {
+      "Authorization": "Bearer " + token.value,
+      'Accept': 'application/json',
+    },
+    params: {
+      hash: hash.value
+    }
+  }).then((response) => {
     if (response.data.success) {
       invoice.value = response.data.invoice;
       populateInvoice(invoice.value);
@@ -208,10 +292,9 @@ const getInvoice = async (hash) => {
         console.log("Invoice Show", invoice.value);
       }
     }
-  } catch (error) {
+  }).catch((error) => {
     console.log(error);
-  }
-
+  });
   loading.value = false;
 }
 
@@ -237,58 +320,57 @@ const myCompanies = ref([]);
 const clients = ref([]);
 const invoice = ref({});
 
-const getCompanies = async () => {
-  try {
-    const response = await axios.get('/api/companies', {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-    });
-
-    if (response.data.success === true) {
+const getCompanies = () => {
+  axios.get('/api/companies', {
+    headers: {
+      "Authorization" : "Bearer " + token.value,
+      'Accept' : 'application/json',
+    },
+  }).then((response) => {
+    if(response.data.success === true){
       myCompanies.value = response.data.companies;
     }
 
-    if (import.meta.env.VITE_APP_ENV === 'local') {
+    if(import.meta.env.VITE_APP_ENV === 'local'){
       console.log("Get Companies", myCompanies.value);
     }
-  } catch (error) {
+
+  }).catch((error) => {
     console.log(error);
-  }
+  });
 }
 
-const getClients = async () => {
-  try {
-    const response = await axios.get('/api/clients/min', {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-    });
-
-    if (response.data.success === true) {
+const getClients = () => {
+  axios.get('/api/clients/min', {
+    headers: {
+      "Authorization" : "Bearer " + token.value,
+      'Accept' : 'application/json',
+    },
+  }).then((response) => {
+    if(response.data.success === true){
       clients.value = response.data.clients;
     }
 
-    if (import.meta.env.VITE_APP_ENV === 'local') {
+    if(import.meta.env.VITE_APP_ENV === 'local'){
       console.log("Get Companies", myCompanies.value);
     }
-  } catch (error) {
+
+  }).catch((error) => {
     console.log(error);
-  }
+  });
 }
 
 const calculateSubTotal = () => {
   let subTotal = 0;
   let tax = 0;
   invoiceData.invoice_items.forEach((item) => {
-    if (item.qty && item.rate) {
+    if(item.qty && item.rate){
       subTotal += (item.qty * item.rate);
-      if (item.tax === 'HST') {
+      if(item.tax === 'HST'){
         tax += (item.qty * item.rate) * 0.13;
       }
     }
+
   });
 
   invoiceData.invoice.sub_total = subTotal;
@@ -296,21 +378,13 @@ const calculateSubTotal = () => {
   invoiceData.invoice.total = subTotal + tax;
 }
 
-watch(() => invoiceData.invoice_items, () => {
+watch(invoiceData.invoice_items, () => {
   calculateSubTotal();
 }, { deep: true });
 
-watch(() => hash.value, async () => {
-  if (hash.value) {
-    await getInvoice(hash.value);
-  } else {
-    resetInvoiceForm();
-  }
-});
-
 onBeforeMount(async () => {
-  await getCompanies();
-  await getClients();
+  getCompanies();
+  getClients();
 
   if (hash.value) {
     await getInvoice(hash.value);
@@ -320,6 +394,7 @@ onBeforeMount(async () => {
 
   console.log(myCompanies.value);
   console.log("Token", token.value);
+
 })
 </script>
 
