@@ -30,7 +30,7 @@ const invoiceData = reactive({
     currency: '',
     invoice_date: '',
     invoice_due: '',
-    na: '',
+    na: false,
     can_pay_with_cc: false,
     sub_total: 0,
     taxes: 0,
@@ -66,37 +66,37 @@ const submitInvoice = async () => {
   submitted.value = false;
   loading.value = true;
 
-  const formData = new FormData();
+  // const formData = new FormData();
   // iterate and add form data
-  Object.keys(invoiceData).forEach(function (form_key) {
-    if (form_key === 'invoice') {
-      Object.keys(invoiceData[form_key]).forEach(function (key) {
-        if (invoiceData[form_key][key] !== null && invoiceData[form_key][key] !== '') {
-          formData.append(key, invoiceData[form_key][key]);
-        }
-      });
-    }
-
-    if (form_key === 'invoice_items') {
-      invoiceData[form_key].forEach(function (item, index) {
-        Object.keys(item).forEach(function (key) {
-          if (item[key] !== null && item[key] !== '') {
-            formData.append(key + '[' + index + ']', item[key]);
-          }
-        });
-      });
-    }
-
-    if (form_key === 'invoice_payments') {
-      invoiceData[form_key].forEach(function (payment, index) {
-        Object.keys(payment).forEach(function (key) {
-          if (payment[key] !== null && payment[key] !== '') {
-            formData.append(key + '[' + index + ']', payment[key]);
-          }
-        });
-      });
-    }
-  });
+  // Object.keys(invoiceData).forEach(function (form_key) {
+  //   if (form_key === 'invoice') {
+  //     Object.keys(invoiceData[form_key]).forEach(function (key) {
+  //       if (invoiceData[form_key][key] !== null && invoiceData[form_key][key] !== '') {
+  //         formData.append(key, invoiceData[form_key][key]);
+  //       }
+  //     });
+  //   }
+  //
+  //   if (form_key === 'invoice_items') {
+  //     invoiceData[form_key].forEach(function (item, index) {
+  //       Object.keys(item).forEach(function (key) {
+  //         if (item[key] !== null && item[key] !== '') {
+  //           formData.append(key + '[' + index + ']', item[key]);
+  //         }
+  //       });
+  //     });
+  //   }
+  //
+  //   if (form_key === 'invoice_payments') {
+  //     invoiceData[form_key].forEach(function (payment, index) {
+  //       Object.keys(payment).forEach(function (key) {
+  //         if (payment[key] !== null && payment[key] !== '') {
+  //           formData.append(key + '[' + index + ']', payment[key]);
+  //         }
+  //       });
+  //     });
+  //   }
+  // });
 
   try {
     let response;
@@ -429,17 +429,6 @@ onBeforeMount(async () => {
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
-
-<!--              <VSelect-->
-<!--                v-model="invoiceData.invoice.company_id"-->
-<!--                :items="myCompanies"-->
-<!--                item-title="name"-->
-<!--                item-value="id"-->
-<!--                placeholder="Select Client"-->
-<!--                return-object-->
-<!--                class="mb-4"-->
-<!--                style="inline-size: 11.875rem;"-->
-<!--              />-->
             </VCol>
 
             <VCol cols="3" md="3" class="text-no-wrap">
@@ -499,6 +488,21 @@ onBeforeMount(async () => {
                 style="inline-size: 11.875rem;"
               />
             </VCol>
+
+            <VCol cols="6" md="6" class="text-no-wrap d-flex">
+                <VCheckbox
+                  v-model="invoiceData.invoice.na"
+                  label="N/A"
+                  class="mb-4"
+                />
+
+              <VCheckbox
+                v-model="invoiceData.invoice.can_pay_with_cc"
+                label="Can Pay with Credit Card"
+                class="mb-4"
+              />
+          </VCol>
+
           </VRow>
 
           <VDivider class="my-6 border-dashed" thickness="4" />

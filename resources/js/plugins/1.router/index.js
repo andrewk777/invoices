@@ -143,7 +143,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const pageTitle = to.meta.title;
     if (pageTitle) {
-        document.title = pageTitle + ' | OAD SOFT';
+        document.title = pageTitle + ' - OAD SOFT';
     } else {
         document.title = 'OAD SOFT';
     }
