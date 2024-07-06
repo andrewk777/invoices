@@ -1,16 +1,15 @@
 <script setup>
-import { ref, reactive, onBeforeMount, watch } from 'vue'
+import {onBeforeMount, reactive, ref, watch} from 'vue'
 import InvoiceSendInvoiceDrawer from '@/views/apps/invoice/InvoiceSendInvoiceDrawer.vue'
-import { themeConfig } from "@themeConfig";
-import { VNodeRenderer } from "@layouts/components/VNodeRenderer.jsx";
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
 import axios from "axios";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
-import TrashIcon from "@/components/icons/TrashIcon.vue";
 import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.vue";
 import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
-import { useRoute } from 'vue-router';
+import {useRoute} from 'vue-router';
 import AppTextarea from "@core/components/app-form-elements/AppTextarea.vue";
+import SuccessAlert from "@/components/Alerts/SuccessAlert.vue";
+import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
 
 const route = useRoute();
 const hash = ref(route.params.hash);
@@ -23,11 +22,11 @@ const errors = ref({});
 
 const invoiceData = reactive({
   invoice: {
-    company_id: '',
+    my_company_id: '',
     client_id: '',
     invoice_num: 0,
     invoice_type: '',
-    status: '',
+    status: 'Draft',
     currency: '',
     invoice_date: '',
     invoice_due: '',
@@ -55,7 +54,7 @@ const invoiceData = reactive({
   }],
 });
 
-const submitInvoice = async () => {
+const submitInvoice = async (event, action = null) => {
 
   console.log("Before FormData", invoiceData);
 
@@ -66,38 +65,6 @@ const submitInvoice = async () => {
 
   submitted.value = false;
   loading.value = true;
-
-  // const formData = new FormData();
-  // iterate and add form data
-  // Object.keys(invoiceData).forEach(function (form_key) {
-  //   if (form_key === 'invoice') {
-  //     Object.keys(invoiceData[form_key]).forEach(function (key) {
-  //       if (invoiceData[form_key][key] !== null && invoiceData[form_key][key] !== '') {
-  //         formData.append(key, invoiceData[form_key][key]);
-  //       }
-  //     });
-  //   }
-  //
-  //   if (form_key === 'invoice_items') {
-  //     invoiceData[form_key].forEach(function (item, index) {
-  //       Object.keys(item).forEach(function (key) {
-  //         if (item[key] !== null && item[key] !== '') {
-  //           formData.append(key + '[' + index + ']', item[key]);
-  //         }
-  //       });
-  //     });
-  //   }
-  //
-  //   if (form_key === 'invoice_payments') {
-  //     invoiceData[form_key].forEach(function (payment, index) {
-  //       Object.keys(payment).forEach(function (key) {
-  //         if (payment[key] !== null && payment[key] !== '') {
-  //           formData.append(key + '[' + index + ']', payment[key]);
-  //         }
-  //       });
-  //     });
-  //   }
-  // });
 
   try {
     let response;
@@ -119,6 +86,9 @@ const submitInvoice = async () => {
 
     if (response.data.success) {
       submitted.value = true;
+      if(action === 'close') {
+        router.push({ name: 'InvoicesView' });
+      }
     }
 
   } catch (error) {
@@ -193,7 +163,7 @@ const resetInvoiceForm = () => {
 
 const getInvoice = async (hash) => {
   try {
-    const response = await axios.get('/api/invoice/show/' + hash, {
+    const response = await axios.get('/api/invoices/show/' + hash, {
       headers: {
         "Authorization": "Bearer " + token.value,
         'Accept': 'application/json',
@@ -238,7 +208,20 @@ const removeCharge = index => {
   invoiceData?.invoice_items.splice(index, 1)
 }
 
+const updateInvoiceDue = (event) => {
+  console.log("Update Invoice Due", event.target.value);
+  // Parse the input date string to a Date object
+  const selectedDate = new Date(event.target.value);
+  // Add 10 days to the date
+  selectedDate.setDate(selectedDate.getDate() + 10);
+  // Convert the updated Date object back to a string in YYYY-MM-DD format
+  // Update invoice_due with the new date
+  invoiceData.invoice.invoice_due = selectedDate.toISOString().split('T')[0];
+}
+
 const myCompanies = ref([]);
+const invoiceFrom = ref({});
+const invoiceTo = ref({});
 const clients = ref([]);
 const invoice = ref({});
 
@@ -253,6 +236,7 @@ const getCompanies = async () => {
 
     if (response.data.success === true) {
       myCompanies.value = response.data.companies;
+      invoiceFrom.value = response.data.companies[1];
     }
 
     if (import.meta.env.VITE_APP_ENV === 'local') {
@@ -263,9 +247,20 @@ const getCompanies = async () => {
   }
 }
 
+const selectInvoiceFrom = (event) => {
+  console.log("Select Invoice From", event);
+  invoiceFrom.value = myCompanies.value.find(company => company.id === event);
+}
+
+const selectInvoiceTo = (event) => {
+  console.log("Select Invoice To", event);
+  invoiceTo.value = clients.value.find(client => client.id === event);
+  console.log("Selected Client", invoiceTo.value);
+}
+
 const getClients = async () => {
   try {
-    const response = await axios.get('/api/clients/min', {
+    const response = await axios.get('/api/clients', {
       headers: {
         "Authorization": "Bearer " + token.value,
         'Accept': 'application/json',
@@ -319,8 +314,6 @@ onBeforeMount(async () => {
 
   if (hash.value) {
     await getInvoice(hash.value);
-  } else {
-    resetInvoiceForm();
   }
 
   console.log(myCompanies.value);
@@ -335,109 +328,138 @@ onBeforeMount(async () => {
     <VRow>
 
       <VCol cols="12" md="10">
+
         <VCard class="pa-6 pa-sm-12">
+
+          <SuccessAlert>
+            Invoice has been successfully submitted.
+          </SuccessAlert>
+
           <!-- SECTION Header -->
           <div class="d-flex flex-wrap justify-space-between flex-column rounded bg-var-theme-background flex-sm-row gap-6 pa-6 mb-6">
             <!-- 👉 Left Content -->
             <div>
-              <div class="d-flex align-center app-logo mb-6">
+              <div class="d-block align-center app-logo mb-6">
                 <!-- 👉 Logo -->
-                <VNodeRenderer :nodes="themeConfig.app.logo" />
+                <img :src="invoiceFrom.logo" width="200"/>
 
                 <!-- 👉 Title -->
-                <h6 class="app-logo-title">
-                  {{ themeConfig.app.title }}
-                </h6>
+<!--                <h6 class="app-logo-title">-->
+<!--                  {{ invoiceFrom.name }}-->
+<!--                </h6>-->
               </div>
 
               <!-- 👉 Address -->
               <p class="text-high-emphasis mb-0">
-                203-125 Commerce Valley Dr. W.,
-                Thornhill, ON, L3T 7W4
+                {{ invoiceFrom.address }}
               </p>
               <p class="text-high-emphasis mb-0">
-                info@oadsoft.com
+                {{ invoiceFrom.email }}
               </p>
               <p class="text-high-emphasis mb-0">
-                416-477-4763
+                {{ invoiceFrom.mobile }}
               </p>
             </div>
 
             <!-- 👉 Right Content -->
             <div class="d-flex flex-column gap-2">
-              <!-- 👉 Invoice Id -->
+
               <div class="d-flex align-start align-sm-center gap-x-4 font-weight-medium text-lg flex-column flex-sm-row">
-              <span
-                class="text-high-emphasis text-sm-end"
-                style="inline-size: 5.625rem ;"
-              >Invoice:</span>
-                <span>
-                <AppTextField
-                  value="0000"
-                  disabled
-                  prefix="#"
+                <span
+                  class="text-high-emphasis text-sm-end"
+                  style="inline-size: 5.625rem ;"
+                >Invoice From:</span>
+
+                <AppAutocomplete
+                  v-if="invoiceFrom"
+                  @change="selectInvoiceFrom"
+                  v-model="invoiceData.invoice.my_company_id"
+                  :items="myCompanies"
+                  item-title="name"
+                  item-value="id"
+                  placeholder="Select Company"
                   style="inline-size: 9.5rem;"
                 />
-              </span>
+              </div>
+
+
+              <!-- 👉 Invoice Id -->
+              <div class="d-flex align-start align-sm-center gap-x-4 font-weight-medium text-lg flex-column flex-sm-row">
+                <span
+                  class="text-high-emphasis text-sm-end"
+                  style="inline-size: 5.625rem ;"
+                >Invoice:</span>
+                  <span>
+                  <AppTextField
+                    value="0000"
+                    disabled
+                    prefix="#"
+                    style="inline-size: 9.5rem;"
+                  />
+                </span>
               </div>
 
               <!-- 👉 Issue Date -->
               <div class="d-flex gap-x-4 align-start align-sm-center flex-column flex-sm-row">
-            <span
-              class="text-high-emphasis text-sm-end"
-              style="inline-size: 5.625rem;"
-            >Invoice Date:</span>
+                <span
+                  class="text-high-emphasis text-sm-end"
+                  style="inline-size: 5.625rem;"
+                >Invoice Date:</span>
 
                 <span style="inline-size: 9.5rem;">
-                <AppDateTimePicker
-                  v-model="invoiceData.invoice.invoice_date"
-                  placeholder="YYYY-MM-DD"
-                  :config="{ position: 'auto right' }"
-                />
-              </span>
+                  <AppDateTimePicker
+                    @change="updateInvoiceDue"
+                    v-model="invoiceData.invoice.invoice_date"
+                    placeholder="YYYY-MM-DD"
+                    :config="{ position: 'auto right' }"
+                  />
+                </span>
               </div>
 
               <!-- 👉 Due Date -->
               <div class="d-flex gap-x-4 align-start align-sm-center flex-column flex-sm-row">
-            <span
-              class="text-high-emphasis text-sm-end"
-              style="inline-size: 5.625rem;"
-            >Payment Date:</span>
+                <span
+                  class="text-high-emphasis text-sm-end"
+                  style="inline-size: 5.625rem;"
+                >Invoice Due:</span>
                 <span style="min-inline-size: 9.5rem;">
-              <AppDateTimePicker
-                v-model="invoiceData.invoice.invoice_due"
-                placeholder="YYYY-MM-DD"
-                :config="{ position: 'auto right' }"
-              />
-            </span>
+                  <AppDateTimePicker
+                    v-model="invoiceData.invoice.invoice_due"
+                    placeholder="YYYY-MM-DD"
+                    :config="{ position: 'auto right' }"
+                  />
+                </span>
               </div>
             </div>
           </div>
           <!-- !SECTION -->
 
           <VRow>
-            <VCol cols="3" md="3" class="text-no-wrap">
-              <h6 class="text-h6 mb-4">
-                Invoice From:
-              </h6>
+<!--            <VCol cols="3" md="3" class="text-no-wrap">-->
+<!--              <h6 class="text-h6 mb-4">-->
+<!--                Invoice From:-->
+<!--              </h6>-->
 
-              <AppAutocomplete
-                v-model="invoiceData.invoice.company_id"
-                :items="myCompanies"
-                item-title="name"
-                item-value="id"
-                placeholder="Select Client"
-                class="mb-4"
-                style="inline-size: 11.875rem;"
-              />
-            </VCol>
+<!--              <AppAutocomplete-->
+<!--                v-if="invoiceFrom"-->
+<!--                @change="selectInvoiceFrom"-->
+<!--                v-model="invoiceData.invoice.my_company_id"-->
+<!--                :items="myCompanies"-->
+<!--                item-title="name"-->
+<!--                item-value="id"-->
+<!--                placeholder="Select Company"-->
+<!--                class="mb-4"-->
+<!--                style="inline-size: 11.875rem;"-->
+<!--              />-->
+<!--            </VCol>-->
 
-            <VCol cols="3" md="3" class="text-no-wrap">
+            <VCol cols="4" md="4" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Invoice To:
               </h6>
 
               <AppAutocomplete
+                @change="selectInvoiceTo"
                 v-model="invoiceData.invoice.client_id"
                 :items="clients"
                 item-title="company_name"
@@ -446,32 +468,36 @@ onBeforeMount(async () => {
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
+
+              <div v-if="invoiceData.invoice.client_id" class="d-block">
+                <p><strong>Company:</strong> {{ invoiceTo.company_name }}</p>
+                <p><strong>Email:</strong> {{ invoiceTo.company_email }}</p>
+                <p><strong>Mobile:</strong> {{ invoiceTo.company_phone }}</p>
+                <p><strong>Address:</strong> {{ invoiceTo.company_address }}</p>
+              </div>
             </VCol>
 
-            <VCol cols="3" md="3" class="text-no-wrap">
+            <VCol cols="4" md="4" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Status:
               </h6>
-
               <VSelect
                 v-model="invoiceData.invoice.status"
                 :items="[
-                { name: 'Draft' },
-                { name: 'Approved' },
-                { name: 'Sent' },
-                { name: 'Charge Declined' },
-                { name: 'Partially Paid' },
-                { name: 'Paid' },
-              ]"
-                item-title="name"
-                item-value="name"
+                  'Draft',
+                  'Approved',
+                  'Sent',
+                  'Charge Declined',
+                  'Partially Paid',
+                  'Paid',
+                ]"
                 placeholder="Select Client"
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
             </VCol>
 
-            <VCol cols="3" md="3" class="text-no-wrap">
+            <VCol cols="4" md="4" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Currency:
               </h6>
@@ -479,11 +505,9 @@ onBeforeMount(async () => {
               <VSelect
                 v-model="invoiceData.invoice.currency"
                 :items="[
-                { name: 'USD' },
-                { name: 'CAD' },
-              ]"
-                item-title="name"
-                item-value="name"
+                  'USD',
+                  'CAD',
+                ]"
                 placeholder="Select Client"
                 class="mb-4"
                 style="inline-size: 11.875rem;"
@@ -604,12 +628,18 @@ onBeforeMount(async () => {
             </h6>
 
             <VRow v-for="(payment, index) in invoiceData.invoice_payments" :key="index">
-              <VCol cols="12" md="6">
 
-                <AppDateTimePicker
-                  v-model="payment.date"
-                  placeholder="Select Date"
-                  class="mb-6"
+              <VCol cols="12" md="6">
+                <AppSelect
+                  v-model="payment.type"
+                  :items="[
+                    'Card',
+                    'Cheque',
+                    'Cash',
+                    'EFT'
+                  ]"
+                  placeholder="Payment Type"
+                  class="mb-4"
                 />
 
                 <AppTextarea
@@ -620,17 +650,15 @@ onBeforeMount(async () => {
                 />
               </VCol>
 
-              <VCol cols="12" md="2" sm="4">
-                <AppTextField
-                  @input="calculateSubTotal"
-                  v-model="payment.item"
-                  type="text"
-                  placeholder="Item"
+              <VCol cols="12" md="3" sm="3">
+                <AppDateTimePicker
+                  v-model="payment.date"
+                  placeholder="Date"
                   class="mb-6"
                 />
               </VCol>
 
-              <VCol cols="12" md="2" sm="4">
+              <VCol cols="12" md="3" sm="3">
                 <AppTextField
                   @input="calculateSubTotal"
                   v-model="payment.amount"
@@ -752,7 +780,6 @@ onBeforeMount(async () => {
       </VCol>
 
       <VCol cols="12" md="2">
-
         <VBtn
           v-if="!loading"
           block
@@ -761,7 +788,18 @@ onBeforeMount(async () => {
           class="mb-2"
           @click="submitInvoice"
         >
-          Submit Invoice
+          Save Invoice
+        </VBtn>
+
+        <VBtn
+          v-if="!loading"
+          block
+          color="info"
+          variant="tonal"
+          class="mb-2"
+          @click="submitInvoice($event, 'close')"
+        >
+          Save and Close
         </VBtn>
 
         <VBtn
@@ -787,6 +825,18 @@ onBeforeMount(async () => {
             All Invoices
           </VBtn>
         </router-link>
+
+        <VBtn
+          class="mt-2"
+          block
+          color="warning"
+          variant="tonal"
+          @click=""
+        >
+           <DocumentLicenseIcon :width="'18px'" class="mr-1"/> Print Invoice
+        </VBtn>
+
+
 
       </VCol>
 

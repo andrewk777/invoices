@@ -59,6 +59,7 @@ declare module 'vue' {
     SearchSelect: typeof import('./resources/js/components/SearchSelect.vue')['default']
     ShareProjectDialog: typeof import('./resources/js/components/dialogs/ShareProjectDialog.vue')['default']
     Shortcuts: typeof import('./resources/js/@core/components/Shortcuts.vue')['default']
+    SuccessAlert: typeof import('./resources/js/components/Alerts/SuccessAlert.vue')['default']
     TablePagination: typeof import('./resources/js/@core/components/TablePagination.vue')['default']
     TheCustomizer: typeof import('./resources/js/@core/components/TheCustomizer.vue')['default']
     ThemeSwitcher: typeof import('./resources/js/@core/components/ThemeSwitcher.vue')['default']

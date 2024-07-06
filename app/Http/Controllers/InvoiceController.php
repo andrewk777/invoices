@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Invoice\StoreInvoiceRequest;
 use App\Http\Resources\Invoice\InvoiceResource;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\Invoice\InvoiceRepository;
@@ -43,7 +44,7 @@ class InvoiceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreInvoiceRequest $request): JsonResponse
     {
         try {
             $data = $this->invoice->storeInvoice($request);
@@ -62,8 +63,8 @@ class InvoiceController extends Controller
         try {
             $data = $this->invoice->invoice()->where('hash', $hash)
                 ->with(
-                    'company:id,name',
-                    'client:main_contact_first_name,main_contact_last_name,id',
+                    'company',
+                    'client:company_name,company_email,company_address,company_mobile,id',
                     'items',
                     'payments',
                 )->first();

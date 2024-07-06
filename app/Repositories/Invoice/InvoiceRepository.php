@@ -43,16 +43,18 @@ class InvoiceRepository
 
             foreach ($inputs['invoice_items'] as $item){
                 $this->invoiceItem()->create([
+                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                     'invoice_id' => $invoice->id,
                     'description' => $item['description'],
                     'qty' => $item['qty'],
                     'rate' => $item['rate'],
-                    'tax' => $item['tax'],
+                    'tax' => $item['tax'] !== 'None',
                 ]);
             }
 
             foreach ($inputs['invoice_payments'] as $payment){
                 $this->invoicePayment()->create([
+                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                     'invoice_id' => $invoice->id,
                     'amount' => $payment['amount'],
                     'date' => $payment['date'],
@@ -75,6 +77,7 @@ class InvoiceRepository
             return [
                 'success' => false,
                 'errors' => ['server_error' => ['Something went wrong, please try again later.']],
+                'server_error' => $e->getMessage(),
             ];
         }
 
@@ -172,8 +175,8 @@ class InvoiceRepository
         $invoice = Invoice::with(
             'items',
             'payments',
-            'client:id,company_name,company_address',
-            'company:id,name'
+            'client:id,company_name,company_address,company_email',
+            'company'
         )->where('hash', $hash)->first();
 
         if (!$invoice) {

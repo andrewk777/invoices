@@ -19,12 +19,12 @@ class CreateInvoicesTable extends Migration
             $table->enum('currency', ['USD', 'CAD'])->nullable();
             $table->date('invoice_date')->nullable();
             $table->date('invoice_due')->nullable();
-            $table->boolean('na')->default(false);
-            $table->boolean('can_pay_with_cc')->default(false);
+            $table->boolean('na')->default(false)->nullable();
+            $table->boolean('can_pay_with_cc')->default(false)->nullable();
             $table->decimal('subtotal', 10, 2)->nullable();
             $table->decimal('taxes', 10, 2)->nullable();
             $table->decimal('total', 10, 2)->nullable();
-            $table->decimal('total_paid', 10, 2)->default(0);
+            $table->decimal('total_paid', 10, 2)->default(0)->nullable();
             $table->decimal('balance', 10, 2)->nullable();
             $table->softDeletes();
             $table->timestamps();

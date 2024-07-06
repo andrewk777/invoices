@@ -13,7 +13,12 @@ class MyCompany extends Model
     protected $guarded = ['id'];
     protected $fillable = [
       'name',
-      'hash'
+      'hash',
+      'email',
+      'mobile',
+      'address',
+      'country',
+      'logo',
     ];
 
     public function clients(): HasMany

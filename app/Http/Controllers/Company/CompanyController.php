@@ -19,7 +19,7 @@ class CompanyController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $data = $this->company->company()->orderBy('name')->get();
+            $data = $this->company->company()->get();
             return response()->json([
                 'success' => true,
                 'companies' => $data
