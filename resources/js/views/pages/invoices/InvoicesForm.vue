@@ -325,7 +325,7 @@ onBeforeMount(async () => {
 
   <VForm>
 
-    <VRow>
+    <VRow class="position-relative">
 
       <VCol cols="12" md="10">
 
@@ -698,7 +698,7 @@ onBeforeMount(async () => {
           <VDivider class="my-6 border-dashed" thickness="4" />
 
           <!-- 👉 Total Amount -->
-          <div class="d-flex justify-space-between flex-wrap flex-column flex-sm-row">
+          <div class="d-flex justify-end flex-wrap flex-column flex-sm-row">
             <div>
               <table class="w-100">
                 <tbody>
@@ -713,17 +713,6 @@ onBeforeMount(async () => {
                     </h6>
                   </td>
                 </tr>
-
-<!--                <tr>-->
-<!--                  <td class="pe-16">-->
-<!--                    Discount:-->
-<!--                  </td>-->
-<!--                  <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">-->
-<!--                    <h6 class="text-h6">-->
-<!--                      $28-->
-<!--                    </h6>-->
-<!--                  </td>-->
-<!--                </tr>-->
 
                 <tr>
                   <td class="pe-16">
@@ -779,7 +768,8 @@ onBeforeMount(async () => {
         </VCard>
       </VCol>
 
-      <VCol cols="12" md="2">
+      <!--Right Buttons-->
+      <VCol cols="12" md="2" class="static-column">
         <VBtn
           v-if="!loading"
           block
@@ -840,7 +830,6 @@ onBeforeMount(async () => {
 
       </VCol>
 
-      <!-- 👉 Right Column: Invoice Action -->
     </VRow>
 
 
@@ -849,3 +838,16 @@ onBeforeMount(async () => {
   <!-- 👉 Send Invoice Sidebar -->
   <InvoiceSendInvoiceDrawer v-model:isDrawerOpen="isSendPaymentSidebarVisible" />
 </template>
+
+<style scoped>
+.position-relative {
+  position: relative;
+}
+
+.static-column {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+}
+</style>
