@@ -16,7 +16,7 @@ class Invoice extends Model
 
     protected $fillable = [
         'hash',
-        'company_id',
+        'my_company_id',
         'client_id',
         'invoice_num',
         'invoice_type',
@@ -35,7 +35,7 @@ class Invoice extends Model
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(MyCompany::class, 'company_id', 'id');
+        return $this->belongsTo(MyCompany::class, 'my_company_id', 'id');
     }
 
     public function client(): BelongsTo

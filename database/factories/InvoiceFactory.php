@@ -21,7 +21,7 @@ class InvoiceFactory extends Factory
     {
         return [
             'hash' => $this->faker->uuid(),
-            'company_id' => MyCompany::inRandomOrder()->first()->id,
+            'my_company_id' => MyCompany::inRandomOrder()->first()->id,
             'client_id' => Client::factory()->create()->id,
             'invoice_num' => $this->faker->randomNumber(),
             'invoice_type' => $this->faker->randomElement(['standard', 'credit_memo']),
@@ -29,7 +29,7 @@ class InvoiceFactory extends Factory
             'currency' => $this->faker->randomElement(['USD', 'CAD']),
             'invoice_date' => $this->faker->date(),
             'invoice_due' => $this->faker->date(),
-            //'na' => null,
+            'na' => $this->faker->boolean(),
             'can_pay_with_cc' => $this->faker->boolean(),
             'subtotal' => $this->faker->randomFloat(2, 0, 999999.99),
             'taxes' => $this->faker->randomFloat(2, 0, 999999.99),

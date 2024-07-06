@@ -11,7 +11,7 @@ class CreateInvoicesTable extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('hash', 50)->unique();
-            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('my_company_id')->nullable();
             $table->unsignedBigInteger('client_id')->nullable();
             $table->string('invoice_num')->nullable();
             $table->enum('invoice_type', ['standard', 'credit_memo'])->nullable();
@@ -29,7 +29,7 @@ class CreateInvoicesTable extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('company_id')->references('id')->on('my_companies');
+            $table->foreign('my_company_id')->references('id')->on('my_companies');
             $table->foreign('client_id')->references('id')->on('clients');
         });
     }

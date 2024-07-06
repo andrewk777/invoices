@@ -205,4 +205,5 @@ watch(totalPrice, () => {
       </IconBtn>
     </div>
   </VCard>
+
 </template>

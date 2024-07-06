@@ -10,6 +10,7 @@ import TrashIcon from "@/components/icons/TrashIcon.vue";
 import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.vue";
 import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
 import { useRoute } from 'vue-router';
+import AppTextarea from "@core/components/app-form-elements/AppTextarea.vue";
 
 const route = useRoute();
 const hash = ref(route.params.hash);
@@ -507,59 +508,62 @@ onBeforeMount(async () => {
 
           <VDivider class="my-6 border-dashed" thickness="4" />
 
-          <!-- 👉 Add purchased products -->
+          <!-- Add Charges -->
           <div class="add-products-form">
             <h6 class="text-h6 mb-4">
               Charges:
             </h6>
+
             <VRow v-for="(item, index) in invoiceData.invoice_items" :key="index">
-              <VCol
-                cols="12"
-                md="3"
-              >
-                <AppTextField
-                  v-model="item.description"
-                  label="Description"
-                  placeholder="Description"
-                />
-              </VCol>
 
               <VCol
                 cols="12"
-                md="3"
-              >
-                <AppTextField
-                  @input="calculateSubTotal"
-                  v-model="item.qty"
-                  label="Quantity"
-                  placeholder="Quantity"
-                />
-              </VCol>
-
-              <VCol
-                cols="12"
-                md="2"
-              >
-                <AppTextField
-                  @input="calculateSubTotal"
-                  v-model="item.rate"
-                  label="Rate"
-                  placeholder="Rate"
-                />
-              </VCol>
-
-              <VCol
-                cols="12"
-                md="2"
+                md="6"
               >
                 <AppSelect
                   @change="calculateSubTotal"
                   v-model="item.tax"
-                  label="Tax"
                   :items="[
                    'HST',
                    'None',
                   ]"
+                  placeholder="Select Tax"
+                  class="mb-6"
+                />
+
+                <AppTextarea
+                  v-model="item.description"
+                  rows="2"
+                  placeholder="Item description"
+                  persistent-placeholder
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="2"
+                sm="4"
+              >
+                <AppTextField
+                  @input="calculateSubTotal"
+                  v-model="item.qty"
+                  type="number"
+                  placeholder="Quantity"
+                  class="mb-6"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="2"
+                sm="4"
+              >
+                <AppTextField
+                  @input="calculateSubTotal"
+                  v-model="item.rate"
+                  type="number"
+                  placeholder="Rate"
+                  class="mb-6"
                 />
               </VCol>
 
@@ -568,12 +572,15 @@ onBeforeMount(async () => {
                 md="2"
               >
                 <a href="">
-                  <TrashIcon
+                  <IconBtn
+                    size="36"
                     @click.prevent="removeCharge(index)"
-                    :width="25" :height="25"
-                    :color="'#f84444'"
-                    class="mt-md-5"
-                  />
+                  >
+                    <VIcon
+                      :size="24"
+                      icon="tabler-x"
+                    />
+                  </IconBtn>
                 </a>
               </VCol>
 
@@ -595,62 +602,55 @@ onBeforeMount(async () => {
             <h6 class="text-h6 mb-4">
               Payments:
             </h6>
+
             <VRow v-for="(payment, index) in invoiceData.invoice_payments" :key="index">
-              <VCol
-                cols="12"
-                md="3"
-              >
-                <AppTextField
-                  v-model="payment.item"
-                  label="Item"
-                  placeholder="Item"
-                />
-              </VCol>
+              <VCol cols="12" md="6">
 
-              <VCol
-                cols="12"
-                md="3"
-              >
-                <AppTextField
-                  v-model="payment.amount"
-                  label="Amount"
-                  placeholder="Amount"
-                />
-              </VCol>
-
-              <VCol
-                cols="12"
-                md="2"
-              >
                 <AppDateTimePicker
                   v-model="payment.date"
-                  label="Date"
-                  placeholder="Date"
+                  placeholder="Select Date"
+                  class="mb-6"
                 />
-              </VCol>
 
-              <VCol
-                cols="12"
-                md="2"
-              >
-                <AppTextField
+                <AppTextarea
                   v-model="payment.note"
-                  label="Note"
+                  rows="2"
                   placeholder="Note"
+                  persistent-placeholder
                 />
               </VCol>
 
-              <VCol
-                cols="12"
-                md="2"
-              >
+              <VCol cols="12" md="2" sm="4">
+                <AppTextField
+                  @input="calculateSubTotal"
+                  v-model="payment.item"
+                  type="text"
+                  placeholder="Item"
+                  class="mb-6"
+                />
+              </VCol>
+
+              <VCol cols="12" md="2" sm="4">
+                <AppTextField
+                  @input="calculateSubTotal"
+                  v-model="payment.amount"
+                  type="number"
+                  placeholder="Rate"
+                  class="mb-6"
+                />
+              </VCol>
+
+              <VCol cols="12" md="2">
                 <a href="">
-                  <TrashIcon
+                  <IconBtn
+                    size="36"
                     @click.prevent="removePayment(index)"
-                    :width="25" :height="25"
-                    :color="'#f84444'"
-                    class="mt-md-5"
-                  />
+                  >
+                    <VIcon
+                      :size="24"
+                      icon="tabler-x"
+                    />
+                  </IconBtn>
                 </a>
               </VCol>
 
@@ -664,6 +664,7 @@ onBeforeMount(async () => {
             >
               Add Payment
             </VBtn>
+
           </div>
 
           <VDivider class="my-6 border-dashed" thickness="4" />

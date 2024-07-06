@@ -18,7 +18,7 @@ class MyCompany extends Model
 
     public function clients(): HasMany
     {
-        return $this->hasMany(User::class, 'client_id', 'id');
+        return $this->hasMany(Client::class, 'client_id', 'id');
     }
 
     public function invoices(): HasMany
