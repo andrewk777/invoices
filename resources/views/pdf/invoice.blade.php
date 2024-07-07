@@ -1,7 +1,6 @@
 <style>
     body {
         font-family: Arial, sans-serif;
-        padding: 30px;
     }
     table {
         width: 100%;
@@ -31,7 +30,7 @@
 <table>
     <tr>
         <td rowspan="2" valign="middle" style="width: 50%;">
-            <img src="{{ asset($invoice->company?->logo) }}" alt="SWS eMarketing Inc Logo" style="height:70px;">
+            <img src="data:image/png;base64,{{ $myCompany['logo'] }}" alt="{{ $invoice->company?->name }}" style="height:70px;">
         </td>
         <td class="text-right" style="font-size: 36px; font-weight: 300;">INVOICE</td>
     </tr>
@@ -90,8 +89,8 @@
             <td>{{ $item->description }}</td>
             <td>$ {{ $item->rate }}</td>
             <td>{{ $item->qty }}</td>
-            <td class="text-right">$ {{ $invoice->rate * $invoice->qty }}</td>
-            <td class="text-right">{{ $item->tax }}</td>
+            <td class="text-right">$ {{ $item->rate * $item->qty }}</td>
+            <td class="text-right">{{ $item->tax ? '13%' : '' }}</td>
         </tr>
     @endforeach
 </table>
@@ -119,12 +118,16 @@
                     <td class="text-right" style="width: 67%;"><b>Total:</b></td>
                     <td class="text-right">${{ $invoice->total }} {{ $invoice->currency }}</td>
                 </tr>
-                @foreach($invoice->payments as $payment)
+                @forelse($invoice->payments as $payment)
                     <tr>
                         <td class="text-right">{{ $payment->note }} on {{ $payment->date }} by {{ $payment->type }}:</td>
                         <td class="text-right">${{ $payment->amount }} {{ $invoice->currency }}</td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="2" class="text-right">No Payment</td>
+                    </tr>
+                @endforelse
             </table>
             <div class="border-bottom" style="margin: 5px 0;"></div>
 

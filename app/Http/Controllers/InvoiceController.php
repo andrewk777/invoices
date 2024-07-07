@@ -64,7 +64,7 @@ class InvoiceController extends Controller
             $data = $this->invoice->invoice()->where('hash', $hash)
                 ->with(
                     'company',
-                    'client:company_name,company_email,company_address,company_mobile,id',
+                    'client:company_name,company_email,company_address,company_phone,id',
                     'items',
                     'payments',
                 )->first();

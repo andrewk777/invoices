@@ -133,13 +133,23 @@ const populateInvoice = (invoice) => {
 
 const populateInvoiceItem = (invoice_items) => {
   invoice_items.forEach(function (item, index) {
+    // Initialize the item at index if it does not exist
+    if (!invoiceData.invoice_items[index]) {
+      invoiceData.invoice_items[index] = {
+        description: '',
+        rate: 0,
+        qty: 0,
+        tax: '',
+      };
+    }
+
     Object.keys(item).forEach(function (key) {
       if (item[key] !== null && item[key] !== '') {
         invoiceData.invoice_items[index][key] = item[key];
       }
     });
   });
-}
+};
 
 const populateInvoicePayment = (invoice_payments) => {
   invoice_payments.forEach(function (payment, index) {
@@ -187,9 +197,16 @@ const getInvoice = async (hash) => {
 
     if (response.data.success) {
       invoice.value = response.data.invoice;
+
+      console.log("Invoice Show Value", invoice.value)
+
       populateInvoice(invoice.value);
-      populateInvoiceItem(invoice.value.items);
-      populateInvoicePayment(invoice.value.payments);
+      if(invoice.value.items.length > 0){
+        populateInvoiceItem(invoice.value.items);
+      }
+      if(invoice.value.payments.length > 0){
+        populateInvoicePayment(invoice.value.payments);
+      }
 
       if (import.meta.env.VITE_APP_ENV === 'local') {
         console.log("Invoice Show", invoice.value);
@@ -263,6 +280,7 @@ const getCompanies = async () => {
     if (response.data.success === true) {
       myCompanies.value = response.data.companies;
       invoiceFrom.value = response.data.companies[1];
+      invoiceData.invoice.my_company_id = response.data.companies[1].id
     }
 
     if (import.meta.env.VITE_APP_ENV === 'local') {
@@ -317,7 +335,7 @@ const calculateSubTotal = () => {
     }
   });
 
-  invoiceData.invoice.sub_total = subTotal;
+  invoiceData.invoice.subtotal = subTotal;
   invoiceData.invoice.taxes = tax;
   invoiceData.invoice.total = subTotal + tax;
 }
@@ -394,9 +412,23 @@ onBeforeMount(async () => {
 
         <VCard class="pa-6 pa-sm-12">
 
-          <SuccessAlert>
+          <VAlert
+            v-if="submitted"
+            class="text-center mb-2"
+            type="success"
+          >
             Invoice has been successfully submitted.
-          </SuccessAlert>
+          </VAlert>
+
+          <VAlert
+            v-if="Object.keys(errors).length > 0"
+            class="text-center mb-2"
+            type="error"
+          >
+            <p v-for="(error, index) in Object.keys(errors)" :key="index" class="mb-0">
+              {{ errors[error][0] }}
+            </p>
+          </VAlert>
 
           <!-- SECTION Header -->
           <div class="d-flex flex-wrap justify-space-between flex-column rounded bg-var-theme-background flex-sm-row gap-6 pa-6 mb-6">

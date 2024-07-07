@@ -34,15 +34,16 @@ class StoreInvoiceRequest extends FormRequest
             'invoice.sub_total' => 'required',
             'invoice.total' => 'required',
 
-            'invoice.invoice_items.*.description' => 'nullable|string',
-            'invoice.invoice_items.*.qty' => 'required',
-            'invoice.invoice_items.*.rate' => 'required',
-            'invoice.invoice_items.*.tax' => 'nullable|string',
+            'invoice_items' => 'required|array',
+            'invoice_items.*.description' => 'nullable|string',
+            'invoice_items.*.qty' => 'required',
+            'invoice_items.*.rate' => 'required',
+            'invoice_items.*.tax' => 'nullable|string',
 
-            'invoice.invoice_payments.*.amount' => 'required',
-            'invoice.invoice_payments.*.date' => 'required',
-            'invoice.invoice_payments.*.type' => 'required',
-            'invoice.invoice_payments.*.note' => 'nullable|string',
+            'invoice_payments.*.amount' => 'required',
+            'invoice_payments.*.date' => 'required',
+            'invoice_payments.*.type' => 'required',
+            'invoice_payments.*.note' => 'nullable|string',
         ];
     }
 
@@ -58,15 +59,16 @@ class StoreInvoiceRequest extends FormRequest
             'invoice.sub_total.required' => 'Sub total is required',
             'invoice.total.required' => 'Total is required',
 
-            'invoice.invoice_items.*.description.string' => 'Description must be a string',
-            'invoice.invoice_items.*.qty.required' => 'Quantity is required',
-            'invoice.invoice_items.*.rate.required' => 'Rate is required',
-            'invoice.invoice_items.*.tax.string' => 'Tax must be a string',
+            'invoice_items.required' => 'Invoice items are required',
+            'invoice_items.*.description.string' => 'Invoice item description must be a string',
+            'invoice_items.*.qty.required' => 'Invoice item quantity is required',
+            'invoice_items.*.rate.required' => 'Invoice item rate is required',
+            'invoice_items.*.tax.string' => 'Invoice item tax must be a string',
 
-            'invoice.invoice_payments.*.amount.required' => 'Amount is required',
-            'invoice.invoice_payments.*.date.required' => 'Date is required',
-            'invoice.invoice_payments.*.type.required' => 'Type is required',
-            'invoice.invoice_payments.*.note.string' => 'Note must be a string',
+            'invoice_payments.*.amount.required' => 'Invoice payment amount is required',
+            'invoice_payments.*.date.required' => 'Invoice payment date is required',
+            'invoice_payments.*.type.required' => 'Invoice payment type is required',
+            'invoice_payments.*.note.string' => 'Invoice payment note must be a string',
         ];
     }
 

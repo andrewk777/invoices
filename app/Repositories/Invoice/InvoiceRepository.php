@@ -183,6 +183,20 @@ class InvoiceRepository
             return "Invoice not found";
         }
 
-        return PDF::loadView('pdf.invoice', compact('invoice'))->download('invoice_receipt_'.time().'.pdf');
+        // Convert logo to base64
+        $logoPath = public_path($invoice->company->logo);
+        $logoContent = file_get_contents($logoPath);
+        $logoBase64 = base64_encode($logoContent);
+
+        $myCompany = [
+            'name' => $invoice->company->name,
+            'email' => $invoice->company->email,
+            'mobile' => $invoice->company->mobile,
+            'address' => $invoice->company->address,
+            'country' => $invoice->company->country,
+            'logo' => $logoBase64,
+        ];
+
+        return PDF::loadView('pdf.invoice', compact('invoice', 'myCompany'))->download('invoice_receipt_'.time().'.pdf');
     }
 }
