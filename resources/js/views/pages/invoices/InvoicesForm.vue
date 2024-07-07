@@ -39,19 +39,31 @@ const invoiceData = reactive({
     balance: 0,
   },
 
-  invoice_items: [{
-    description: '',
-    rate: 0,
-    qty: 0,
-    tax: '',
-  }],
+  invoice_items: [
+    //   {
+    //     description: '',
+    //     rate: '',
+    //     qty: '',
+    //     tax: '',
+    // },
+    //
+    // {
+    //   description: '',
+    //   rate: '',
+    //   qty: '',
+    //   tax: '',
+    // },
 
-  invoice_payments: [{
-    type: '',
-    amount: '',
-    date: '',
-    note: '',
-  }],
+  ],
+
+  invoice_payments: [
+    //   {
+    //     type: '',
+    //     amount: '',
+    //     date: '',
+    //     note: '',
+    // }
+  ],
 });
 
 const submitInvoice = async (event, action = null) => {
@@ -193,7 +205,13 @@ const getInvoice = async (hash) => {
 const isSendPaymentSidebarVisible = ref(false)
 
 const addPayment = value => {
-  invoiceData?.invoice_payments.push(value)
+  invoiceData?.invoice_payments.push({
+    type: '',
+    amount: '',
+    date: '',
+    note: '',
+  });
+  console.log("Added Payment to Array", invoiceData.invoice_payments);
 }
 
 const removePayment = index => {
@@ -201,7 +219,15 @@ const removePayment = index => {
 }
 
 const addCharge = value => {
-  invoiceData?.invoice_items.push(value)
+  console.log("Add Charge Value", value)
+  //invoiceData?.invoice_items.push(value);
+  invoiceData?.invoice_items.push({
+    description: '',
+    rate: '',
+    qty: '',
+    tax: '',
+  });
+  console.log("Added Charge to Array", invoiceData.invoice_items);
 }
 
 const removeCharge = index => {
@@ -296,6 +322,43 @@ const calculateSubTotal = () => {
   invoiceData.invoice.total = subTotal + tax;
 }
 
+const calculateBalance = () => {
+  let totalPaid = 0;
+  invoiceData.invoice_payments.forEach((payment) => {
+    if (payment.amount) {
+      totalPaid += parseFloat(payment.amount);
+    }
+  });
+
+  invoiceData.invoice.total_paid = totalPaid;
+  invoiceData.invoice.balance = invoiceData.invoice.total - totalPaid;
+}
+
+
+const downloadInvoiceReceipt = (hash) => {
+
+  axios.get(`/api/invoices/receipt/${hash}/download`, {
+
+    responseType: 'blob',
+    headers: {
+      'Accept': 'application/json',
+      "Authorization": "Bearer " + token.value,
+    }
+
+  }).then(response => {
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'invoice_receipt.pdf');
+    document.body.appendChild(link);
+    link.click();
+
+  }).catch(error => {
+    console.error('Error downloading invoice receipt:', error);
+  });
+};
+
 watch(() => invoiceData.invoice_items, () => {
   calculateSubTotal();
 }, { deep: true });
@@ -342,20 +405,17 @@ onBeforeMount(async () => {
               <div class="d-block align-center app-logo mb-6">
                 <!-- 👉 Logo -->
                 <img :src="invoiceFrom.logo" width="200"/>
-
-                <!-- 👉 Title -->
-<!--                <h6 class="app-logo-title">-->
-<!--                  {{ invoiceFrom.name }}-->
-<!--                </h6>-->
               </div>
 
               <!-- 👉 Address -->
               <p class="text-high-emphasis mb-0">
                 {{ invoiceFrom.address }}
               </p>
+
               <p class="text-high-emphasis mb-0">
                 {{ invoiceFrom.email }}
               </p>
+
               <p class="text-high-emphasis mb-0">
                 {{ invoiceFrom.mobile }}
               </p>
@@ -650,7 +710,7 @@ onBeforeMount(async () => {
                 />
               </VCol>
 
-              <VCol cols="12" md="3" sm="3">
+              <VCol cols="12" md="2" sm="2">
                 <AppDateTimePicker
                   v-model="payment.date"
                   placeholder="Date"
@@ -658,12 +718,12 @@ onBeforeMount(async () => {
                 />
               </VCol>
 
-              <VCol cols="12" md="3" sm="3">
+              <VCol cols="12" md="2" sm="2">
                 <AppTextField
-                  @input="calculateSubTotal"
+                  @input="calculateBalance"
                   v-model="payment.amount"
                   type="number"
-                  placeholder="Rate"
+                  placeholder="Amount"
                   class="mb-6"
                 />
               </VCol>
@@ -817,6 +877,8 @@ onBeforeMount(async () => {
         </router-link>
 
         <VBtn
+          v-if="hash"
+          @click.prevent="downloadInvoiceReceipt(hash)"
           class="mt-2"
           block
           color="warning"
