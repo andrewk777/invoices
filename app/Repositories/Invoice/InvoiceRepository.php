@@ -48,7 +48,7 @@ class InvoiceRepository
                     'description' => $item['description'],
                     'qty' => $item['qty'],
                     'rate' => $item['rate'],
-                    'tax' => $item['tax'] !== 'None',
+                    'tax' => $item['tax'] === 'HST',
                 ]);
             }
 
@@ -97,17 +97,19 @@ class InvoiceRepository
             $invoice->items()->delete();
             foreach ($inputs['invoice_items'] as $item){
                 $this->invoiceItem()->create([
+                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                     'invoice_id' => $invoice->id,
                     'description' => $item['description'],
                     'qty' => $item['qty'],
                     'rate' => $item['rate'],
-                    'tax' => $item['tax'],
+                    'tax' => $item['tax'] === 'HST',
                 ]);
             }
 
             $invoice->payments()->delete();
             foreach ($inputs['invoice_payments'] as $payment){
                 $this->invoicePayment()->create([
+                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                     'invoice_id' => $invoice->id,
                     'amount' => $payment['amount'],
                     'date' => $payment['date'],
@@ -130,6 +132,7 @@ class InvoiceRepository
             return [
                 'success' => false,
                 'errors' => ['server_error' => ['Something went wrong, please try again later.']],
+                'server_error' => $e->getMessage(),
             ];
         }
     }

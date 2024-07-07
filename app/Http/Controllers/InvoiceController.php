@@ -28,7 +28,7 @@ class InvoiceController extends Controller
             $data = $this->invoice->invoice()
                 ->with(
                     'company:id,name',
-                    'client:main_contact_first_name,main_contact_last_name,id',
+                    'client:id,company_name,company_email,company_address,company_phone',
                 )->latest()->get();
             return response()->json([
                 'success' => true,

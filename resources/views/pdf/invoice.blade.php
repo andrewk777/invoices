@@ -36,9 +36,9 @@
     </tr>
     <tr>
         <td class="text-right" style="font-size:14px;">
-            <b>{{ $invoice->company?->name }}</b><br>
-            {{ $invoice->company?->address }}<br>
-            {{ $invoice->company?->country }}
+            <b>{{ $myCompany['name'] }}</b><br>
+            {{ $myCompany['address'] }}<br>
+            {{ $myCompany['country'] }}
         </td>
     </tr>
 </table>
@@ -108,7 +108,7 @@
                 </tr>
                 <tr>
                     <td class="text-right">HST 13% (801143694RT0001):</td>
-                    <td class="text-right">${{ $invoice->tax }}</td>
+                    <td class="text-right">${{ $invoice->taxes }}</td>
                 </tr>
             </table>
             <div class="border-bottom" style="margin: 5px 0;"></div>

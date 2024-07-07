@@ -31,11 +31,13 @@ class InvoiceResource extends JsonResource
             'total_paid' => $this->total_paid,
             'balance' => $this->balance,
 
+            'my_company_id' => $this->my_company_id,
             'company' => $this->company ?? '',
+            'client_id' => $this->client_id,
             'client' => $this->client ?? '',
 
-            'items' => $this->items ?? [],
-            'payments' => $this->payments ?? [],
+            'items' => $this->items ? InvoiceItemResource::collection($this->items) : [],
+            'payments' => $this->payments ? InvoicePaymentResource::collection($this->payments) : [],
         ];
     }
 }

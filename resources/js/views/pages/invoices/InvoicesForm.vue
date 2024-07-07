@@ -8,7 +8,6 @@ import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.
 import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
 import {useRoute} from 'vue-router';
 import AppTextarea from "@core/components/app-form-elements/AppTextarea.vue";
-import SuccessAlert from "@/components/Alerts/SuccessAlert.vue";
 import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
 
 const route = useRoute();
@@ -26,7 +25,7 @@ const invoiceData = reactive({
     client_id: '',
     invoice_num: 0,
     invoice_type: '',
-    status: 'Draft',
+    status: 'draft',
     currency: '',
     invoice_date: '',
     invoice_due: '',
@@ -66,9 +65,19 @@ const invoiceData = reactive({
   ],
 });
 
+const statuses = ref([
+  {value: 'draft', text: 'Draft'},
+  {value: 'paid', text: 'Paid'},
+  {value: 'approved', text: 'Approved'},
+  {value: 'sent', text: 'Sent'},
+  {value: 'partially_paid', text: 'Partially Paid'},
+])
+
 const submitInvoice = async (event, action = null) => {
 
   console.log("Before FormData", invoiceData);
+
+  updateBalanceAndStatusOnSave();
 
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
@@ -96,15 +105,15 @@ const submitInvoice = async (event, action = null) => {
       });
     }
 
-    if (response.data.success) {
+    if (response.data.success){
       submitted.value = true;
       if(action === 'close') {
-        router.push({ name: 'InvoicesView' });
+        window.location.href = '/invoices';
       }
     }
 
   } catch (error) {
-    if ([401, 402, 422].includes(error.response.status)) {
+    if (error.response && [401, 402, 422].includes(error.response.status)) {
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
         if (import.meta.env.VITE_APP_ENV === 'local') {
@@ -133,6 +142,7 @@ const populateInvoice = (invoice) => {
 
 const populateInvoiceItem = (invoice_items) => {
   invoice_items.forEach(function (item, index) {
+
     // Initialize the item at index if it does not exist
     if (!invoiceData.invoice_items[index]) {
       invoiceData.invoice_items[index] = {
@@ -145,19 +155,40 @@ const populateInvoiceItem = (invoice_items) => {
 
     Object.keys(item).forEach(function (key) {
       if (item[key] !== null && item[key] !== '') {
-        invoiceData.invoice_items[index][key] = item[key];
+        if(key === 'tax'){
+          if(item[key] === 1){
+            invoiceData.invoice_items[index][key] = 'HST';
+          }else{
+            invoiceData.invoice_items[index][key] = 'None';
+          }
+        }else{
+          invoiceData.invoice_items[index][key] = item[key];
+        }
       }
     });
+
   });
 };
 
 const populateInvoicePayment = (invoice_payments) => {
   invoice_payments.forEach(function (payment, index) {
+
+    // Initialize the item at index if it does not exist
+    if (!invoiceData.invoice_payments[index]) {
+      invoiceData.invoice_payments[index] = {
+        type: '',
+        amount: 0,
+        date: '',
+        note: '',
+      };
+    }
+
     Object.keys(payment).forEach(function (key) {
       if (payment[key] !== null && payment[key] !== '') {
         invoiceData.invoice_payments[index][key] = payment[key];
       }
     });
+
   });
 }
 
@@ -201,6 +232,7 @@ const getInvoice = async (hash) => {
       console.log("Invoice Show Value", invoice.value)
 
       populateInvoice(invoice.value);
+      selectInvoiceTo(invoice.value.client_id);
       if(invoice.value.items.length > 0){
         populateInvoiceItem(invoice.value.items);
       }
@@ -222,10 +254,13 @@ const getInvoice = async (hash) => {
 const isSendPaymentSidebarVisible = ref(false)
 
 const addPayment = value => {
+  calculateBalance();
+  const paymentToday = new Date().toISOString().split('T')[0];
+
   invoiceData?.invoice_payments.push({
-    type: '',
-    amount: '',
-    date: '',
+    type: 'Cheque',
+    amount: invoiceData.invoice.balance,
+    date: paymentToday,
     note: '',
   });
   console.log("Added Payment to Array", invoiceData.invoice_payments);
@@ -242,7 +277,7 @@ const addCharge = value => {
     description: '',
     rate: '',
     qty: '',
-    tax: '',
+    tax: 'HST',
   });
   console.log("Added Charge to Array", invoiceData.invoice_items);
 }
@@ -338,20 +373,42 @@ const calculateSubTotal = () => {
   invoiceData.invoice.subtotal = subTotal;
   invoiceData.invoice.taxes = tax;
   invoiceData.invoice.total = subTotal + tax;
+  calculateBalance();
 }
 
 const calculateBalance = () => {
   let totalPaid = 0;
-  invoiceData.invoice_payments.forEach((payment) => {
-    if (payment.amount) {
-      totalPaid += parseFloat(payment.amount);
-    }
-  });
+  if(invoiceData.invoice_payments.length > 0){
+    invoiceData.invoice_payments.forEach((payment) => {
+      if (payment.amount) {
+        totalPaid += parseFloat(payment.amount);
+      }
+    });
+  }
 
   invoiceData.invoice.total_paid = totalPaid;
   invoiceData.invoice.balance = invoiceData.invoice.total - totalPaid;
 }
 
+const updateBalanceFromStatus = (event) => {
+  console.log("Update Balance From Status", event.target.value);
+  if (event.target.value === 'draft') {
+    invoiceData.invoice.balance = invoiceData.invoice.total;
+
+  }else if(event.target.value === 'paid'){
+    invoiceData.invoice.balance = 0;
+  }
+}
+
+const updateBalanceAndStatusOnSave = () => {
+  if (invoiceData.invoice.balance === 0) {
+    invoiceData.invoice.status = 'paid';
+  } else if(invoiceData.invoice.balance === invoiceData.invoice.total) {
+    invoiceData.invoice.status = 'draft';
+  }else{
+    invoiceData.invoice.status = 'partially_paid';
+  }
+}
 
 const downloadInvoiceReceipt = (hash) => {
 
@@ -417,7 +474,7 @@ onBeforeMount(async () => {
             class="text-center mb-2"
             type="success"
           >
-            Invoice has been successfully submitted.
+            {{ hash ? 'Invoice updated successfully' : 'Invoice created successfully'}}
           </VAlert>
 
           <VAlert
@@ -469,7 +526,7 @@ onBeforeMount(async () => {
                   :items="myCompanies"
                   item-title="name"
                   item-value="id"
-                  placeholder="Select Company"
+                  placeholder="Select Client"
                   style="inline-size: 9.5rem;"
                 />
               </div>
@@ -483,7 +540,7 @@ onBeforeMount(async () => {
                 >Invoice:</span>
                   <span>
                   <AppTextField
-                    value="0000"
+                    :value="hash ? invoiceData.invoice.invoice_num : ''"
                     disabled
                     prefix="#"
                     style="inline-size: 9.5rem;"
@@ -573,17 +630,13 @@ onBeforeMount(async () => {
               <h6 class="text-h6 mb-4">
                 Status:
               </h6>
-              <VSelect
+              <AppAutocomplete
                 v-model="invoiceData.invoice.status"
-                :items="[
-                  'Draft',
-                  'Approved',
-                  'Sent',
-                  'Charge Declined',
-                  'Partially Paid',
-                  'Paid',
-                ]"
-                placeholder="Select Client"
+                @change="updateBalanceFromStatus"
+                :items="statuses"
+                item-title="text"
+                item-value="value"
+                placeholder="Select Status"
                 class="mb-4"
                 style="inline-size: 11.875rem;"
               />
