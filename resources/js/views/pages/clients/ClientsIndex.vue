@@ -2,8 +2,9 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import axios from 'axios'
 
-import ClientsItem from "@/views/pages/clients/ClientsItem.vue";
 import baseService from '@/utils/base-service.js'
+import ClientsListRow from "@/views/pages/clients/ClientsListRow.vue";
+import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 
 const user = ref(baseService.getUserFromLocalStorage());
 
@@ -18,24 +19,36 @@ const search_values = ref([]);
 
 const headers = [
   {
-    title: 'Company',
-    sortable: false,
-    key: 'id',
+    title: 'Company Name',
+    key: 'company_name',
   },
   {
-    title: 'Main Contact',
-    key: 'fullName',
+    title: 'First Name',
+    key: 'main_contact_first_name',
   },
   {
-    title: 'Accounts Payable',
-    key: 'email',
+    title: 'Last Name',
+    key: 'main_contact_last_name',
   },
+
+  {
+    title: 'Full Address',
+    key: 'company_address',
+  },
+
+  {
+    title: 'Email',
+    key: 'company_email',
+  },
+
   {
     title: 'Credit Card',
+    sortable: false,
     key: 'startDate',
   },
   {
     title: 'Actions',
+    sortable: false,
     key: 'experience',
   },
 ]
@@ -60,6 +73,8 @@ const getClients = (page = 1) => {
   });
 }
 
+// const search = ref('')
+
 onBeforeMount(() => {
   getClients();
 });
@@ -69,7 +84,7 @@ onBeforeMount(() => {
 
   <VRow class="mb-2">
     <VCol cols="6">
-      <h3 class="card-header">Customers</h3>
+      <h3 class="card-header">Clients</h3>
     </VCol>
 
     <VCol cols="6" class="text-right mt-4">
@@ -85,13 +100,33 @@ onBeforeMount(() => {
     </VCol>
   </VRow>
 
+<!--  <VCardText>-->
+<!--    <VRow>-->
+<!--      <VCol-->
+<!--        cols="12"-->
+<!--        offset-md="8"-->
+<!--        md="4"-->
+<!--      >-->
+<!--        <AppTextField-->
+<!--          v-model="search"-->
+<!--          placeholder="Search ..."-->
+<!--          append-inner-icon="tabler-search"-->
+<!--          single-line-->
+<!--          hide-details-->
+<!--          dense-->
+<!--          outlined-->
+<!--        />-->
+<!--      </VCol>-->
+<!--    </VRow>-->
+<!--  </VCardText>-->
+
   <VDataTable
     :headers="headers"
     :items="clients"
     :items-per-page="25"
   >
     <template v-slot:item="{ item: client }">
-      <ClientsItem :client="client" />
+      <ClientsListRow :client="client" />
     </template>
   </VDataTable>
 

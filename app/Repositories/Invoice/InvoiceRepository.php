@@ -38,7 +38,7 @@ class InvoiceRepository
         DB::beginTransaction();
         try {
             $inputs['invoice']['hash'] = BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
-            $inputs['invoice']['invoice_num'] = BaseRepository::randomCharacters(5, '0123456789');
+            $inputs['invoice']['invoice_num'] = $this->invoice()->orderBy('id', 'desc')->first()->invoice_num + 1;
             $invoice = $this->invoice()->create($inputs['invoice']);
 
             foreach ($inputs['invoice_items'] as $item){

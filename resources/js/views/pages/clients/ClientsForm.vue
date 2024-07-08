@@ -3,6 +3,8 @@ import {ref, watch, reactive, computed, onMounted} from 'vue';
 import axios from "axios";
 import CreditCardForm from "@/views/pages/clients/credit-card/CreditCardForm.vue";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
+import DialogCloseBtn
+  from "../../../../../vuexy-vue-laravel-version/typescript-version/full-version/resources/ts/@core/components/DialogCloseBtn.vue";
 
 // For routing with params
 const hash = ref('');
@@ -57,7 +59,7 @@ const resetForm = () => {
   }
 };
 
-const submitClient = async () => {
+const submitClient = async (action) => {
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
     delete errors.value[key];
@@ -83,8 +85,12 @@ const submitClient = async () => {
     }
   }).then((response) => {
     if (response.data.success) {
+      hash.value = response.data.client.hash;
       submitted.value = true;
-      resetForm();
+      // resetForm();
+      if (action === 'close') {
+        window.location.href = '/clients';
+      }
     }
   }).catch((error) => {
     if ([401, 402, 422].includes(error.response.status)) {
@@ -107,7 +113,7 @@ const submitClient = async () => {
   loading.value = false;
 }
 
-const updateClient = async (hash) => {
+const updateClient = async (hash, action) => {
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
     delete errors.value[key];
@@ -134,6 +140,9 @@ const updateClient = async (hash) => {
   }).then((response) => {
     if (response.data.success) {
       submitted.value = true;
+      if (action === 'close') {
+        window.location.href = '/clients';
+      }
     }
   }).catch((error) => {
     if (error.response && [401, 402, 422].includes(error.response.status)) {
@@ -204,18 +213,51 @@ defineExpose({
 
 <template>
   <VRow class="mb-2">
-    <VCol cols="6">
-      <h3 class="card-header">Customers</h3>
+    <VCol cols="4">
+      <h3 class="card-header">Clients</h3>
     </VCol>
 
-    <VCol cols="6" class="text-right">
+    <VAlert
+      v-if="Object.keys(errors).length > 0"
+      class="text-center mb-2"
+      type="error"
+    >
+      <p v-for="(error, index) in Object.keys(errors)" :key="index" class="mb-0">
+        {{ errors[error][0] }}
+      </p>
+    </VAlert>
+
+    <VCol cols="8" class="text-right flex">
+
+      <VBtn
+        :size="'small'"
+        @click.prevent="hash ? updateClient(hash) : submitClient()"
+        type="submit"
+        color="success"
+        :loading="loading"
+        class="mr-2"
+      >
+        {{ 'save' }}
+      </VBtn>
+
+      <VBtn
+        :size="'small'"
+        @click.prevent="hash ? updateClient(hash, 'close') : submitClient('close')"
+        type="submit"
+        color="success"
+        :loading="loading"
+        class="mr-2 btn-info waves-effect waves-light"
+      >
+        {{ 'save and close' }}
+      </VBtn>
+
       <router-link
-        class="btn btn-info waves-effect waves-light mr-2 btn-sm"
+        class="btn btn-info waves-effect waves-light"
         exact
         :to="{name: 'ClientsCreate'}"
       >
-        <VBtn variant="flat">
-          Create Customer
+        <VBtn variant="flat" :size="'small'">
+          Create Client
         </VBtn>
       </router-link>
     </VCol>
@@ -224,7 +266,7 @@ defineExpose({
   <VRow>
     <VCol col="12">
 
-      <VForm @submit.prevent="hash ? updateClient(hash) : submitClient()">
+      <VForm>
         <VRow class="p-2">
           <!-- 👉 Company Name -->
           <VCol cols="12" md="3">
@@ -401,15 +443,8 @@ defineExpose({
           <!-- 👉 Success Message -->
           <VCol cols="12" v-if="submitted" class="justify-center">
             <VAlert type="success" class="text-center" closable>
-              {{ hash ? 'Customer Updated' : 'Customer Added' }}
+              {{ hash ? 'Client Updated' : 'Client Created' }}
             </VAlert>
-          </VCol>
-
-          <!-- 👉 Submit Button -->
-          <VCol cols="12" class="d-flex justify-center">
-            <VBtn type="submit" color="success" :loading="loading">
-              {{ hash ? 'Update Customer' : 'Add Customer' }}
-            </VBtn>
           </VCol>
 
         </VRow>

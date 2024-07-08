@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, reactive, ref } from 'vue';
+import {defineProps, reactive, ref} from 'vue';
 import axios from "axios";
 
 const props = defineProps({
@@ -16,12 +16,53 @@ const errors = ref({});
 
 const form = reactive({
   client_id: props.client.id,
-  cc_last_4_digits: '',
+  cc_number: '',
+  cc_exp: '',
   cc_exp_month: '',
   cc_exp_year: '',
 });
 
+const maskMonthAndYear = (event) => {
+  let cc_exp = event.target.value;
+
+  // Remove any non-digit characters
+  cc_exp = cc_exp.replace(/\D/g, '');
+
+  // Add '/' after the first 2 digits
+  if (cc_exp.length > 2) {
+    cc_exp = cc_exp.slice(0, 2) + '/' + cc_exp.slice(2);
+  }
+
+  // Limit the input to 5 characters (MM/YY)
+  cc_exp = cc_exp.slice(0, 5);
+
+  // Update the form.cc_exp field with the masked value
+  form.cc_exp = cc_exp;
+
+  // Split the masked value and assign to the respective fields
+  const cc_exp_array = cc_exp.split('/');
+  form.cc_exp_month = cc_exp_array[0];
+  form.cc_exp_year = cc_exp_array[1];
+}
+
+const maxLength = (event, max) => {
+
+  console.log("MAX", max);
+
+  let value = event.target.value.replace(/\s/g, ''); // Remove existing spaces
+
+  if (value.length > max) {
+    value = value.slice(0, max);
+  }
+
+  // Add a space after every 4 digits
+  event.target.value = value.replace(/(\d{4})/g, '$1 ').trim();
+}
+
 const submitCreditCard = async () => {
+
+  console.log("Form data", form);
+
   // Delete all errors
   Object.keys(errors.value).forEach(function(key) {
     delete errors.value[key];
@@ -83,37 +124,30 @@ const submitCreditCard = async () => {
         <VAlert v-if="errors.server_error" class="text-danger">{{ errors.server_error }}</VAlert>
       </VCol>
 
-      <VCol md="4">
+      <VCol md="8">
         <VTextField
-          v-model="form.cc_last_4_digits"
-          label="Last 4 Digits"
-          type="number"
-          maxlength="4"
-          placeholder="0000"
-          :error-messages="errors.cc_last_4_digits"
+          @keydown="maxLength($event, 19)"
+          v-model="form.cc_number"
+          label=""
+          type="text"
+          maxlength="19"
+          placeholder="0000 0000 0000 0000"
           class="credit-card-mask"
         />
+        <p v-if="errors.cc_number" class="text-warning">
+          {{ errors.cc_number[0] }}
+        </p>
       </VCol>
 
       <VCol md="4">
         <VTextField
-          v-model="form.cc_exp_month"
-          label="Expiry Month"
-          type="number"
-          maxlength="2"
-          placeholder="00"
-          :error-messages="errors.cc_exp_month"
-        />
-      </VCol>
-
-      <VCol md="4">
-        <VTextField
-          v-model="form.cc_exp_year"
-          label="Expiry Year"
-          type="number"
-          maxlength="4"
-          class="expiry-date-mask"
-          :error-messages="errors.cc_exp_year"
+          @input="maskMonthAndYear"
+          v-model="form.cc_exp"
+          label="Expiry"
+          type="text"
+          maxlength="5"
+          placeholder="MM/YY"
+          :error-messages="errors.cc_exp"
         />
       </VCol>
     </VRow>

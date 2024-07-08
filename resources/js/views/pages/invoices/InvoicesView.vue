@@ -5,7 +5,6 @@ import axios from 'axios'
 import InvoicesItem from "@/views/pages/invoices/InvoicesItem.vue";
 import LaravelVuePagination from 'laravel-vue-pagination';
 import baseService from '@/utils/base-service.js'
-import ClientsItem from "@/views/pages/clients/ClientsItem.vue";
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 
@@ -45,11 +44,11 @@ const getInvoices = (page = 1) => {
 const headers = [
   {
     title: 'Invoice #',
-    key: 'invoiceNumber',
+    key: 'invoice_num',
   },
   {
     title: 'From Company',
-    key: 'fromCompany',
+    key: 'invoice.company.name',
   },
   {
     title: 'Status',
@@ -57,15 +56,15 @@ const headers = [
   },
   {
     title: 'Customer',
-    key: 'customer',
+    key: 'invoice.client.company_name',
   },
   {
     title: 'Invoice Date',
-    key: 'invoiceDate',
+    key: 'invoice_date',
   },
   {
     title: 'Payment Due',
-    key: 'paymentDue',
+    key: 'invoice_due',
   },
   {
     title: 'Total',
@@ -77,7 +76,7 @@ const headers = [
   },
   {
     title: 'Outstanding',
-    key: 'outstanding',
+    key: 'balance',
   },
   {
     title: 'Actions',

@@ -35,7 +35,7 @@ const authenticatedRoutes = [
     {
         path: '/clients',
         name: 'ClientsView',
-        component: () => import('@/views/pages/clients/ClientsView.vue'),
+        component: () => import('@/views/pages/clients/ClientsIndex.vue'),
         meta: { title: 'Clients' },
     },
     {

@@ -13,7 +13,7 @@ class CreateInvoicesTable extends Migration
             $table->string('hash', 50)->unique();
             $table->unsignedBigInteger('my_company_id')->nullable();
             $table->unsignedBigInteger('client_id')->nullable();
-            $table->string('invoice_num')->nullable();
+            $table->bigInteger('invoice_num')->unique();
             $table->enum('invoice_type', ['standard', 'credit_memo'])->nullable();
             $table->enum('status', ['draft', 'approved', 'sent', 'partially_paid', 'paid'])->nullable();
             $table->enum('currency', ['USD', 'CAD'])->nullable();
@@ -36,6 +36,39 @@ class CreateInvoicesTable extends Migration
 
     public function down()
     {
+        Schema::table('invoice_payments', function (Blueprint $table) {
+            $table->dropForeign(['invoice_id']);
+        });
+
+        Schema::table('invoice_items', function (Blueprint $table) {
+            $table->dropForeign(['invoice_id']);
+        });
+
         Schema::dropIfExists('invoices');
+
+//        if (Schema::hasColumn('my_companies', 'my_company_id')) {
+//            Schema::table('my_companies', function (Blueprint $table) {
+//                $table->dropForeign(['my_company_id']);
+//            });
+//        }
+//
+//        if (Schema::hasColumn('clients', 'client_id')) {
+//            Schema::table('clients', function (Blueprint $table) {
+//                $table->dropForeign(['client_id']);
+//            });
+//        }
+
+//        if (Schema::hasColumn('invoice_items', 'invoice_id')) {
+//            Schema::table('invoice_items', function (Blueprint $table) {
+//                $table->dropForeign(['invoice_id']);
+//            });
+//        }
+
+//        if (Schema::hasColumn('invoice_payments', 'invoice_id')) {
+//            Schema::table('invoice_payments', function (Blueprint $table) {
+//                $table->dropForeign(['invoice_id']);
+//            });
+//        }
+
     }
 }

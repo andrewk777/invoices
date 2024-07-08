@@ -17,7 +17,7 @@ class CreditCard extends Model
         'hash',
         'client_id',
         'cc_provider',
-        'cc_last_4_digits',
+        'cc_number',
         'cc_exp_month',
         'cc_exp_year',
         'cc_provider_customer_id',

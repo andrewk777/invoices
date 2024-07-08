@@ -21,10 +21,10 @@ class StoreCreditCardRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'cc_last_4_digits' => 'required|string|max:4',
+            'cc_number' => 'required',
             'cc_exp_month' => 'required|string|max:2',
             'cc_exp_year' => 'required|string|max:4',
         ];

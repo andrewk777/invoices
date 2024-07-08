@@ -23,7 +23,7 @@ class InvoiceFactory extends Factory
             'hash' => $this->faker->uuid(),
             'my_company_id' => MyCompany::inRandomOrder()->first()->id,
             'client_id' => Client::factory()->create()->id,
-            'invoice_num' => $this->faker->randomNumber(),
+            'invoice_num' => $this->faker->unique()->numberBetween(1000, 9999),
             'invoice_type' => $this->faker->randomElement(['standard', 'credit_memo']),
             'status' => $this->faker->randomElement(['draft', 'approved', 'sent', 'partially_paid', 'paid']),
             'currency' => $this->faker->randomElement(['USD', 'CAD']),

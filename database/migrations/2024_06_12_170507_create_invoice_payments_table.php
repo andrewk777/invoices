@@ -24,6 +24,13 @@ class CreateInvoicePaymentsTable extends Migration
 
     public function down()
     {
+//        if (Schema::hasColumn('invoice_payments', 'invoice_id')) {
+//            Schema::table('invoice_payments', function (Blueprint $table) {
+//                $table->dropForeign(['invoice_id']);
+//            });
+//        }
+
         Schema::dropIfExists('invoice_payments');
+        //Schema::dropIfExists('invoices');
     }
 }

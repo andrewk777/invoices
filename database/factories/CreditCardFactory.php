@@ -21,7 +21,7 @@ class CreditCardFactory extends Factory
             'hash' => $this->faker->sha1,
             'client_id' => Client::factory()->create()->id,
             'cc_provider' => $this->faker->randomElement(['Stripe', 'Paypal', 'Braintree', 'Authorize']),
-            'cc_last_4_digits' => $this->faker->numberBetween('1000', '9999'),
+            'cc_number' => $this->faker->numberBetween('1000', '9999'),
             'cc_exp_month' => $this->faker->numberBetween('1', '12'),
             'cc_exp_year' => $this->faker->numberBetween('2022', '2030'),
             'cc_provider_customer_id' => $this->faker->numberBetween('1', '20'),
