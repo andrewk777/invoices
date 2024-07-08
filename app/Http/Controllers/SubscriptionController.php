@@ -2,10 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\Subscription\SubscriptionRepository;
 use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
+    protected SubscriptionRepository $subscription;
+    public function __construct(SubscriptionRepository $subscription)
+    {
+        $this->subscription = $subscription;
+    }
+
     /**
      * Display a listing of the resource.
      */

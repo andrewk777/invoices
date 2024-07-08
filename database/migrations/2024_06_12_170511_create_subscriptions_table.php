@@ -14,7 +14,7 @@ class CreateSubscriptionsTable extends Migration
             $table->string('hash', 50)->unique();
             $table->string('name')->nullable();
             $table->unsignedBigInteger('company_id')->nullable();
-            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->json('tags')->nullable();
             $table->enum('currency', ['CAD', 'USD'])->nullable();
             $table->unsignedBigInteger('credit_card_id')->nullable();

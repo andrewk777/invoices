@@ -53,7 +53,7 @@ const authenticatedRoutes = [
     {
         path: '/invoices',
         name: 'InvoicesView',
-        component: () => import('@/views/pages/invoices/InvoicesView.vue'),
+        component: () => import('@/views/pages/invoices/InvoicesIndex.vue'),
         meta: { title: 'Invoices' },
     },
     {
@@ -71,7 +71,7 @@ const authenticatedRoutes = [
     {
         path: '/subscriptions',
         name: 'SubscriptionsView',
-        component: () => import('@/views/pages/subscriptions/SubscriptionsView.vue'),
+        component: () => import('@/views/pages/subscriptions/SubscriptionsIndex.vue'),
         meta: { title: 'Subscriptions' },
     },
     {
@@ -89,7 +89,7 @@ const authenticatedRoutes = [
     {
         path: '/users',
         name: 'UsersView',
-        component: () => import('@/views/pages/users/UsersView.vue'),
+        component: () => import('@/views/pages/users/UsersIndex.vue'),
         meta: { title: 'Users' },
     },
     {

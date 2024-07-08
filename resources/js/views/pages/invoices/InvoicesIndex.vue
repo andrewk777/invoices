@@ -2,7 +2,7 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import axios from 'axios'
 
-import InvoicesItem from "@/views/pages/invoices/InvoicesItem.vue";
+import InvoicesItem from "@/views/pages/invoices/InvoicesListRow.vue";
 import LaravelVuePagination from 'laravel-vue-pagination';
 import baseService from '@/utils/base-service.js'
 

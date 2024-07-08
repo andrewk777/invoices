@@ -5,6 +5,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\CreditCardController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,16 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/invoices/receipt/{hash}/download', [InvoiceController::class, 'receipt']);
     Route::post('/invoices/update/{hash}', [InvoiceController::class, 'update']);
     Route::delete('/invoices/destroy/{hash}', [InvoiceController::class, 'destroy']);
+
+    // Subscriptions
+    Route::get('/subscriptions', [SubscriptionController::class, 'index']);
+    Route::get('/subscriptions/search', [SubscriptionController::class, 'search']);
+    Route::post('/subscriptions/store', [SubscriptionController::class, 'store']);
+    Route::get('/subscriptions/show/{hash}', [SubscriptionController::class, 'show']);
+    Route::post('/subscriptions/update/{hash}', [SubscriptionController::class, 'update']);
+    Route::delete('/subscriptions/destroy/{hash}', [SubscriptionController::class, 'destroy']);
+
+
 
 
     Route::get('/logout', [LoginController::class, 'logout']);
