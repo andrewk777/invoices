@@ -19,6 +19,12 @@ class InvoiceFactory extends Factory
      */
     public function definition(): array
     {
+        $subtotal = $this->faker->randomFloat(2, 0, 500.99);
+        $taxes = $this->faker->randomFloat(2, 0, 50.00);
+        $total = $subtotal + $taxes;
+        $total_paid = $this->faker->randomFloat(2, 0, $total);
+        $balance = $total - $total_paid;
+
         return [
             'hash' => $this->faker->uuid(),
             'my_company_id' => MyCompany::inRandomOrder()->first()->id,
@@ -31,11 +37,12 @@ class InvoiceFactory extends Factory
             'invoice_due' => $this->faker->date(),
             'na' => $this->faker->boolean(),
             'can_pay_with_cc' => $this->faker->boolean(),
-            'subtotal' => $this->faker->randomFloat(2, 0, 999999.99),
-            'taxes' => $this->faker->randomFloat(2, 0, 999999.99),
-            'total' => $this->faker->randomFloat(2, 0, 999999.99),
-            'total_paid' => $this->faker->randomFloat(2, 0, 999999.99),
-            'balance' => $this->faker->randomFloat(2, 0, 999999.99),
+
+            'subtotal' => $subtotal,
+            'taxes' => $taxes,
+            'total' => $total,
+            'total_paid' => $total_paid,
+            'balance' => $balance,
         ];
     }
 }

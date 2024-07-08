@@ -88,6 +88,22 @@ class ClientController extends Controller
         }
     }
 
+    public function users($hash): JsonResponse
+    {
+        try {
+            $data = $this->client->client()
+                ->with('users')
+                ->where('hash', $hash)->first();
+            return response()->json([
+                'success' => true,
+                'users' => $data?->users,
+            ]);
+
+        }catch (\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
     public function update(UpdateClientRequest $request, $hash): JsonResponse
     {
         try {

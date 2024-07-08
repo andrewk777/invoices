@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Client;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -33,7 +34,7 @@ class UserFactory extends Factory
             'system_access' => true,
             'hash' => Str::random(50),
             'role' => 'supper-admin',
-            'client_id' => null,
+            'client_id' => Client::factory()->create()->id,
         ];
     }
 

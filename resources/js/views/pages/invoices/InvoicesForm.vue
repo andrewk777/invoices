@@ -973,6 +973,20 @@ onBeforeMount(async () => {
            <DocumentLicenseIcon :width="'18px'" class="mr-1"/> Print Invoice
         </VBtn>
 
+        <VBtn
+          v-if="hash"
+          class="mt-2"
+          block
+          color="danger"
+          variant="tonal"
+        >
+          <VIcon
+            left
+            icon="tabler-credit-card"
+          />
+          Charge Credit Card
+        </VBtn>
+
 
 
       </VCol>

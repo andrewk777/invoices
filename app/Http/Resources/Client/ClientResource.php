@@ -34,8 +34,8 @@ class ClientResource extends JsonResource
             'ap_phone' => $this->ap_phone,
             'ap_email' => $this->ap_email,
 
-            'credit_cards' => $this->creditCards && count($this->creditCards) > 0 ? $this->creditCards : null,
-            'users' => $this->users && count($this->users) > 0 ? $this->users : null,
+            'credit_cards' => $this->creditCards && count($this->creditCards) > 0 ? $this->creditCards : [],
+            'users' => $this->users && count($this->users) > 0 ? $this->users : [],
 
             'notes' => $this->notes,
             'created_at' => $this->created_at,

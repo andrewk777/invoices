@@ -5,6 +5,7 @@ import CreditCardForm from "@/views/pages/clients/credit-card/CreditCardForm.vue
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 import DialogCloseBtn
   from "../../../../../vuexy-vue-laravel-version/typescript-version/full-version/resources/ts/@core/components/DialogCloseBtn.vue";
+import ClientsUsersIndex from "@/views/pages/clients/ClientsUsersIndex.vue";
 
 // For routing with params
 const hash = ref('');
@@ -431,9 +432,8 @@ defineExpose({
 
             <VSelect
               v-if="client.credit_cards?.length > 0"
-              v-model="selectedCreditCard"
               :items="client.credit_cards"
-              item-title="cc_last_4_digits"
+              item-title="cc_number"
               item-value="id"
               label="Select Credit Card"
               class="mt-2"
@@ -450,6 +450,14 @@ defineExpose({
         </VRow>
       </VForm>
 
+    </VCol>
+  </VRow>
+
+  <VRow v-if="hash && client.users?.length > 0">
+    <VCol cols="12">
+      <ClientsUsersIndex
+        :users="client.users"
+      />
     </VCol>
   </VRow>
 

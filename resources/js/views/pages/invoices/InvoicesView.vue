@@ -101,10 +101,14 @@ onBeforeMount(() => {
 
       <VCol col="6" class="text-right mt-4">
         <router-link
-          class="btn btn-info waves-effect waves-light mr-2 btn-sm"
+          class="btn btn-info waves-effect waves-light"
           exact
           :to="{name: 'InvoicesCreate'}">
-          <VBtn variant="flat">
+          <VBtn
+            variant="flat"
+            :size="'small'"
+            color="primary"
+          >
             Create Invoice
           </VBtn>
         </router-link>

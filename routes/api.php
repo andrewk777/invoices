@@ -24,8 +24,11 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/clients/min', [ClientController::class, 'indexMin']);
     Route::post('/clients/store', [ClientController::class, 'store']);
     Route::get('/clients/show/{hash}', [ClientController::class, 'show']);
+    Route::get('/clients/{hash}/users', [ClientController::class, 'users']);
     Route::post('/clients/update/{hash}', [ClientController::class, 'update']);
     Route::delete('/clients/destroy/{hash}', [ClientController::class, 'destroy']);
+
+
 
     Route::get('/companies', [CompanyController::class, 'index']);
 
