@@ -37,6 +37,16 @@ class ClientController extends Controller
         }
     }
 
+    public function search(Request $request){
+        try {
+            $data = $this->client->searchClients($request);
+            return response()->json($data);
+
+        }catch (\Exception $e) {
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
     public function indexMin(): JsonResponse
     {
         try {

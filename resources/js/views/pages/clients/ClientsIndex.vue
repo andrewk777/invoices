@@ -1,21 +1,20 @@
 <script setup>
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import axios from 'axios'
 
 import baseService from '@/utils/base-service.js'
 import ClientsListRow from "@/views/pages/clients/ClientsListRow.vue";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 
-const user = ref(baseService.getUserFromLocalStorage());
-
+const token = computed(() => baseService.getTokenFromLocalStorage());
 const loading = ref(false);
 
 const clients = ref([]);
 const total = ref(0);
 const searchTotal = ref(0);
 const dataLoaded = ref(false);
-const searchActive = ref(false);
-const search_values = ref([]);
+const search = ref('');
+const savedSearch = computed(() => localStorage.getItem('client-search'));
 
 const headers = [
   {
@@ -54,11 +53,10 @@ const headers = [
 ]
 
 const getClients = (page = 1) => {
-  searchActive.value = false;
   dataLoaded.value = false;
   axios.get('/api/clients?page=' + page, {
     headers: {
-      "Authorization" : "Bearer " + user.value.token,
+      "Authorization" : "Bearer " + token.value,
       'Accept' : 'application/json',
     },
   }).then((response) => {
@@ -73,15 +71,48 @@ const getClients = (page = 1) => {
   });
 }
 
-// const search = ref('')
+const searchClients = () => {
+  if (search.value.trim() === '') {
+    localStorage.removeItem('client-search');
+    getClients();
+    return;
+  }
+
+  // Store search result to be loaded on page refresh
+  localStorage.setItem('client-search', search.value);
+
+  dataLoaded.value = false;
+  axios.get('/api/clients/search?query=' + search.value, {
+    headers: {
+      "Authorization" : "Bearer " + token.value,
+      'Accept' : 'application/json',
+    },
+  }).then((response) => {
+    if(response.data.success === true){
+      clients.value = response.data.clients;
+      searchTotal.value = response.data.total;
+    }
+    dataLoaded.value = true;
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+watch(search, () => {
+  searchClients();
+});
 
 onBeforeMount(() => {
-  getClients();
+  if(savedSearch.value) {
+    search.value = savedSearch.value;
+    searchClients();
+  }else{
+    getClients();
+  }
 });
 </script>
 
 <template>
-
   <VRow class="mb-2">
     <VCol cols="6">
       <h3 class="card-header">Clients</h3>
@@ -94,44 +125,53 @@ onBeforeMount(() => {
         :to="{name: 'ClientsCreate'}"
       >
         <VBtn variant="flat">
-          Create Customer
+          Create Client
         </VBtn>
       </router-link>
     </VCol>
   </VRow>
 
-<!--  <VCardText>-->
-<!--    <VRow>-->
-<!--      <VCol-->
-<!--        cols="12"-->
-<!--        offset-md="8"-->
-<!--        md="4"-->
-<!--      >-->
-<!--        <AppTextField-->
-<!--          v-model="search"-->
-<!--          placeholder="Search ..."-->
-<!--          append-inner-icon="tabler-search"-->
-<!--          single-line-->
-<!--          hide-details-->
-<!--          dense-->
-<!--          outlined-->
-<!--        />-->
-<!--      </VCol>-->
-<!--    </VRow>-->
-<!--  </VCardText>-->
+  <VCardText>
+    <VRow>
+      <VCol
+        cols="12"
+        offset-md="8"
+        md="4"
+      >
+        <AppTextField
+          v-model="search"
+          @keyup.enter="searchClients"
+          placeholder="Search ..."
+          append-inner-icon="tabler-search"
+          single-line
+          hide-details
+          dense
+          outlined
+        />
+      </VCol>
+    </VRow>
+  </VCardText>
 
   <VDataTable
     :headers="headers"
     :items="clients"
     :items-per-page="25"
+    :loading="!dataLoaded"
   >
     <template v-slot:item="{ item: client }">
       <ClientsListRow :client="client" />
     </template>
   </VDataTable>
 
+  <div v-if="search && searchTotal > 0" class="text-center mt-4">
+    <p>Showing {{ clients.length }} of {{ searchTotal }} search results.</p>
+  </div>
+
+  <div v-if="!search && total > 0" class="text-center mt-4">
+    <p>Showing {{ clients.length }} of {{ total }} clients.</p>
+  </div>
 </template>
 
 <style scoped>
-
+/* Add any necessary styles */
 </style>
