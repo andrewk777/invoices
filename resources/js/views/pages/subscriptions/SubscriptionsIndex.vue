@@ -142,26 +142,24 @@ onBeforeMount(() => {
     </VCol>
   </VRow>
 
-  <VCardText>
-    <VRow>
-      <VCol
-        cols="12"
-        offset-md="8"
-        md="4"
-      >
-        <AppTextField
-          v-model="search"
-          @keyup.enter="searchSubscriptions"
-          placeholder="Search ..."
-          append-inner-icon="tabler-search"
-          single-line
-          hide-details
-          dense
-          outlined
-        />
-      </VCol>
-    </VRow>
-  </VCardText>
+  <VRow>
+    <VCol
+      cols="6"
+      md="6"
+    >
+      <AppTextField
+        v-model="search"
+        @keyup.enter="searchSubscriptions"
+        placeholder="Search ..."
+        append-inner-icon="tabler-search"
+        single-line
+        hide-details
+        dense
+        outlined
+        clearable
+      />
+    </VCol>
+  </VRow>
 
   <VDataTable
     :headers="headers"

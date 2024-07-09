@@ -192,28 +192,6 @@ const populateInvoicePayment = (invoice_payments) => {
   });
 }
 
-const resetInvoiceForm = () => {
-  Object.keys(invoiceData).forEach(function (master_key) {
-    if (master_key === 'invoice') {
-      Object.keys(invoiceData[master_key]).forEach(function (key) {
-        invoiceData.invoice[key] = '';
-      });
-    } else if (master_key === 'invoice_items') {
-      invoiceData[master_key].forEach(function (item, index) {
-        Object.keys(item).forEach(function (key) {
-          invoiceData[master_key][index][key] = '';
-        });
-      });
-    } else if (master_key === 'invoice_payments') {
-      invoiceData[master_key].forEach(function (payment, index) {
-        Object.keys(payment).forEach(function (key) {
-          invoiceData[master_key][index][key] = '';
-        });
-      });
-    }
-  });
-}
-
 const getInvoice = async (hash) => {
   try {
     const response = await axios.get('/api/invoices/show/' + hash, {
@@ -440,9 +418,7 @@ watch(() => invoiceData.invoice_items, () => {
 
 watch(() => hash.value, async () => {
   if (hash.value) {
-    await getInvoice(hash.value);
-  } else {
-    resetInvoiceForm();
+    await getSubscription(hash.value);
   }
 });
 

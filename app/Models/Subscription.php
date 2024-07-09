@@ -55,7 +55,7 @@ class Subscription extends Model
         return $this->belongsTo(CreditCard::class, 'credit_card_id', 'id');
     }
 
-    public function items(): HasMany
+    public function charges(): HasMany
     {
         return $this->hasMany(SubscriptionItem::class, 'subscription_id', 'id');
     }

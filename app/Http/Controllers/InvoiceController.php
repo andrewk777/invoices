@@ -42,17 +42,6 @@ class InvoiceController extends Controller
         }
     }
 
-    public function search(Request $request): JsonResponse
-    {
-        try {
-            $data = $this->invoice->searchInvoices($request);
-            return response()->json($data, $data['success'] ? 200 : 500);
-
-        }catch (\Exception $e){
-            return BaseRepository::tryCatchException($e);
-        }
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -91,16 +80,6 @@ class InvoiceController extends Controller
         }
     }
 
-    public function receipt($hash): Response|JsonResponse
-    {
-        try {
-            return $this->invoice->generateInvoiceReceipt($hash);
-
-        }catch (\Exception $e){
-            return BaseRepository::tryCatchException($e);
-        }
-    }
-
     /**
      * Update the specified resource in storage.
      */
@@ -127,6 +106,27 @@ class InvoiceController extends Controller
                 'message' => 'Invoice deleted successfully'
             ]);
         }catch(\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        try {
+            $data = $this->invoice->searchInvoices($request);
+            return response()->json($data, $data['success'] ? 200 : 500);
+
+        }catch (\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
+    public function receipt($hash): Response|JsonResponse
+    {
+        try {
+            return $this->invoice->generateInvoiceReceipt($hash);
+
+        }catch (\Exception $e){
             return BaseRepository::tryCatchException($e);
         }
     }
