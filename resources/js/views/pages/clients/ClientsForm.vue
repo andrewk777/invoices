@@ -5,7 +5,7 @@ import CreditCardForm from "@/views/pages/clients/credit-card/CreditCardForm.vue
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 import DialogCloseBtn
   from "../../../../../vuexy-vue-laravel-version/typescript-version/full-version/resources/ts/@core/components/DialogCloseBtn.vue";
-import ClientsUsersIndex from "@/views/pages/clients/ClientsUsersIndex.vue";
+import ClientsUsersIndex from "@/views/pages/clients/client-users/ClientsUsersIndex.vue";
 
 // For routing with params
 const hash = ref('');

@@ -11,7 +11,8 @@ class CreateClientsTable extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->string('hash', 50)->unique();
-            $table->foreignId('my_company_id')->nullable()->constrained('my_companies');
+            $table->foreignId('my_company_id')->nullable();
+            $table->foreignId('default_credit_card_id')->nullable();
             $table->string('company_name')->nullable();
             $table->string('company_address')->nullable();
             $table->string('company_phone')->nullable();
@@ -32,6 +33,24 @@ class CreateClientsTable extends Migration
 
     public function down()
     {
+//        if (Schema::hasTable('client_users')) {
+//            Schema::table('client_users', function (Blueprint $table) {
+//                $table->dropForeign(['client_id']);
+//            });
+//        }
+//
+//        if (Schema::hasTable('credit_cards')) {
+//            Schema::table('credit_cards', function (Blueprint $table) {
+//                $table->dropForeign(['client_id']);
+//            });
+//        }
+
+//        Schema::table('clients', function (Blueprint $table) {
+//            $table->dropForeign('clients_my_company_id_foreign');
+//            $table->dropColumn('my_company_id');
+//        });
+
+
         Schema::dropIfExists('clients');
     }
 }

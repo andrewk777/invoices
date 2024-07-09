@@ -25,16 +25,18 @@ class CreateMyCompaniesTable extends Migration
     public function down()
     {
         // Drop foreign key
-        Schema::table('clients', function (Blueprint $table) {
-            if (Schema::hasColumn('clients', 'my_company_id')) {
-                $table->dropForeign(['my_company_id']);
-            }
-        });
-        Schema::table('invoices', function (Blueprint $table) {
-            if (Schema::hasColumn('invoices', 'my_company_id')) {
-                $table->dropForeign(['my_company_id']);
-            }
-        });
+//        Schema::table('clients', function (Blueprint $table) {
+//            if (Schema::hasTable('clients') && Schema::hasColumn('clients', 'my_company_id')) {
+//                $table->dropForeign(['my_company_id']);
+//            }
+//        });
+//
+//        Schema::table('invoices', function (Blueprint $table) {
+//            if (Schema::hasTable('invoices') && Schema::hasColumn('invoices', 'my_company_id')) {
+//                $table->dropForeign(['my_company_id']);
+//            }
+//        });
+
         Schema::dropIfExists('my_companies');
     }
 }
