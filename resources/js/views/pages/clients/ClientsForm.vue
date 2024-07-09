@@ -213,7 +213,6 @@ const closeModal = () => {
 };
 
 const assignDefaultCreditCard = (creditCard) => {
-  //creditCards.value.push(creditCard);
   getClient(hash.value);
   closeModal();
 };

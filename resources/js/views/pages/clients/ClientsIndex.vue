@@ -11,8 +11,9 @@ const loading = ref(false);
 
 const clients = ref([]);
 const total = ref(0);
-const searchTotal = ref(0);
 const dataLoaded = ref(false);
+
+const searchTotal = ref(0);
 const search = ref('');
 const savedSearch = computed(() => localStorage.getItem('client-search'));
 
@@ -135,26 +136,25 @@ onBeforeMount(() => {
     </VCol>
   </VRow>
 
-  <VCardText>
-    <VRow>
-      <VCol
-        cols="12"
-        offset-md="8"
-        md="4"
-      >
-        <AppTextField
-          v-model="search"
-          @keyup.enter="searchClients"
-          placeholder="Search ..."
-          append-inner-icon="tabler-search"
-          single-line
-          hide-details
-          dense
-          outlined
-        />
-      </VCol>
-    </VRow>
-  </VCardText>
+  <VRow>
+    <VCol
+      cols="4"
+      md="4"
+      class="mb-4"
+    >
+      <AppTextField
+        v-model="search"
+        @keyup.enter="searchClients"
+        placeholder="Search ..."
+        append-inner-icon="tabler-search"
+        single-line
+        hide-details
+        dense
+        outlined
+        clearable
+      />
+    </VCol>
+  </VRow>
 
   <VDataTable
     :headers="headers"

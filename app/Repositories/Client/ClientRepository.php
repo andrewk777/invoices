@@ -35,6 +35,42 @@ class ClientRepository
         ];
     }
 
+    public function updateClient($request, $hash): array
+    {
+        $client = $this->client()->where('hash', $hash)->first();
+        $inputs = $request->all();
+        $client->update($inputs);
+
+        return [
+            'success' => true,
+            'client' => new ClientResource($client)
+        ];
+    }
+
+    public function deleteClient($hash): array
+    {
+        $client = $this->client()->where('hash', $hash)->first();
+        // Check if the achievement exists
+        if (!$client) {
+            return [
+                'success' => false,
+                'error_message' => 'Client not found'
+            ];
+        }
+
+        // Delete Credit cards
+        if($client->creditCards()?->count() > 0){
+            $client->creditCards()->delete();
+        }
+
+        $client->delete();
+
+        return [
+            'success' => true,
+            'message' => 'Client deleted successfully'
+        ];
+    }
+
     public function searchClients($request): array
     {
         $search = $request->all()['query'];
@@ -74,42 +110,6 @@ class ClientRepository
             'clients' => [],
             'total' => 0,
             'search_values' => Session::get('search_values')
-        ];
-    }
-
-    public function updateClient($request, $hash): array
-    {
-        $client = $this->client()->where('hash', $hash)->first();
-        $inputs = $request->all();
-        $client->update($inputs);
-
-        return [
-            'success' => true,
-            'client' => new ClientResource($client)
-        ];
-    }
-
-    public function deleteClient($hash): array
-    {
-        $client = $this->client()->where('hash', $hash)->first();
-        // Check if the achievement exists
-        if (!$client) {
-            return [
-                'success' => false,
-                'error_message' => 'Client not found'
-            ];
-        }
-
-        // Delete Credit cards
-        if($client->creditCards()?->count() > 0){
-            $client->creditCards()->delete();
-        }
-
-        $client->delete();
-
-        return [
-            'success' => true,
-            'message' => 'Client deleted successfully'
         ];
     }
 

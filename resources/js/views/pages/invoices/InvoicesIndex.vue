@@ -1,20 +1,23 @@
 <script setup>
-import { computed, onBeforeMount, ref } from 'vue'
+import {computed, onBeforeMount, ref, watch} from 'vue'
 import axios from 'axios'
 
 import InvoicesItem from "@/views/pages/invoices/InvoicesListRow.vue";
 import LaravelVuePagination from 'laravel-vue-pagination';
 import baseService from '@/utils/base-service.js'
+import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
-
 const loading = ref(false);
 
 const invoices = ref([]);
 const total = ref(0);
-const searchTotal = ref(0);
 const dataLoaded = ref(false);
+
 const searchActive = ref(false);
+const searchTotal = ref(0);
+const search = ref('');
+const savedSearch = computed(() => localStorage.getItem('client-search'));
 const search_values = ref([]);
 
 const getInvoices = (page = 1) => {
@@ -36,6 +39,33 @@ const getInvoices = (page = 1) => {
       console.log(invoices.value);
     }
 
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+const searchInvoices = () => {
+  if (search.value.trim() === '') {
+    localStorage.removeItem('invoice-search');
+    getInvoices();
+    return;
+  }
+
+  // Store search result to be loaded on page refresh
+  localStorage.setItem('invoice-search', search.value);
+
+  dataLoaded.value = false;
+  axios.get('/api/invoices/search?query=' + search.value, {
+    headers: {
+      "Authorization" : "Bearer " + token.value,
+      'Accept' : 'application/json',
+    },
+  }).then((response) => {
+    if(response.data.success === true){
+      invoices.value = response.data.invoices;
+      searchTotal.value = response.data.total;
+    }
+    dataLoaded.value = true;
   }).catch((error) => {
     console.log(error);
   });
@@ -85,8 +115,17 @@ const headers = [
   },
 ]
 
+watch(search, () => {
+  searchInvoices();
+});
+
 onBeforeMount(() => {
-  getInvoices();
+  if(savedSearch.value) {
+    search.value = savedSearch.value;
+    searchInvoices();
+  }else{
+    getInvoices();
+  }
 });
 </script>
 
@@ -115,6 +154,26 @@ onBeforeMount(() => {
       </VCol>
     </VRow>
 
+    <VRow>
+      <VCol
+        cols="4"
+        md="4"
+        class="mb-4"
+      >
+        <AppTextField
+          v-model="search"
+          @keyup.enter="searchInvoices"
+          placeholder="Search ..."
+          append-inner-icon="tabler-search"
+          single-line
+          hide-details
+          dense
+          outlined
+          clearable
+        />
+      </VCol>
+    </VRow>
+
     <VDataTable
       :headers="headers"
       :items="invoices"
@@ -124,6 +183,14 @@ onBeforeMount(() => {
         <InvoicesItem :invoice="invoice" />
       </template>
     </VDataTable>
+
+    <div v-if="search && searchTotal > 0" class="text-center mt-4">
+      <p>Showing {{ invoices.length }} of {{ searchTotal }} search results.</p>
+    </div>
+
+    <div v-if="!search && total > 0" class="text-center mt-4">
+      <p>Showing {{ invoices.length }} of {{ total }} invoices.</p>
+    </div>
 
 <!--    <laravel-vue-pagination-->
 <!--      class="justify-content-center"-->

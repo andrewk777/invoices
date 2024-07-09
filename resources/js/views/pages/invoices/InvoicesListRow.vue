@@ -80,7 +80,7 @@ const downloadInvoiceReceipt = () => {
 
     <td>
       <p>
-        {{ parseFloat(invoice.total).toFixed(2) }}
+        ${{ parseFloat(invoice.total).toFixed(2) }}
       </p>
     </td>
 
@@ -92,7 +92,7 @@ const downloadInvoiceReceipt = () => {
 
     <td>
       <p>
-        {{ parseFloat(invoice.balance).toFixed(2) }}
+        ${{ parseFloat(invoice.balance).toFixed(2) }}
       </p>
     </td>
 

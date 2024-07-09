@@ -29,12 +29,24 @@ class InvoiceController extends Controller
                 ->with(
                     'company:id,name',
                     'client:id,company_name,company_email,company_address,company_phone',
-                )->latest()->get();
+                )->orderBy('invoice_num')->get();
+
             return response()->json([
                 'success' => true,
                 'invoices' => $data,
                 'total' => $data->count(),
             ]);
+
+        }catch (\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        try {
+            $data = $this->invoice->searchInvoices($request);
+            return response()->json($data, $data['success'] ? 200 : 500);
 
         }catch (\Exception $e){
             return BaseRepository::tryCatchException($e);

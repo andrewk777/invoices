@@ -13,6 +13,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class InvoiceRepository
 {
@@ -80,7 +81,6 @@ class InvoiceRepository
                 'server_error' => $e->getMessage(),
             ];
         }
-
     }
 
     public function updateInvoice($request, $hash): array
@@ -171,7 +171,59 @@ class InvoiceRepository
         }
     }
 
-    // InvoiceController.php
+    public function searchInvoices($request): array
+    {
+        $search = $request->all()['query'];
+        Session::forget(['search_inputs', 'search_values']);
+
+        $invoices = $this->invoice()->with('company', 'client')->select(
+
+            'my_companies.id as my_company_id',
+            'my_companies.name as my_company_name',
+            'clients.id AS client_id',
+            'clients.company_name AS client_name',
+            'clients.company_email AS client_email',
+            'clients.company_address AS client_address',
+
+            'invoices.*'
+
+        )->leftjoin('my_companies', 'my_companies.id', '=', 'invoices.my_company_id')
+            ->leftjoin('clients', 'clients.id', '=', 'invoices.client_id')
+
+            ->where(function($query) use ($search){
+                $query->when(!empty($search), static function($q) use($search){
+                    $q->where('invoices.invoice_num', 'like' , '%'. $search .'%')
+                        ->orWhere('invoices.total', 'like' , '%'. $search .'%')
+                        ->orWhere('invoices.balance', 'like' , '%'. $search .'%')
+                        ->orWhere('invoices.status', 'like' , '%'. $search .'%')
+                        ->orWhere('clients.company_name', 'like' , '%'. $search .'%')
+                        ->orWhere('clients.company_email', 'like' , '%'. $search .'%')
+                        ->orWhere('clients.company_address', 'like' , '%'. $search .'%')
+                        ->orWhere('clients.company_phone', 'like' , '%'. $search .'%')
+                        ->orWhere('clients.main_contact_first_name', 'like' , '%'. $search .'%')
+                        ->orWhere('clients.main_contact_last_name', 'like' , '%'. $search .'%')
+                        ->orWhere('my_companies.name', 'like' , '%'. $search .'%');
+                });
+
+            })->latest()->get();
+
+        // if a result exists return results, else return empty array
+        if($invoices->count() > 0){
+            return [
+                'success' => true,
+                'invoices' => InvoiceResource::collection($invoices),
+                'total' => $invoices->count(),
+                'search_values' => Session::get('search_values')
+            ];
+        }
+
+        return [
+            'success' => true,
+            'invoices' => [],
+            'total' => 0,
+            'search_values' => Session::get('search_values')
+        ];
+    }
 
     public function generateInvoiceReceipt($hash): Response|string
     {
