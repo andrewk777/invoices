@@ -13,7 +13,7 @@ class CreateSubscriptionsTable extends Migration
             $table->id();
             $table->string('hash', 50)->unique();
             $table->string('name')->nullable();
-            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('my_company_id')->nullable();
             $table->unsignedBigInteger('client_id')->nullable();
             $table->json('tags')->nullable();
             $table->enum('currency', ['CAD', 'USD'])->nullable();
@@ -34,8 +34,8 @@ class CreateSubscriptionsTable extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('company_id')->references('id')->on('my_companies');
-            $table->foreign('customer_id')->references('id')->on('clients');
+            $table->foreign('my_company_id')->references('id')->on('my_companies');
+            $table->foreign('client_id')->references('id')->on('clients');
             $table->foreign('credit_card_id')->references('id')->on('credit_cards');
             $table->foreign('email_template_id')->references('id')->on('email_templates');
         });
@@ -43,6 +43,12 @@ class CreateSubscriptionsTable extends Migration
 
     public function down()
     {
+        if (Schema::hasTable('subscription_items')) {
+            Schema::table('subscription_items', function (Blueprint $table) {
+                $table->dropForeign(['subscription_id']);
+            });
+        }
+
         Schema::dropIfExists('subscriptions');
     }
 }

@@ -36,39 +36,18 @@ class CreateInvoicesTable extends Migration
 
     public function down()
     {
-        Schema::table('invoice_payments', function (Blueprint $table) {
-            $table->dropForeign(['invoice_id']);
-        });
+        if (Schema::hasTable('invoice_payments')) {
+            Schema::table('invoice_payments', function (Blueprint $table) {
+                $table->dropForeign(['invoice_id']);
+            });
+        }
 
-        Schema::table('invoice_items', function (Blueprint $table) {
-            $table->dropForeign(['invoice_id']);
-        });
+        if (Schema::hasTable('invoice_items')) {
+            Schema::table('invoice_items', function (Blueprint $table) {
+                $table->dropForeign(['invoice_id']);
+            });
+        }
 
         Schema::dropIfExists('invoices');
-
-//        if (Schema::hasColumn('my_companies', 'my_company_id')) {
-//            Schema::table('my_companies', function (Blueprint $table) {
-//                $table->dropForeign(['my_company_id']);
-//            });
-//        }
-//
-//        if (Schema::hasColumn('clients', 'client_id')) {
-//            Schema::table('clients', function (Blueprint $table) {
-//                $table->dropForeign(['client_id']);
-//            });
-//        }
-
-//        if (Schema::hasColumn('invoice_items', 'invoice_id')) {
-//            Schema::table('invoice_items', function (Blueprint $table) {
-//                $table->dropForeign(['invoice_id']);
-//            });
-//        }
-
-//        if (Schema::hasColumn('invoice_payments', 'invoice_id')) {
-//            Schema::table('invoice_payments', function (Blueprint $table) {
-//                $table->dropForeign(['invoice_id']);
-//            });
-//        }
-
     }
 }

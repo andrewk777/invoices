@@ -27,7 +27,7 @@ const form = reactive({
   remember: false,
 })
 
-let errors = reactive({});
+const errors = ref({});
 const loading = ref(false);
 
 const submitLogin = async () => {
@@ -74,7 +74,7 @@ const submitLogin = async () => {
       if (error.response?.data?.errors) {
         console.log("Data Errors", error.response?.data?.errors);
         // if errors exist in response, check if it's an object and convert to array
-        errors = error.response?.data?.errors;
+        errors.value = error.response?.data?.errors;
         console.log("Errors", errors);
       }
     }
@@ -166,13 +166,12 @@ onBeforeMount(() => {
                   label="Email"
                   type="email"
                 />
-                <VAlert
+                <p
                   v-if="errors.email"
-                  type="error"
-                  class="mt-2"
+                  class="mt-2 text-center text-error"
                 >
                   {{ errors.email[0] }}
-                </VAlert>
+                </p>
               </VCol>
 
               <!-- password -->
@@ -184,6 +183,12 @@ onBeforeMount(() => {
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
+                <span
+                  v-if="errors.password"
+                  class="mt-2 text-center text-error"
+                >
+                  {{ errors.password[0] }}
+                </span>
 
 <!--                <div class="d-flex align-center flex-wrap justify-space-between mt-2 mb-4">-->
 <!--                  <VCheckbox-->

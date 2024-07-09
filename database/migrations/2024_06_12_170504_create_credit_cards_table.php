@@ -29,9 +29,12 @@ class CreateCreditCardsTable extends Migration
 
     public function down()
     {
-        Schema::table('subscriptions', function (Blueprint $table) {
-            $table->dropForeign('subscriptions_credit_card_id_foreign');
-        });
+        if (Schema::hasTable('subscriptions')) {
+            Schema::table('subscriptions', function (Blueprint $table) {
+                $table->dropForeign(['credit_card_id']);
+            });
+        }
+
         Schema::dropIfExists('credit_cards');
     }
 }
