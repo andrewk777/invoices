@@ -60,7 +60,7 @@ const resetForm = () => {
   }
 };
 
-const submitClient = async (action) => {
+const submitClient = async (action = null) => {
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
     delete errors.value[key];
@@ -114,7 +114,7 @@ const submitClient = async (action) => {
   loading.value = false;
 }
 
-const updateClient = async (hash, action) => {
+const updateClient = async (hash, action = null) => {
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
     delete errors.value[key];
@@ -218,16 +218,6 @@ defineExpose({
       <h3 class="card-header">Clients</h3>
     </VCol>
 
-    <VAlert
-      v-if="Object.keys(errors).length > 0"
-      class="text-center mb-2"
-      type="error"
-    >
-      <p v-for="(error, index) in Object.keys(errors)" :key="index" class="mb-0">
-        {{ errors[error][0] }}
-      </p>
-    </VAlert>
-
     <VCol cols="8" class="text-right flex">
 
       <VBtn
@@ -255,13 +245,33 @@ defineExpose({
       <router-link
         class="btn btn-info waves-effect waves-light"
         exact
-        :to="{name: 'ClientsCreate'}"
+        :to="{name: 'ClientsView'}"
       >
         <VBtn variant="flat" :size="'small'">
-          Create Client
+          Clients List
         </VBtn>
       </router-link>
     </VCol>
+
+    <VCol cols="12">
+      <VAlert
+        v-if="Object.keys(errors).length > 0"
+        class="text-center mb-2"
+        type="error"
+      >
+        <p v-for="(error, index) in Object.keys(errors)" :key="index" class="mb-0">
+          {{ errors[error][0] }}
+        </p>
+      </VAlert>
+    </VCol>
+
+    <!-- 👉 Success Message -->
+    <VCol cols="12" v-if="submitted" class="justify-center">
+      <VAlert type="success" class="text-center" closable>
+        {{ hash ? 'Client Updated' : 'Client Created' }}
+      </VAlert>
+    </VCol>
+
   </VRow>
 
   <VRow>
@@ -438,13 +448,6 @@ defineExpose({
               label="Select Credit Card"
               class="mt-2"
             />
-          </VCol>
-
-          <!-- 👉 Success Message -->
-          <VCol cols="12" v-if="submitted" class="justify-center">
-            <VAlert type="success" class="text-center" closable>
-              {{ hash ? 'Client Updated' : 'Client Created' }}
-            </VAlert>
           </VCol>
 
         </VRow>

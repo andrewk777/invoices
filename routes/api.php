@@ -29,12 +29,10 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::post('/clients/update/{hash}', [ClientController::class, 'update']);
     Route::delete('/clients/destroy/{hash}', [ClientController::class, 'destroy']);
 
-
-
-    Route::get('/companies', [CompanyController::class, 'index']);
-
     Route::get('/clients/credit-cards/{hash}', [CreditCardController::class, 'index']);
     Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
+
+    Route::get('/companies', [CompanyController::class, 'index']);
 
     Route::get('/invoices', [InvoiceController::class, 'index']);
     Route::get('/invoices/search', [InvoiceController::class, 'search']);

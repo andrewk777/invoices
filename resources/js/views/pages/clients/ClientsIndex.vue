@@ -124,7 +124,11 @@ onBeforeMount(() => {
         exact
         :to="{name: 'ClientsCreate'}"
       >
-        <VBtn variant="flat">
+        <VBtn
+          variant="flat"
+          color="primary"
+          :size="'small'"
+        >
           Create Client
         </VBtn>
       </router-link>

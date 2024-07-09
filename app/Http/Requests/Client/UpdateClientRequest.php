@@ -27,17 +27,8 @@ class UpdateClientRequest extends FormRequest
         return [
             'company_name' => 'required|string|max:255,company_name,'.$hash,
             'company_address' => 'required|string|max:255',
-            'company_phone' => 'required|string|max:255|regex:/^([0-9\s\-\+\(\)]*)$/|min:8',
             'company_email' => 'required|string|email|max:255',
             'main_contact_first_name' => 'required|string|max:255',
-            'main_contact_last_name' => 'required|string|max:255',
-            'main_contact_phone' => 'required|string|max:255|regex:/^([0-9\s\-\+\(\)]*)$/|min:8',
-            'main_contact_email' => 'required|string|email|max:255',
-            'ap_first_name' => 'nullable|string|max:255',
-            'ap_last_name' => 'nullable|string|max:255',
-            'ap_phone' => 'nullable|string|max:255|regex:/^([0-9\s\-\+\(\)]*)$/|min:8',
-            'ap_email' => 'nullable|string|email|max:255',
-            'notes' => 'nullable|string|max:255',
         ];
     }
 
