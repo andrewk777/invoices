@@ -1,5 +1,5 @@
 <script setup>
-import {defineProps, reactive, ref} from 'vue';
+import {defineProps, reactive, ref, defineEmits} from 'vue';
 import axios from "axios";
 
 const props = defineProps({
@@ -9,6 +9,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['close-cc-dialogue', 'assign-default-cc']);
+
 const token = computed(() => baseService.getTokenFromLocalStorage());
 const loading = ref(false);
 const submitted = ref(false);
@@ -17,7 +19,6 @@ const errors = ref({});
 const form = reactive({
   client_id: props.client.id,
   cc_number: '',
-  cc_exp: '',
   cc_exp_month: '',
   cc_exp_year: '',
 });
@@ -46,9 +47,6 @@ const maskMonthAndYear = (event) => {
 }
 
 const maxLength = (event, max) => {
-
-  console.log("MAX", max);
-
   let value = event.target.value.replace(/\s/g, ''); // Remove existing spaces
 
   if (value.length > max) {
@@ -82,7 +80,6 @@ const submitCreditCard = async () => {
 
   await axios.post('/api/clients/credit-cards/store', formData, {
     headers: {
-      'content-type': 'multipart/form-data',
       'Accept' : 'application/json',
       "Authorization" : "Bearer " + token.value,
     }
@@ -90,10 +87,11 @@ const submitCreditCard = async () => {
 
     if (response.data.success){
       submitted.value = true;
+      emit('assign-default-cc', response.data.credit_card.id);
     }
 
   }).catch((error) => {
-    if([401, 402, 422].includes(error.response.status)){
+    if(error.response){
       console.log(error.response);
 
       if(Object.keys(error.response?.data?.errors).length > 0){

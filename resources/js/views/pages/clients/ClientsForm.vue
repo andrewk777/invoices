@@ -23,14 +23,18 @@ watch(
   },
 );
 
-const client = ref({});
 const token = computed(() => baseService.getTokenFromLocalStorage());
 const loading = ref(false);
 const submitted = ref(false);
 const errors = ref({});
+
+const client = ref({});
+const creditCards = ref([]);
+
 const ccDialogueVisible = ref(false);
 
 const form = reactive({
+  default_credit_card_id: '',
   company_name: '',
   company_email: '',
   company_phone: '',
@@ -177,6 +181,7 @@ const getClient = async (hash) => {
     if (response.data.success) {
       client.value = response.data.client;
       populateForm(client.value);
+      creditCards.value = client.value.credit_cards;
 
       if (import.meta.env.VITE_APP_ENV === 'local') {
         console.log("Client Show", client.value);
@@ -197,7 +202,7 @@ onMounted(async () => {
 });
 
 // Modal Popup
-const emit = defineEmits(['close-cc-dialogue']);
+const emit = defineEmits(['close-cc-dialogue', 'assign-default-cc']);
 
 const openModal = () => {
   ccDialogueVisible.value = true;
@@ -205,6 +210,12 @@ const openModal = () => {
 
 const closeModal = () => {
   ccDialogueVisible.value = false;
+};
+
+const assignDefaultCreditCard = (creditCard) => {
+  //creditCards.value.push(creditCard);
+  getClient(hash.value);
+  closeModal();
 };
 
 defineExpose({
@@ -434,6 +445,7 @@ defineExpose({
                     :client="client"
                     :token="token.value"
                     @close-cc-dialogue="closeModal"
+                    @assign-default-cc="assignDefaultCreditCard"
                   />
                 </VCardText>
 
@@ -441,9 +453,10 @@ defineExpose({
             </VDialog>
 
             <VSelect
-              v-if="client.credit_cards?.length > 0"
-              :items="client.credit_cards"
-              item-title="cc_number"
+              v-if="creditCards?.length > 0"
+              v-model="form.default_credit_card_id"
+              :items="creditCards"
+              item-title="cc_last_4_digits"
               item-value="id"
               label="Select Credit Card"
               class="mt-2"

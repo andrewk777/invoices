@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Client;
 
+use App\Http\Resources\CreditCard\CreditCardResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,6 +19,7 @@ class ClientResource extends JsonResource
             'id' => $this->id,
             'hash' => $this->hash,
             'my_company_id' => $this->my_company_id,
+            'default_credit_card_id' => $this->default_credit_card_id,
 
             'company_name' => $this->company_name,
             'company_address' => $this->company_address,
@@ -34,7 +36,10 @@ class ClientResource extends JsonResource
             'ap_phone' => $this->ap_phone,
             'ap_email' => $this->ap_email,
 
-            'credit_cards' => $this->creditCards && count($this->creditCards) > 0 ? $this->creditCards : [],
+            'default_credit_card' => $this->defaultCreditCard ?? '',
+
+            'credit_cards' => $this->creditCards && count($this->creditCards) > 0 ? CreditCardResource::collection($this->creditCards) : [],
+
             'users' => $this->users && count($this->users) > 0 ? $this->users : [],
 
             'notes' => $this->notes,

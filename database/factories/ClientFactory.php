@@ -20,6 +20,7 @@ class ClientFactory extends Factory
         return [
             'hash' => $this->faker->unique()->regexify('[A-Za-z0-9]{50}'),
             'my_company_id' => MyCompany::inRandomOrder()->first()->id,
+            'default_credit_card_id' => null,
             'company_name' => $this->faker->company,
             'company_address' => $this->faker->address,
             'company_phone' => $this->faker->phoneNumber,

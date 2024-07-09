@@ -16,6 +16,7 @@ class Client extends Model
     protected $fillable = [
         'hash',
         'my_company_id',
+        'default_credit_card_id',
         'company_name',
         'company_address',
         'company_phone',
@@ -34,6 +35,11 @@ class Client extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(MyCompany::class, 'my_company_id', 'id');
+    }
+
+    public function defaultCreditCard(): BelongsTo
+    {
+        return $this->belongsTo(CreditCard::class, 'default_credit_card_id', 'id');
     }
 
     public function creditCards(): HasMany
