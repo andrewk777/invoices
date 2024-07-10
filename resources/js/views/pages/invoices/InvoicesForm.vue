@@ -1,5 +1,5 @@
 <script setup>
-import {onBeforeMount, reactive, ref, watch} from 'vue'
+import {onBeforeMount, reactive, ref, watch, onMounted} from 'vue'
 import InvoiceSendInvoiceDrawer from '@/views/apps/invoice/InvoiceSendInvoiceDrawer.vue'
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
 import axios from "axios";
@@ -12,12 +12,22 @@ import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
 
 const route = useRoute();
 const hash = ref(route.params.hash);
+watch(() => hash.value, async () => {
+  if (hash.value) {
+    await getSubscription(hash.value);
+  }
+});
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
-
 const loading = ref(false);
 const submitted = ref(false);
 const errors = ref({});
+
+const invoice_due = computed(() => {
+  const selectedDate = new Date();
+  selectedDate.setDate(selectedDate.getDate() + 10);
+  return selectedDate.toISOString().split('T')[0];
+});
 
 const invoiceData = reactive({
   invoice: {
@@ -26,12 +36,12 @@ const invoiceData = reactive({
     invoice_num: 0,
     invoice_type: '',
     status: 'draft',
-    currency: '',
-    invoice_date: '',
-    invoice_due: '',
+    currency: 'CAD',
+    invoice_date: new Date().toISOString().split('T')[0],
+    invoice_due: invoice_due.value,
     na: false,
     can_pay_with_cc: false,
-    sub_total: 0,
+    subtotal: 0,
     taxes: 0,
     total: 0,
     total_paid: 0,
@@ -39,29 +49,11 @@ const invoiceData = reactive({
   },
 
   invoice_items: [
-    //   {
-    //     description: '',
-    //     rate: '',
-    //     qty: '',
-    //     tax: '',
-    // },
-    //
-    // {
-    //   description: '',
-    //   rate: '',
-    //   qty: '',
-    //   tax: '',
-    // },
 
   ],
 
   invoice_payments: [
-    //   {
-    //     type: '',
-    //     amount: '',
-    //     date: '',
-    //     note: '',
-    // }
+
   ],
 });
 
@@ -107,9 +99,13 @@ const submitInvoice = async (event, action = null) => {
 
     if (response.data.success){
       submitted.value = true;
+      hash.value = response.data.invoice.hash;
+      invoiceData.invoice.invoice_num = response.data.invoice.invoice_num;
+
       if(action === 'close') {
         window.location.href = '/invoices';
       }
+
     }
 
   } catch (error) {
@@ -416,11 +412,7 @@ watch(() => invoiceData.invoice_items, () => {
   calculateSubTotal();
 }, { deep: true });
 
-watch(() => hash.value, async () => {
-  if (hash.value) {
-    await getSubscription(hash.value);
-  }
-});
+
 
 onBeforeMount(async () => {
   await getCompanies();
@@ -429,10 +421,10 @@ onBeforeMount(async () => {
   if (hash.value) {
     await getInvoice(hash.value);
   }
-
   console.log(myCompanies.value);
   console.log("Token", token.value);
-})
+});
+
 </script>
 
 <template>
@@ -830,7 +822,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(invoiceData.invoice.sub_total).toFixed(2) }}
+                      {{ parseFloat(invoiceData.invoice.subtotal).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>

@@ -31,9 +31,12 @@
 <table>
     <tr>
         <td rowspan="2" valign="middle" style="width: 50%;">
-            <img src="{{ asset('/images/sws-emarketing.png') }}" alt="SWS eMarketing Inc Logo" style="height:70px;">
+            <img
+                src="{{ asset('/images/oad-soft.jpg') }}"
+                alt="SWS eMarketing Inc Logo" style="height:70px;"
+            >
         </td>
-        <td class="text-right" style="font-size: 36px; font-weight: 300;">INVOICE</td>
+        <td class="text-right" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 500;">INVOICE</td>
     </tr>
     <tr>
         <td class="text-right" style="font-size:14px;">

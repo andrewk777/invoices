@@ -34,7 +34,7 @@ class MyCompanySeeder extends Seeder
                 'mobile' => '416-477-4763',
                 'address' => '203-125 Commerce Valley Dr. W., Thornhill, ON, L3T 7W4 ',
                 'country' => 'Canada',
-                'logo' => '/images/oad-soft.png',
+                'logo' => '/images/oad-soft.jpg',
             ],
         ];
 

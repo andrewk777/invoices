@@ -1,5 +1,5 @@
 <script setup>
-import {defineProps, reactive, ref, defineEmits} from 'vue';
+import {defineProps, reactive, ref, defineEmits, watch, onMounted} from 'vue';
 import axios from "axios";
 
 const props = defineProps({
@@ -7,17 +7,30 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  updatedClient: {
+    type: Object,
+    required: true,
+  },
+  token: {
+    type: String,
+    required: true,
+  },
+});
+
+watch(() => props.updatedClient, (updatedClient) => {
+  client.value = updatedClient;
+  console.log("Watch Client updated", client.value);
 });
 
 const emit = defineEmits(['close-cc-dialogue', 'assign-default-cc']);
 
-const token = computed(() => baseService.getTokenFromLocalStorage());
+const client = ref(props.client);
 const loading = ref(false);
 const submitted = ref(false);
 const errors = ref({});
 
 const form = reactive({
-  client_id: props.client.id,
+  client_id: client.value.id,
   cc_number: '',
   cc_exp_month: '',
   cc_exp_year: '',
@@ -81,7 +94,7 @@ const submitCreditCard = async () => {
   await axios.post('/api/clients/credit-cards/store', formData, {
     headers: {
       'Accept' : 'application/json',
-      "Authorization" : "Bearer " + token.value,
+      "Authorization" : "Bearer " + props.token,
     }
   }).then((response) => {
 
@@ -111,6 +124,10 @@ const submitCreditCard = async () => {
   loading.value = false;
 }
 
+onMounted(() => {
+  console.log("Client Updated", client.value);
+  console.log("Token", props.token);
+});
 </script>
 
 <template>

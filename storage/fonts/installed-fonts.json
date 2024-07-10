@@ -1,0 +1,9 @@
+{
+    "noto sans regular": {
+        "normal": "\/var\/www\/html\/storage\/fonts\/noto_sans_regular_normal_5dff787cce75a7abe6db85cf188db6ba",
+        "300": "noto_sans_regular_300_5dff787cce75a7abe6db85cf188db6ba"
+    },
+    "noto sans medium": {
+        "300": "noto_sans_medium_300_3ab00cb0970770a85c0bce3337e3d492"
+    }
+}

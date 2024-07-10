@@ -252,6 +252,8 @@ class InvoiceRepository
             'logo' => $logoBase64,
         ];
 
-        return PDF::loadView('pdf.invoice', compact('invoice', 'myCompany'))->download('invoice_receipt_'.time().'.pdf');
+        return PDF::loadView('pdf.invoice', compact('invoice', 'myCompany'))
+            ->setPaper('a4', 'landscape')
+            ->download('invoice_receipt_'.time().'.pdf');
     }
 }

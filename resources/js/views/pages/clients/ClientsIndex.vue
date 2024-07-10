@@ -73,6 +73,7 @@ const getClients = (page = 1) => {
 }
 
 const searchClients = () => {
+
   if (search.value.trim() === '') {
     localStorage.removeItem('client-search');
     getClients();
@@ -99,7 +100,10 @@ const searchClients = () => {
   });
 }
 
-watch(search, () => {
+watch(search, (newValue) => {
+  if (newValue === null) {
+    search.value = '';
+  }
   searchClients();
 });
 

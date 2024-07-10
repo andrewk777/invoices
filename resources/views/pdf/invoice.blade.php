@@ -1,4 +1,15 @@
 <style>
+    @font-face {
+        font-family: 'Noto Sans Medium';
+        src: url({{ storage_path("fonts/NotoSans-Medium.ttf") }}) format("truetype");
+        font-weight: 300;
+        /*font-style: normal;*/
+    }
+
+    .invoice-header {
+        font-family: 'Noto Sans Medium', sans-serif;
+    }
+
     body {
         font-family: Arial, sans-serif;
     }
@@ -32,10 +43,10 @@
         <td rowspan="2" valign="middle" style="width: 50%;">
             <img src="data:image/png;base64,{{ $myCompany['logo'] }}" alt="{{ $invoice->company?->name }}" style="height:70px;">
         </td>
-        <td class="text-right" style="font-size: 36px; font-weight: 300;">INVOICE</td>
+        <td class="text-right invoice-header" style="font-size: 36px;">INVOICE</td>
     </tr>
     <tr>
-        <td class="text-right" style="font-size:14px;">
+        <td class="text-right" style="font-size:14px; width: 200px;">
             <b>{{ $myCompany['name'] }}</b><br>
             {{ $myCompany['address'] }}<br>
             {{ $myCompany['country'] }}

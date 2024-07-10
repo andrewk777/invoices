@@ -31,7 +31,7 @@ const emittedClient = (event) => {
 
     <td>
       <router-link
-        v-if="client.credit_cards"
+        v-if="client.credit_cards?.length"
         class="btn btn-info waves-effect waves-light"
         exact
         :to="{name: 'ClientsEdit', params: { hash: client.hash }}">

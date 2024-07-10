@@ -31,7 +31,7 @@ class StoreInvoiceRequest extends FormRequest
             'invoice.currency' => 'required',
             'invoice.invoice_date' => 'required',
             'invoice.invoice_due' => 'required',
-            'invoice.sub_total' => 'required',
+            'invoice.subtotal' => 'required',
             'invoice.total' => 'required',
 
             'invoice_items' => 'required|array',

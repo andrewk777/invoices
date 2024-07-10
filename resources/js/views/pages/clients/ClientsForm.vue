@@ -23,12 +23,20 @@ watch(
   },
 );
 
+const client = ref({});
+const updatedClient = ref({});
+watch(
+  () => client.value,
+  (updatedClient) => {
+    updatedClient.value = updatedClient;
+  }
+);
+
 const token = computed(() => baseService.getTokenFromLocalStorage());
 const loading = ref(false);
 const submitted = ref(false);
 const errors = ref({});
 
-const client = ref({});
 const creditCards = ref([]);
 
 const ccDialogueVisible = ref(false);
@@ -90,12 +98,17 @@ const submitClient = async (action = null) => {
     }
   }).then((response) => {
     if (response.data.success) {
+
       hash.value = response.data.client.hash;
+      client.value = response.data.client;
+
       submitted.value = true;
+
       // resetForm();
       if (action === 'close') {
         window.location.href = '/clients';
       }
+
     }
   }).catch((error) => {
     if ([401, 402, 422].includes(error.response.status)) {
@@ -202,7 +215,10 @@ onMounted(async () => {
 });
 
 // Modal Popup
-const emit = defineEmits(['close-cc-dialogue', 'assign-default-cc']);
+const emit = defineEmits([
+  'close-cc-dialogue',
+  'assign-default-cc',
+]);
 
 const openModal = () => {
   ccDialogueVisible.value = true;
@@ -442,7 +458,8 @@ defineExpose({
                 <VCardText>
                   <CreditCardForm
                     :client="client"
-                    :token="token.value"
+                    :updatedClient="updatedClient"
+                    :token="token"
                     @close-cc-dialogue="closeModal"
                     @assign-default-cc="assignDefaultCreditCard"
                   />
