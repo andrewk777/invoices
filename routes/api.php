@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
 
     Route::post('/clients/{hash}/users/store', [ClientUserController::class, 'store']);
+    Route::post('/clients/users/{hash}/access', [ClientUserController::class, 'access']);
 
     Route::get('/companies', [CompanyController::class, 'index']);
 
