@@ -26,7 +26,5 @@ class UserSeeder extends Seeder
                 'client_id' => null,
             ]
         );
-
-        User::factory(3)->create();
     }
 }

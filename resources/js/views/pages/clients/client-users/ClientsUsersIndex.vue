@@ -1,26 +1,47 @@
 <script setup>
 import { ref } from 'vue'
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
+import ClientsUsersForm from "@/views/pages/clients/client-users/ClientsUsersForm.vue";
 
 const props = defineProps({
     users: {
       type: Array,
       required: true,
     },
+    client: {
+      type: Object,
+      required: true,
+    },
+    token: {
+      type: String,
+      required: true,
+    },
+    updatedClient: {
+      type: Object,
+      required: true,
+    },
 });
 
 const users = ref(props.users);
 const search = ref('');
+const token = ref(props.token);
+const client = ref(props.client);
+const updatedClient = ref(props.updatedClient);
+
+const openFormDialogue = ref(false);
+const openModal = () => {
+  openFormDialogue.value = true;
+};
+
+const closeModal = () => {
+  openFormDialogue.value = false;
+};
 
 // headers
 const headers = [
   {
-    title: 'FIRST NAME',
-    key: 'first_name',
-  },
-  {
-    title: 'LAST NAME',
-    key: 'last_name',
+    title: 'NAME',
+    key: 'name',
   },
   {
     title: 'EMAIL',
@@ -36,7 +57,7 @@ const headers = [
   },
   {
     title: 'ACTION',
-    key: 'delete',
+    key: 'access',
     sortable: false,
   },
 ]
@@ -49,137 +70,6 @@ const deleteItem = itemId => {
   users.value.splice(index, 1)
 }
 
-// const categoryIcons = [
-//   {
-//     name: 'Mouse',
-//     icon: 'tabler-mouse',
-//     color: 'warning',
-//   },
-//   {
-//     name: 'Glass',
-//     icon: 'tabler-eyeglass',
-//     color: 'primary',
-//   },
-//   {
-//     name: 'Smart Watch',
-//     icon: 'tabler-device-watch',
-//     color: 'success',
-//   },
-//   {
-//     name: 'Bag',
-//     icon: 'tabler-briefcase',
-//     color: 'info',
-//   },
-//   {
-//     name: 'Storage Device',
-//     icon: 'tabler-device-audio-tape',
-//     color: 'warning',
-//   },
-//   {
-//     name: 'Bluetooth',
-//     icon: 'tabler-bluetooth',
-//     color: 'error',
-//   },
-//   {
-//     name: 'Gaming',
-//     icon: 'tabler-device-gamepad-2',
-//     color: 'warning',
-//   },
-//   {
-//     name: 'Home',
-//     icon: 'tabler-home',
-//     color: 'error',
-//   },
-//   {
-//     name: 'VR',
-//     icon: 'tabler-badge-vr',
-//     color: 'primary',
-//   },
-//   {
-//     name: 'Shoes',
-//     icon: 'tabler-shoe',
-//     color: 'success',
-//   },
-//   {
-//     name: 'Electronics',
-//     icon: 'tabler-cpu',
-//     color: 'info',
-//   },
-//   {
-//     name: 'Projector',
-//     icon: 'tabler-theater',
-//     color: 'warning',
-//   },
-//   {
-//     name: 'iPod',
-//     icon: 'tabler-device-airpods',
-//     color: 'error',
-//   },
-//   {
-//     name: 'Keyboard',
-//     icon: 'tabler-keyboard',
-//     color: 'primary',
-//   },
-//   {
-//     name: 'Smart Phone',
-//     icon: 'tabler-device-mobile',
-//     color: 'success',
-//   },
-//   {
-//     name: 'Smart TV',
-//     icon: 'tabler-device-tv',
-//     color: 'info',
-//   },
-//   {
-//     name: 'Google Home',
-//     icon: 'tabler-brand-google',
-//     color: 'warning',
-//   },
-//   {
-//     name: 'Mac',
-//     icon: 'tabler-brand-apple',
-//     color: 'error',
-//   },
-//   {
-//     name: 'Headphone',
-//     icon: 'tabler-headphones',
-//     color: 'primary',
-//   },
-//   {
-//     name: 'iMac',
-//     icon: 'tabler-device-imac',
-//     color: 'success',
-//   },
-//   {
-//     name: 'iPhone',
-//     icon: 'tabler-brand-apple',
-//     color: 'warning',
-//   },
-// ]
-//
-// const resolveStatusColor = status => {
-//   if (status === 'Confirmed')
-//     return 'primary'
-//   if (status === 'Completed')
-//     return 'success'
-//   if (status === 'Cancelled')
-//     return 'error'
-// }
-
-// const categoryIconFilter = categoryName => {
-//   const index = categoryIcons.findIndex(category => category.name === categoryName)
-//   if (index !== -1)
-//     return [{
-//       icon: categoryIcons[index].icon,
-//       color: categoryIcons[index].color,
-//     }]
-//
-//   return [{
-//     icon: 'tabler-help-circle',
-//     color: 'primary',
-//   }]
-// }
-
 </script>
 
 <template>
@@ -188,9 +78,8 @@ const deleteItem = itemId => {
       <h3>Users</h3>
       <VRow>
         <VCol
-          cols="12"
-          offset-md="8"
-          md="4"
+          cols="6"
+          md="6"
         >
 <!--          <AppTextField-->
 <!--            v-model="search"-->
@@ -201,6 +90,20 @@ const deleteItem = itemId => {
 <!--            dense-->
 <!--            outlined-->
 <!--          />-->
+        </VCol>
+
+        <VCol
+          cols="6"
+          md="6"
+          class="text-right"
+        >
+          <ClientsUsersForm
+            :client="client"
+            :token="token"
+            :updatedClient="updatedClient"
+            @close-modal="closeModal"
+          />
+
         </VCol>
       </VRow>
     </VCardText>
@@ -214,18 +117,10 @@ const deleteItem = itemId => {
       class="text-no-wrap"
     >
 
-      <template #item.first_name="{ item }">
+      <template #item.name="{ item }">
         <div class="d-flex align-center">
           <div class="d-flex flex-column ms-3">
-            <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.first_name }}</span>
-          </div>
-        </div>
-      </template>
-
-      <template #item.last_name="{ item }">
-        <div class="d-flex align-center">
-          <div class="d-flex flex-column ms-3">
-            <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.last_name }}</span>
+            <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name }}</span>
           </div>
         </div>
       </template>
@@ -258,9 +153,9 @@ const deleteItem = itemId => {
       </template>
 
       <!-- Delete -->
-      <template #item.delete="{ item }">
-        <IconBtn @click="deleteItem(item.id)">
-          <VIcon icon="tabler-trash" />
+      <template #item.access="{ item }">
+        <IconBtn>
+          <VIcon icon="tabler-accessible" />
         </IconBtn>
       </template>
     </VDataTable>

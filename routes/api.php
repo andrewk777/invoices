@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientUserController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\CreditCardController;
 use App\Http\Controllers\InvoiceController;
@@ -32,6 +33,8 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/clients/credit-cards/{hash}', [CreditCardController::class, 'index']);
     Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
 
+    Route::post('/clients/{hash}/users/store', [ClientUserController::class, 'store']);
+
     Route::get('/companies', [CompanyController::class, 'index']);
 
     Route::get('/invoices', [InvoiceController::class, 'index']);
@@ -49,9 +52,6 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/subscriptions/show/{hash}', [SubscriptionController::class, 'show']);
     Route::post('/subscriptions/update/{hash}', [SubscriptionController::class, 'update']);
     Route::delete('/subscriptions/destroy/{hash}', [SubscriptionController::class, 'destroy']);
-
-
-
 
     Route::get('/logout', [LoginController::class, 'logout']);
 });
