@@ -23,7 +23,11 @@ class SubscriptionResource extends JsonResource
             'client_id' => $this->client_id,
 
             'company' => $this->company ?? null,
+            'from_company' => $this->company ?  $this->company->name : null,
+
             'client' => $this->client ?? null,
+            'customer' => $this->client ? $this->client->company_name : null,
+
             'charges' => $this->charges && count($this->charges) > 0 ? SubscriptionChargeResource::collection($this->charges) : [],
 
             'tags' => $this->tags,
@@ -39,6 +43,7 @@ class SubscriptionResource extends JsonResource
             'charge_cc' => $this->charge_cc,
             'email_invoice' => $this->email_invoice,
             'email_template_id' => $this->email_template_id,
+
             'subtotal' => $this->subtotal,
             'taxes' => $this->taxes,
             'total' => $this->total,

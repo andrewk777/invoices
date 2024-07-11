@@ -2,8 +2,11 @@
 
 namespace App\Repositories\Subscription;
 
+use App\Http\Resources\Subscription\SubscriptionResource;
 use App\Models\Subscription;
 use App\Models\SubscriptionItem;
+use App\Repositories\Base\BaseRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class SubscriptionRepository
@@ -18,8 +21,118 @@ class SubscriptionRepository
         return new SubscriptionItem();
     }
 
-    public function storeSubscription(){
+    public function storeSubscription($request): array
+    {
+        $inputs = $request->all();
 
+        DB::beginTransaction();
+        try {
+            $inputs['subscription']['hash'] = BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
+            $subscription = $this->subscription()->create($inputs['subscription']);
+
+            foreach ($inputs['charges'] as $charge){
+                $this->subscription()->create([
+                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
+                    'subscription_id' => $subscription->id,
+                    'description' => $charge['description'],
+                    'qty' => $charge['qty'],
+                    'rate' => $charge['rate'],
+                    'tax' => $charge['tax'] === 'HST',
+                ]);
+            }
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'message' => 'Subscription created successfully',
+                'subscription' => new SubscriptionResource($subscription),
+            ];
+
+        }catch (\Exception $e){
+            DB::rollBack();
+            BaseRepository::logError($e);
+            return [
+                'success' => false,
+                'errors' => ['server_error' => ['Something went wrong, please try again later.']],
+                'server_error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    public function updateSubscription($request, $hash): array
+    {
+        $inputs = $request->all();
+        $inputs['subscription'] = $request->subscription;
+
+        $subscription = $this->subscription()->where('hash', $hash)->first();
+
+        DB::beginTransaction();
+        try {
+            $subscription->update($inputs['subscription']);
+
+            $subscription->charges()->delete();
+            foreach ($inputs['charges'] as $item){
+                $this->subscriptionItem()->create([
+                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
+                    'subscription_id' => $subscription->id,
+                    'description' => $item['description'],
+                    'qty' => $item['qty'],
+                    'rate' => $item['rate'],
+                    'tax' => $item['tax'] === 'HST',
+                ]);
+            }
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'message' => 'Invoice updated successfully',
+                'subscription' => new SubscriptionResource($subscription),
+            ];
+
+        } catch (\Exception $e){
+            DB::rollBack();
+            BaseRepository::logError($e);
+            return [
+                'success' => false,
+                'errors' => ['server_error' => ['Something went wrong, please try again later.']],
+                'server_error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    public function deleteSubscription($hash): array
+    {
+        $subscription = $this->subscription()->where('hash', $hash)->first();
+
+        if(!$subscription){
+            return [
+                'success' => false,
+                'errors' => ['server_error' => ['Invoice not found']],
+            ];
+        }
+
+        DB::beginTransaction();
+        try {
+            $subscription->charges()->delete();
+            $subscription->delete();
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'message' => 'Subscription deleted successfully',
+            ];
+
+        }catch (\Exception $e){
+            DB::rollBack();
+            BaseRepository::logError($e);
+            return [
+                'success' => false,
+                'errors' => ['server_error' => ['Something went wrong, please try again later.']],
+            ];
+        }
     }
 
     public function searchSubscriptions($request): array
@@ -27,40 +140,52 @@ class SubscriptionRepository
         $search = $request->all()['query'];
         Session::forget(['search_inputs', 'search_values']);
 
-        $clients = $this->subscription()->with('company')->select(
+        $subscriptions = $this->subscription()->with('company', 'client')->select(
 
             'my_companies.id as my_company_id',
             'my_companies.name as my_company_name',
-            'clients.*'
 
-        )->leftjoin('my_companies', 'my_companies.id', '=', 'clients.my_company_id')
-            ->where(function($query) use ($search){
-                $query->when(!empty($search), static function($q) use($search){
-                    $q->where('clients.company_name', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.company_email', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.company_address', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.company_phone', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.main_contact_first_name', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.main_contact_last_name', 'like' , '%'. $search .'%');
-                });
+            'clients.id AS client_id',
+            'clients.company_name',
 
-            })->latest()->get();
+            'subscriptions.*'
+
+        )
+        ->leftjoin('my_companies', 'my_companies.id', '=', 'subscriptions.my_company_id')
+        ->leftjoin('clients', 'clients.id', '=', 'subscriptions.client_id')
+
+        ->where(function($query) use ($search){
+            $query->when(!empty($search), static function($q) use($search){
+                $q->where('subscriptions.name', 'like' , '%'. $search .'%')
+                    ->orWhere('subscriptions.total', 'like' , '%'. $search .'%')
+                    ->orWhere('subscriptions.subtotal', 'like' , '%'. $search .'%')
+                    ->orWhere('subscriptions.next_charge_date', 'like' , '%'. $search .'%')
+                    ->orWhere('subscriptions.due_in_days', 'like' , '%'. $search .'%')
+                    ->orWhere('clients.company_name', 'like' , '%'. $search .'%')
+                    ->orWhere('my_companies.name', 'like' , '%'. $search .'%');
+            });
+
+        })->latest()->get();
 
         // if a result exists return results, else return empty array
-        if($clients->count() > 0){
+        if($subscriptions->count() > 0){
             return [
                 'success' => true,
-                'clients' => ClientResource::collection($clients),
-                'total' => $clients->count(),
+                'subscriptions' => SubscriptionResource::collection($subscriptions),
+                'total' => $subscriptions->count(),
                 'search_values' => Session::get('search_values')
             ];
         }
 
         return [
             'success' => true,
-            'clients' => [],
+            'subscriptions' => [],
             'total' => 0,
             'search_values' => Session::get('search_values')
         ];
+    }
+
+    public function chargeSubscriptionCreditCard(){
+
     }
 }

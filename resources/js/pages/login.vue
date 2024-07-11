@@ -11,7 +11,7 @@ import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 import { RouterLink } from 'vue-router'
 import { ref, reactive, onBeforeMount } from 'vue';
-definePage({ meta: { layout: 'blank' } })
+definePage({ meta: { layout: 'blank' } });
 
 const isPasswordVisible = ref(false)
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
@@ -92,9 +92,9 @@ onBeforeMount(() => {
   <RouterLink to="/">
     <div class="auth-logo d-flex align-center gap-x-3">
         <img src="http://nginx.local/images/favicons/favicon-32x32.png" border="0">
-      <h1 class="auth-title">
-        {{ themeConfig.app.title }}
-      </h1>
+        <h1 class="auth-title">
+          {{ themeConfig.app.title }}
+        </h1>
     </div>
   </RouterLink>
 
@@ -153,9 +153,13 @@ onBeforeMount(() => {
 
               <!-- loading -->
               <VCol cols="12">
-                <p v-if="loading" class="text-center">
-                  <i class="fa fa-circle-notch fa-spin fa-2x"></i>
-                </p>
+                <VProgressCircular
+                  v-if="loading"
+                  indeterminate
+                  color="primary"
+                  size="24"
+                  class="text-center"
+                />
               </VCol>
 
               <!-- email -->

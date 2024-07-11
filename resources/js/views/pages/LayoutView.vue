@@ -541,18 +541,8 @@ let dropdowns = document.querySelectorAll(".menu-item");
                     <div class="dropdown-divider my-1 mx-n2"></div>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="pages-pricing.html">
-                      <i class="ti ti-currency-dollar me-3 ti-md"></i><span class="align-middle">Pricing</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="pages-faq.html">
-                      <i class="ti ti-question-mark me-3 ti-md"></i><span class="align-middle">FAQ</span>
-                    </a>
-                  </li>
-                  <li>
                     <div class="d-grid px-2 pt-2 pb-1">
-                      <a class="btn btn-sm btn-danger d-flex" href="auth-login-cover.html" target="_blank">
+                      <a class="btn btn-sm btn-danger d-flex" href="" target="_blank">
                         <small class="align-middle">Logout</small>
                         <i class="ti ti-logout ms-2 ti-14px"></i>
                       </a>

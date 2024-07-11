@@ -19,10 +19,10 @@ class SubscriptionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         try {
-            $data = $this->subscription->subscription()
+            $response = $this->subscription->subscription()
                 ->with(
                     'company:id,name',
                     'client:id,company_name,company_email,company_address,company_phone',
@@ -30,8 +30,8 @@ class SubscriptionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'subscriptions' => $data,
-                'total' => $data->count(),
+                'subscriptions' => SubscriptionResource::collection($response),
+                'total' => $response->count(),
             ]);
 
         }catch (\Exception $e){
@@ -42,7 +42,7 @@ class SubscriptionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         try {
             $data = $this->subscription->storeSubscription($request);
@@ -79,7 +79,7 @@ class SubscriptionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $hash)
+    public function update(Request $request, string $hash): JsonResponse
     {
         try {
             $data = $this->subscription->updateSubscription($request, $hash);
@@ -93,7 +93,7 @@ class SubscriptionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $hash)
+    public function destroy(string $hash): JsonResponse
     {
         try {
             $this->subscription->deleteSubscription($hash);
@@ -116,4 +116,16 @@ class SubscriptionController extends Controller
             return BaseRepository::tryCatchException($e);
         }
     }
+
+    public function chargeCreditCard($subscription_hash): JsonResponse
+    {
+        try {
+            $data = $this->subscription->chargeSubscriptionCreditCard($subscription_hash);
+            return response()->json($data, $data['success'] ? 200 : 500);
+
+        }catch (\Exception $e){
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
 }

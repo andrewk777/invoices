@@ -54,6 +54,7 @@ const headers = [
     title: 'Charge Credit Card',
     sortable: false,
   },
+
   {
     title: 'Actions',
     sortable: false,
@@ -165,7 +166,7 @@ onBeforeMount(() => {
     :headers="headers"
     :items="subscriptions"
     :items-per-page="25"
-    :loading="!dataLoaded"
+    :loading="loading"
   >
     <template v-slot:item="{ item: subscription }">
       <SubscriptionsListRow :subscription="subscription" />
