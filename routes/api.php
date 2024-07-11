@@ -33,8 +33,10 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/clients/credit-cards/{hash}', [CreditCardController::class, 'index']);
     Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
 
-    Route::post('/clients/{hash}/users/store', [ClientUserController::class, 'store']);
-    Route::post('/clients/users/{hash}/access', [ClientUserController::class, 'access']);
+    Route::get('/clients/{client_hash}/users', [ClientUserController::class, 'index']);
+    Route::post('/clients/{client_hash}/user/store', [ClientUserController::class, 'store']);
+    Route::put('/clients/{client_hash}/user/{client_user_hash}/update', [ClientUserController::class, 'update']);
+    Route::get('/clients/user/{client_user_hash}/access', [ClientUserController::class, 'access']);
 
     Route::get('/companies', [CompanyController::class, 'index']);
 

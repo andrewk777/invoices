@@ -39,6 +39,38 @@ class ClientUserRepository
         ];
     }
 
+    public function updateClientUser($request, $client_hash, $client_user_hash): array
+    {
+        $user = $this->clientUser()->with('client:id,hash')
+            ->whereHas('client', function ($query) use ($client_hash) {
+            $query->where('hash', $client_hash);
+        })->where('hash', $client_user_hash)->firstOrFail();
+
+        if(!$user) {
+            return [
+                'success' => false,
+                'errors' => ['unauthorised' => ['You are not authorised to update this user.']]
+            ];
+        }
+
+        $input = $request->all();
+
+        $user->name = $input['name'];
+        $user->email = $input['email'];
+
+        if(!empty($input['password'])) {
+            $user->password = Hash::make($input['password']);
+        }
+        $user->system_access = $input['system_access'];
+        $user->save();
+
+        return [
+            'success' => true,
+            'client_user' => $user,
+            'message' => $user->name.' updated successfully.'
+        ];
+    }
+
     public function getClientsFromUser($clientHash): array
     {
         $client = $this->client()->where('hash', $clientHash)->first();
@@ -50,16 +82,19 @@ class ClientUserRepository
         ];
     }
 
-    public function blockUserLoginAccess($clientUserHash): array
+    public function userLoginAccess($clientUserHash): array
     {
         $user = $this->clientUser()->where('hash', $clientUserHash)->first();
         $user->system_access === 1 ? $user->system_access = 0 : $user->system_access = 1;
         $user->save();
 
+        $clientUsers = $this->clientUser()->where('client_id', $user->client_id)->get();
+
         return [
             'success' => true,
             'client_user' => $user,
-            'access' => $user->system_access === 1 ? 'User unblocked' : 'User blocked'
+            'client_users' => $clientUsers,
+            'access' => $user->system_access === 1 ? $user->name.' unblocked' : $user->name.' blocked'
         ];
     }
 

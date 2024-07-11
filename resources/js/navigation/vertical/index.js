@@ -17,9 +17,9 @@ export default [
       icon: { icon: 'tabler-cash' },
     },
 
-    {
-        title: 'Users',
-        to: { name: 'UsersView' },
-        icon: { icon: 'tabler-user-circle' },
-    },
+    // {
+    //     title: 'Users',
+    //     to: { name: 'UsersView' },
+    //     icon: { icon: 'tabler-user-circle' },
+    // },
   ]

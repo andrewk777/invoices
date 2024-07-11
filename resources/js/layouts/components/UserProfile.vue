@@ -55,19 +55,6 @@ import avatar1 from '@images/avatars/avatar-1.png'
 
           <VDivider class="my-2" />
 
-          <!-- 👉 Profile -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="tabler-user"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Sudo Profile</VListItemTitle>
-          </VListItem>
-
           <!-- 👉 Settings -->
           <VListItem link>
             <template #prepend>
@@ -92,19 +79,6 @@ import avatar1 from '@images/avatars/avatar-1.png'
             </template>
 
             <VListItemTitle>Pricing</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 FAQ -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="tabler-help"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>FAQ</VListItemTitle>
           </VListItem>
 
           <!-- Divider -->

@@ -1,7 +1,8 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, defineEmits, defineProps} from 'vue'
 import DialogCloseBtn from "@core/components/DialogCloseBtn.vue";
 import axios from "axios";
+import baseService from "@/utils/base-service.js";
 
 const props = defineProps({
   client: {
@@ -16,26 +17,38 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  clientUser: {
+    type: Object,
+    default: null,
+  },
 });
+
+const emit = defineEmits([
+  'add-client-user',
+  'close-edit-dialogue',
+]);
 
 const isDialogVisible = ref(false);
 const errors = ref({});
 const submitted = ref(false);
 const loading = ref(false);
-const hash = ref('');
 const client = ref(props.client);
 const token = ref(props.token);
-const clientUser = ref({});
-
+const clientUser = ref(props.clientUser);
 
 const form = reactive({
-  name: '',
-  email: '',
+  name: props.clientUser?.name || '',
+  email: props.clientUser?.email || '',
   password: '',
-  system_access: false,
+  system_access: props.clientUser?.system_access || false,
 });
 
-const addUser = async (action = null) => {
+const closeAllDialogues = () => {
+  isDialogVisible.value = false;
+  emit('close-edit-dialogue');
+}
+
+const addUser = async () => {
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
     delete errors.value[key];
@@ -44,99 +57,71 @@ const addUser = async (action = null) => {
   submitted.value = false;
   loading.value = true;
 
-  await axios.post('/api/clients/'+client.value.hash+'/user/store', form, {
-    headers: {
-      'Accept': 'application/json',
-      "Authorization": "Bearer " + token.value,
-    }
-  }).then((response) => {
-
-    if (response.data.success) {
-        clientUser.value = response.data.user;
+  if (props.clientUser) {
+    await axios.put(`/api/clients/${client.value.hash}/user/${props.clientUser.hash}/update`, form, {
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer " + token.value,
+      }
+    }).then((response) => {
+      if (response.data.success) {
+        clientUser.value = response.data.client_user;
+        emit('edit-client-user', response.data.client_user);
         submitted.value = true;
         isDialogVisible.value = false;
-    }
-
-  }).catch((error) => {
-    if (error.response){
-      console.log(error.response);
-
-      if (Object.keys(error.response?.data?.errors).length > 0) {
-        errors.value = error.response?.data?.errors;
-        if (import.meta.env.VITE_APP_ENV === 'local') {
-          console.log("Validation errors", errors.value);
-        }
       }
+    }).catch((error) => {
+      baseService.handleObjectErrors(error, errors);
+      console.log(error);
+    });
 
-      if (error.response?.data?.server_error) {
-        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
+  } else {
+    await axios.post(`/api/clients/${client.value.hash}/user/store`, form, {
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer " + token.value,
       }
-    }
+    }).then((response) => {
+      if (response.data.success){
+        clientUser.value = response.data.client_user;
+        emit('add-client-user', clientUser.value);
+        submitted.value = true;
+        isDialogVisible.value = false;
+      }
+    }).catch((error) => {
+      baseService.handleObjectErrors(error, errors);
+      console.log(error);
+    });
+  }
 
-    console.log(error);
-  });
   loading.value = false;
 }
 
-const updateClient = async (hash, action = null) => {
-  // Delete all errors
-  Object.keys(errors.value).forEach(function (key) {
-    delete errors.value[key];
-  });
-
-  submitted.value = false;
-  loading.value = true;
-
-  const formData = new FormData();
-  // iterate and add form data
-  Object.keys(form).forEach(function (key) {
-    console.log(key); // key
-    if (form[key] !== null && form[key] !== '') {
-      formData.append(key, form[key]);
-    }
-  });
-
-  await axios.post('/api/clients/update/' + hash, formData, {
-    headers: {
-      'content-type': 'multipart/form-data',
-      'Accept': 'application/json',
-      "Authorization": "Bearer " + token.value,
-    }
-  }).then((response) => {
-    if (response.data.success) {
-      submitted.value = true;
-      if (action === 'close') {
-        window.location.href = '/clients';
-      }
-    }
-  }).catch((error) => {
-    if (error.response && [401, 402, 422].includes(error.response.status)) {
-      console.log(error.response);
-
-      if (Object.keys(error.response?.data?.errors).length > 0) {
-        errors.value = error.response?.data?.errors;
-      }
-
-      if (error.response?.data?.server_error) {
-        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
-      }
-    }
-
-    console.log(error);
-  });
-  loading.value = false;
-}
-
+onMounted(() => {
+  if (props.clientUser) {
+    console.log('Edit user', props.clientUser);
+  }
+});
 </script>
 
 <template>
+
   <VDialog
     v-model="isDialogVisible"
     max-width="600"
   >
     <!-- Dialog Activator -->
     <template #activator="{ props }">
+
+      <IconBtn v-if="clientUser">
+        <VIcon
+          v-bind="props"
+          icon="tabler-edit"
+        />
+      </IconBtn>
+
       <VBtn
+        v-else
         v-bind="props"
         size="small"
       >
@@ -145,12 +130,32 @@ const updateClient = async (hash, action = null) => {
     </template>
 
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="isDialogVisible = !isDialogVisible" />
+    <DialogCloseBtn @click="closeAllDialogues"/>
 
     <!-- Dialog Content -->
-    <VCard title="User Profile">
+    <VCard :title="clientUser ? 'Edit User' : 'User Profile'">
       <VCardText>
         <VRow>
+
+          <VCol cols="12" md="12">
+            <VAlert
+              class="text-center"
+              v-if="Object.keys(errors).length > 0"
+              type="error"
+            >
+              <p v-for="(error, index) in errors" :key="index">
+                {{ error[0] }}
+              </p>
+            </VAlert>
+
+            <VAlert
+              class="text-center"
+              v-if="submitted"
+              type="success"
+            >
+              {{ clientUser ? 'User updated successfully' : 'User added successfully' }}
+            </VAlert>
+          </VCol>
 
           <VCol
             cols="12"
@@ -162,6 +167,9 @@ const updateClient = async (hash, action = null) => {
               label="Name"
               placeholder="Name"
             />
+            <span class="text-error">
+              {{ errors.name ? errors.name[0] : '' }}
+            </span>
           </VCol>
 
           <VCol
@@ -176,6 +184,9 @@ const updateClient = async (hash, action = null) => {
               placeholder="Email"
               type="email"
             />
+            <span class="text-error">
+              {{ errors.email ? errors.email[0] : '' }}
+            </span>
           </VCol>
 
           <VCol
@@ -185,8 +196,11 @@ const updateClient = async (hash, action = null) => {
             <AppTextField
               v-model="form.password"
               label="Password"
-              placeholder="johndoe@email.com"
+              type="password"
             />
+            <span class="text-error">
+              {{ errors.password ? errors.password[0] : '' }}
+            </span>
           </VCol>
 
           <VCol
@@ -198,7 +212,6 @@ const updateClient = async (hash, action = null) => {
               label="System Access"
             />
           </VCol>
-
         </VRow>
       </VCardText>
 
@@ -206,7 +219,7 @@ const updateClient = async (hash, action = null) => {
         <VBtn
           variant="tonal"
           color="secondary"
-          @click="isDialogVisible = false"
+          @click="closeAllDialogues"
         >
           Close
         </VBtn>
@@ -214,10 +227,10 @@ const updateClient = async (hash, action = null) => {
           @click="addUser"
           :loading="loading"
         >
-          Save
+          {{ clientUser ? 'Update' : 'Save' }}
         </VBtn>
       </VCardText>
     </VCard>
-
   </VDialog>
+
 </template>
