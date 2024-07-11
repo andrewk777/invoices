@@ -34,10 +34,10 @@ class CreateSubscriptionsTable extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('my_company_id')->references('id')->on('my_companies');
-            $table->foreign('client_id')->references('id')->on('clients');
-            $table->foreign('credit_card_id')->references('id')->on('credit_cards');
-            $table->foreign('email_template_id')->references('id')->on('email_templates');
+//            $table->foreign('my_company_id')->references('id')->on('my_companies');
+//            $table->foreign('client_id')->references('id')->on('clients');
+//            $table->foreign('credit_card_id')->references('id')->on('credit_cards');
+//            $table->foreign('email_template_id')->references('id')->on('email_templates');
         });
     }
 
