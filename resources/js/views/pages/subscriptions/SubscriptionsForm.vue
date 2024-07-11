@@ -1,6 +1,5 @@
 <script setup>
 import {onBeforeMount, reactive, ref, watch} from 'vue'
-import InvoiceSendInvoiceDrawer from '@/views/apps/invoice/InvoiceSendInvoiceDrawer.vue'
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
 import axios from "axios";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
@@ -8,7 +7,6 @@ import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.
 import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
 import {useRoute} from 'vue-router';
 import AppTextarea from "@core/components/app-form-elements/AppTextarea.vue";
-import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
 
 const route = useRoute();
 const hash = ref(route.params.hash);
@@ -28,6 +26,8 @@ const clients = ref([]);
 const subscriptionTagsInput = ref('');
 const subscriptionTags = ref([]);
 
+const clientCreditCards = ref([]);
+
 const form = reactive({
   subscription: {
     name: '',
@@ -36,8 +36,8 @@ const form = reactive({
     tags: '',
     currency: '',
     credit_card_id: '',
-    next_charge_date: '',
-    due_in_days: '',
+    next_charge_date: new Date().toISOString().split('T')[0],
+    due_in_days: 10,
     frequency_day: '',
     frequency_month: '',
     can_pay_with_cc: false,
@@ -93,6 +93,10 @@ const currencies = ref([
 const submitSubscription = async (event, action = null) => {
 
   console.log("Before FormData", form);
+
+  if(form.subscription.charge_cc === true && form.subscription.credit_card_id === ''){
+    errors.value.credit_card = ['Please select a credit card'];
+  }
 
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
@@ -269,6 +273,7 @@ const selectMyCompany = (event) => {
 const selectClient = (event) => {
   console.log("Select To Client", event);
   toClient.value = clients.value.find(client => client.id === event);
+  clientCreditCards.value = toClient.value.credit_cards;
   console.log("Selected Client", toClient.value);
 }
 
@@ -489,7 +494,7 @@ onBeforeMount(async () => {
               </div>
             </VCol>
 
-            <VCol cols="4" md="4" class="text-no-wrap">
+            <VCol cols="3" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Client:
               </h6>
@@ -513,7 +518,23 @@ onBeforeMount(async () => {
               </div>
             </VCol>
 
-            <VCol cols="4" md="4" class="text-no-wrap">
+            <VCol cols="3" md="3" class="text-no-wrap" v-if="clientCreditCards.length > 0">
+              <h6 class="text-h6 mb-4">
+                Client CC:
+              </h6>
+
+              <AppAutocomplete
+                v-model="form.subscription.credit_card_id"
+                :items="clientCreditCards"
+                item-title="cc_last_4_digits"
+                item-value="id"
+                placeholder="Select Credit Card"
+                class="mb-4"
+                style="inline-size: 11.875rem;"
+              />
+            </VCol>
+
+            <VCol cols="3" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Frequency:
               </h6>
@@ -528,7 +549,7 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="4" md="4" class="text-no-wrap">
+            <VCol cols="3" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Currency:
               </h6>
@@ -545,10 +566,18 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="6" md="6" class="text-no-wrap d-flex">
+            <VCol cols="6" md="3" class="text-no-wrap d-flex">
               <VCheckbox
                 v-model="form.subscription.charge_cc"
                 label="Charge Credit Card"
+                class="mb-4"
+              />
+            </VCol>
+
+            <VCol cols="6" md="3" class="text-no-wrap d-flex">
+              <VCheckbox
+                v-model="form.subscription.can_pay_with_cc"
+                label="Customers can pay with CC"
                 class="mb-4"
               />
             </VCol>
@@ -695,23 +724,6 @@ onBeforeMount(async () => {
                 </tbody>
               </table>
 
-<!--              <VDivider class="mt-4 mb-3" />-->
-
-<!--              <table class="w-100">-->
-<!--                <tbody>-->
-<!--                <tr>-->
-<!--                  <td class="pe-16">-->
-<!--                    Balance:-->
-<!--                  </td>-->
-<!--                  <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">-->
-<!--                    <h6 class="text-h6">-->
-<!--                      {{ invoiceData.invoice.balance }}-->
-<!--                    </h6>-->
-<!--                  </td>-->
-<!--                </tr>-->
-<!--                </tbody>-->
-<!--              </table>-->
-
             </div>
           </div>
 
@@ -766,19 +778,20 @@ onBeforeMount(async () => {
           </VBtn>
         </router-link>
 
-        <VBtn
-          v-if="hash"
-          class="mt-2"
-          block
-          color="danger"
-          variant="tonal"
-        >
-          <VIcon
-            left
-            icon="tabler-credit-card"
-          />
-          Charge Credit Card
-        </VBtn>
+        <a href="" v-if="hash">
+          <VBtn
+            class="mt-2"
+            block
+            color="warning"
+            variant="tonal"
+          >
+            <VIcon
+              left
+              icon="tabler-credit-card"
+            />
+            Charge Credit Card
+          </VBtn>
+        </a>
 
 
 

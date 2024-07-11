@@ -24,7 +24,8 @@ class ClientController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $data = $this->client->client()->with('creditCards:hash,client_id,cc_provider')
+            $data = $this->client->client()
+                ->with('creditCards:id,hash,client_id,cc_number,cc_exp_month,cc_exp_year')
                 ->orderBy('id', 'desc')->get();
             return response()->json([
                 'success' => true,

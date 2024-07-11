@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Subscription;
 
+use App\Http\Resources\Client\ClientResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,10 +24,7 @@ class SubscriptionResource extends JsonResource
             'client_id' => $this->client_id,
 
             'company' => $this->company ?? null,
-            'from_company' => $this->company ?  $this->company->name : null,
-
-            'client' => $this->client ?? null,
-            'customer' => $this->client ? $this->client->company_name : null,
+            'client' => $this->client ? new ClientResource($this->client) : null,
 
             'charges' => $this->charges && count($this->charges) > 0 ? SubscriptionChargeResource::collection($this->charges) : [],
 
