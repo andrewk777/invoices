@@ -86,24 +86,24 @@ const authenticatedRoutes = [
         component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
         meta: { title: 'Edit Subscription' },
     },
-    {
-        path: '/users',
-        name: 'UsersView',
-        component: () => import('@/views/pages/users/UsersIndex.vue'),
-        meta: { title: 'Users' },
-    },
-    {
-        path: '/users/create',
-        name: 'UsersCreate',
-        component: () => import('@/views/pages/users/UsersForm.vue'),
-        meta: { title: 'Create User' },
-    },
-    {
-        path: '/users/edit/:hash',
-        name: 'UsersEdit',
-        component: () => import('@/views/pages/users/UsersForm.vue'),
-        meta: { title: 'Edit User' },
-    }
+    // {
+    //     path: '/users',
+    //     name: 'UsersView',
+    //     component: () => import('@/views/pages/users/UsersIndex.vue'),
+    //     meta: { title: 'Users' },
+    // },
+    // {
+    //     path: '/users/create',
+    //     name: 'UsersCreate',
+    //     component: () => import('@/views/pages/users/UsersForm.vue'),
+    //     meta: { title: 'Create User' },
+    // },
+    // {
+    //     path: '/users/edit/:hash',
+    //     name: 'UsersEdit',
+    //     component: () => import('@/views/pages/users/UsersForm.vue'),
+    //     meta: { title: 'Edit User' },
+    // }
 ];
 
 // unauthenticated routes

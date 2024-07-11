@@ -107,7 +107,10 @@ const searchSubscriptions = () => {
   });
 }
 
-watch(search, () => {
+watch(search, (newValue) => {
+  if (newValue === null) {
+    search.value = '';
+  }
   searchSubscriptions();
 });
 

@@ -115,7 +115,10 @@ const headers = [
   },
 ]
 
-watch(search, () => {
+watch(search, (newValue) => {
+  if (newValue === null) {
+    search.value = '';
+  }
   searchInvoices();
 });
 
