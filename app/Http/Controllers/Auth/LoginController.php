@@ -10,6 +10,7 @@ use App\Repositories\Base\BaseRepository;
 use App\Repositories\Client\ClientRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
@@ -50,6 +51,19 @@ class LoginController extends Controller
         try {
             $data = $this->login->authenticateUserWithToken($request->token);
             return response()->json($data, Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            return BaseRepository::tryCatchException($e);
+        }
+    }
+
+    public function logout(): JsonResponse
+    {
+        try {
+            Auth::user()?->tokens()?->delete();
+            return response()->json([
+                'success' => true,
+            ]);
 
         } catch (\Exception $e) {
             return BaseRepository::tryCatchException($e);

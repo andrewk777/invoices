@@ -151,14 +151,20 @@ onBeforeMount(() => {
           <VForm @submit.prevent="submitLogin">
             <VRow>
 
+              <VAlert
+                v-if="errors.unauthorised"
+                type="error"
+                >
+                {{ errors.unauthorised[0] }}
+              </VAlert>
+
               <!-- loading -->
-              <VCol cols="12">
+              <VCol cols="12" class="text-center">
                 <VProgressCircular
                   v-if="loading"
                   indeterminate
                   color="primary"
                   size="24"
-                  class="text-center"
                 />
               </VCol>
 
@@ -187,25 +193,12 @@ onBeforeMount(() => {
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
-                <span
+                <p
                   v-if="errors.password"
                   class="mt-2 text-center text-error"
                 >
                   {{ errors.password[0] }}
-                </span>
-
-<!--                <div class="d-flex align-center flex-wrap justify-space-between mt-2 mb-4">-->
-<!--                  <VCheckbox-->
-<!--                    v-model="form.remember"-->
-<!--                    label="Remember me"-->
-<!--                  />-->
-<!--                  <a-->
-<!--                    class="text-primary ms-2 mb-1"-->
-<!--                    href="#"-->
-<!--                  >-->
-<!--                    Forgot Password?-->
-<!--                  </a>-->
-<!--                </div>-->
+                </p>
 
                 <VBtn
                   class="mt-4"
@@ -216,37 +209,6 @@ onBeforeMount(() => {
                 </VBtn>
 
               </VCol>
-
-<!--              &lt;!&ndash; create account &ndash;&gt;-->
-<!--              <VCol-->
-<!--                cols="12"-->
-<!--                class="text-center"-->
-<!--              >-->
-<!--                <span>New on our platform?</span>-->
-
-<!--                <a-->
-<!--                  class="text-primary ms-2"-->
-<!--                  href="#"-->
-<!--                >-->
-<!--                  Create an account-->
-<!--                </a>-->
-<!--              </VCol>-->
-<!--              <VCol-->
-<!--                cols="12"-->
-<!--                class="d-flex align-center"-->
-<!--              >-->
-<!--                <VDivider />-->
-<!--                <span class="mx-4">or</span>-->
-<!--                <VDivider />-->
-<!--              </VCol>-->
-
-<!--              &lt;!&ndash; auth providers &ndash;&gt;-->
-<!--              <VCol-->
-<!--                cols="12"-->
-<!--                class="text-center"-->
-<!--              >-->
-<!--                <AuthProvider />-->
-<!--              </VCol>-->
 
             </VRow>
           </VForm>

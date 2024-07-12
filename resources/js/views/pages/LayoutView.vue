@@ -502,7 +502,7 @@ let dropdowns = document.querySelectorAll(".menu-item");
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
-                    <a class="dropdown-item mt-0" href="pages-account-settings-account.html">
+                    <a class="dropdown-item mt-0" href="">
                       <div class="d-flex align-items-center">
                         <div class="flex-shrink-0 me-2">
                           <div class="avatar avatar-online">
@@ -520,12 +520,12 @@ let dropdowns = document.querySelectorAll(".menu-item");
                     <div class="dropdown-divider my-1 mx-n2"></div>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="pages-profile-user.html">
+                    <a class="dropdown-item" href="">
                       <i class="ti ti-user me-3 ti-md"></i><span class="align-middle">My Profile</span>
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="pages-account-settings-account.html">
+                    <a class="dropdown-item" href="">
                       <i class="ti ti-settings me-3 ti-md"></i><span class="align-middle">Settings</span>
                     </a>
                   </li>

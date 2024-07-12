@@ -1,5 +1,40 @@
 <script setup>
-import avatar1 from '@images/avatars/avatar-1.png'
+import { computed, onMounted, reactive, ref } from 'vue';
+import avatar1 from '@images/avatars/avatar-1.png';
+import axios from "axios";
+
+const user = computed(() => baseService.getUserFromLocalStorage());
+const loading = ref(false);
+
+const logout = async () => {
+  loading.value = true;
+  try {
+    const response = await axios.get('/api/logout',{
+      headers: {
+        'Authorization': 'Bearer ' + user.value.token
+      },
+    });
+    if(response.data.success){
+      localStorage.removeItem('invoice-client-token');
+    }
+
+    // Redirect to the login page
+    router.push({ name: 'login' });
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Logout failed:', error.response?.data.message);
+    } else {
+      console.error('Logout failed:', error);
+    }
+  }
+  loading.value = false;
+};
+
+onMounted(() => {
+  console.log("AUTH USER", user.value);
+});
+
 </script>
 
 <template>
@@ -48,7 +83,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              Jane Doe
+              {{ user.name }}
             </VListItemTitle>
             <VListItemSubtitle>Master Admin</VListItemSubtitle>
           </VListItem>
@@ -85,7 +120,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click.prevent="logout">
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -96,6 +131,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
 
             <VListItemTitle>Logout</VListItemTitle>
           </VListItem>
+
         </VList>
       </VMenu>
       <!-- !SECTION -->

@@ -34,7 +34,7 @@ class LoginRepository
                 return [
                     'success' => false,
                     'errors' => [
-                        'unauthorised' => 'Unauthorised.',
+                        'unauthorised' => ['Unauthorised.'],
                     ],
                     'error_code' => 401,
                 ];
@@ -59,7 +59,7 @@ class LoginRepository
         return [
             'success' => false,
             'errors' => [
-                'unauthorised' => 'Unauthorised.',
+                'unauthorised' => ['Unauthorised.'],
             ],
             'error_code' => 401,
         ];
