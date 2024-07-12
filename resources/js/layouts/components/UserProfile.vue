@@ -19,7 +19,7 @@ const logout = async () => {
     }
 
     // Redirect to the login page
-    router.push({ name: 'login' });
+    window.location.href = '/login';
 
   } catch (error) {
     if (axios.isAxiosError(error)) {

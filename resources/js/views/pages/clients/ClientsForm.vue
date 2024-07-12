@@ -268,6 +268,16 @@ defineExpose({
         {{ 'save and close' }}
       </VBtn>
 
+      <VBtn
+        :size="'small'"
+        @click.prevent="$router.go(-1)"
+        type="submit"
+        color="error"
+        class="mr-2 btn-info waves-effect waves-light"
+      >
+        {{ 'close' }}
+      </VBtn>
+
       <router-link
         class="btn btn-info waves-effect waves-light"
         exact

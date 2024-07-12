@@ -765,6 +765,16 @@ onBeforeMount(async () => {
           <i class="fa fa-circle-notch fa-spin fa-2x"></i>
         </VBtn>
 
+        <VBtn
+          block
+          color="error"
+          variant="tonal"
+          class="mb-2"
+          @click.prevent="$router.go(-1)"
+        >
+          Close
+        </VBtn>
+
         <router-link
           :to="{ name: 'SubscriptionsView'}"
         >
