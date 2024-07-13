@@ -16,7 +16,7 @@ class Subscription extends Model
     protected $fillable = [
         'hash',
         'name',
-        'company_id',
+        'my_company_id',
         'client_id',
         'tags',
         'currency',
@@ -42,7 +42,7 @@ class Subscription extends Model
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(MyCompany::class, 'company_id', 'id');
+        return $this->belongsTo(MyCompany::class, 'my_company_id', 'id');
     }
 
     public function client(): BelongsTo

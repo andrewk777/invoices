@@ -882,7 +882,7 @@ onBeforeMount(async () => {
       </VCol>
 
       <!--Right Buttons-->
-      <VCol cols="12" md="2" class="static-column">
+      <VCol cols="12" md="2">
         <VBtn
           v-if="!loading"
           block

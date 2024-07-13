@@ -463,7 +463,7 @@ onBeforeMount(async () => {
           <!-- !SECTION -->
 
           <VRow>
-            <VCol cols="6" md="6" class="text-no-wrap">
+            <VCol cols="12" md="6" class="text-no-wrap">
               <h6 class="text-h6 mb-4">Name:</h6>
 
               <AppTextField
@@ -473,7 +473,7 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="6" md="6" class="text-no-wrap">
+            <VCol cols="12" md="6" class="text-no-wrap">
               <h6 class="text-h6 mb-4">Tags:</h6>
 
               <div class="tag-input">
@@ -494,7 +494,7 @@ onBeforeMount(async () => {
               </div>
             </VCol>
 
-            <VCol cols="3" md="3" class="text-no-wrap">
+            <VCol cols="12" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Client:
               </h6>
@@ -518,7 +518,7 @@ onBeforeMount(async () => {
               </div>
             </VCol>
 
-            <VCol cols="3" md="3" class="text-no-wrap" v-if="clientCreditCards.length > 0">
+            <VCol cols="12" md="3" class="text-no-wrap" v-if="clientCreditCards.length > 0">
               <h6 class="text-h6 mb-4">
                 Client CC:
               </h6>
@@ -534,7 +534,7 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="3" md="3" class="text-no-wrap">
+            <VCol cols="12" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Frequency:
               </h6>
@@ -549,7 +549,7 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="3" md="3" class="text-no-wrap">
+            <VCol cols="12" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Currency:
               </h6>
@@ -566,7 +566,7 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="6" md="3" class="text-no-wrap d-flex">
+            <VCol cols="12" md="3" class="text-no-wrap d-flex">
               <VCheckbox
                 v-model="form.subscription.charge_cc"
                 label="Charge Credit Card"
@@ -731,7 +731,7 @@ onBeforeMount(async () => {
       </VCol>
 
       <!--Right Buttons-->
-      <VCol cols="12" md="2" class="static-column">
+      <VCol cols="12" md="2">
         <VBtn
           v-if="!loading"
           block
