@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeMount } from 'vue'
 import ClientsUsersForm from "@/views/pages/clients/client-users/ClientsUsersForm.vue";
 import axios from "axios";
 import DialogCloseBtn from "@core/components/DialogCloseBtn.vue";
@@ -119,6 +119,10 @@ const headers = [
     sortable: false,
   },
 ]
+
+onBeforeMount(() => {
+  console.log("Client in ClientsUsersIndex", client.value);
+});
 
 </script>
 

@@ -495,9 +495,11 @@ defineExpose({
     </VCol>
   </VRow>
 
-  <VRow v-if="hash && client.users?.length">
+  <VRow v-if="hash && client">
     <VCol cols="12">
       <ClientsUsersIndex
+        v-if="client && Object.keys(client).length > 0"
+        :hash="hash"
         :users="client.users"
         :client="client"
         :updatedClient="updatedClient"

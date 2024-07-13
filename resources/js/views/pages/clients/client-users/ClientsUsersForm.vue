@@ -101,6 +101,10 @@ onMounted(() => {
   if (props.clientUser) {
     console.log('Edit user', props.clientUser);
   }
+
+  if (props.client) {
+    console.log('Client', client.value);
+  }
 });
 </script>
 
