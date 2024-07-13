@@ -159,9 +159,9 @@ onBeforeMount(() => {
 
     <VRow>
       <VCol
-        cols="4"
+        cols="12"
         md="4"
-        class="mb-4"
+        class="mb-4 d-flex"
       >
         <AppTextField
           v-model="search"
@@ -174,6 +174,14 @@ onBeforeMount(() => {
           outlined
           clearable
         />
+        <VIcon
+          @click="getInvoices"
+          class="ml-2"
+          color="primary"
+          size="30"
+          icon="tabler-rotate-clockwise"
+          title="reload"
+        />
       </VCol>
     </VRow>
 
@@ -181,6 +189,7 @@ onBeforeMount(() => {
       :headers="headers"
       :items="invoices"
       :items-per-page="25"
+      :loading="!dataLoaded"
     >
       <template v-slot:item="{ item: invoice }">
         <InvoicesItem :invoice="invoice" />

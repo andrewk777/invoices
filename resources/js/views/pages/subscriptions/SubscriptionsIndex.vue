@@ -148,8 +148,9 @@ onBeforeMount(() => {
 
   <VRow>
     <VCol
-      cols="6"
-      md="6"
+      cols="12"
+      md="4"
+      class="d-flex"
     >
       <AppTextField
         v-model="search"
@@ -162,6 +163,14 @@ onBeforeMount(() => {
         outlined
         clearable
       />
+      <VIcon
+        @click="getSubscriptions"
+        class="ml-2"
+        color="primary"
+        size="30"
+        icon="tabler-rotate-clockwise"
+        title="reload"
+      />
     </VCol>
   </VRow>
 
@@ -169,7 +178,7 @@ onBeforeMount(() => {
     :headers="headers"
     :items="subscriptions"
     :items-per-page="25"
-    :loading="loading"
+    :loading="!dataLoaded"
   >
     <template v-slot:item="{ item: subscription }">
       <SubscriptionsListRow :subscription="subscription" />
