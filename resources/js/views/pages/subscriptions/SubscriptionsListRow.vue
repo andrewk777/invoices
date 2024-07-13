@@ -115,59 +115,84 @@ const deleteSubscription = async () => {
     </td>
 
     <td>
-      <div class="d-flex">
 
-        <router-link
-          :to="{ name: 'SubscriptionsEdit', params: { hash: subscription.hash } }"
-          class="btn btn-primary btn-sm mr-2"
-        >
-          <VIcon
-            icon="tabler-edit"
-          />
-        </router-link>
+      <v-menu>
 
-        <VDialog
-          v-model="isDialogVisible"
-          persistent
-          class="v-dialog-sm"
-        >
-          <!-- Dialog Activator -->
-          <template #activator="{ props }">
-            <VIcon
+        <template v-slot:activator="{ props }">
+          <v-btn-toggle
+            variant="text"
+            density="compact"
+            class="pa-0 h-auto rounded-1"
+          >
+            <router-link
+              :to="{ name: 'SubscriptionsEdit', params: { hash: subscription.hash } }"
+              class="btn btn-primary btn-sm mr-2"
+            >
+              <v-btn class="ma-0 rounded-0">View</v-btn>
+            </router-link>
+
+            <v-btn
+              color="primary"
               v-bind="props"
-              color="error"
-              icon="tabler-trash"
-            />
-          </template>
+              density="compact"
+              class="rounded-0"
+              variant="tonal"
+            >
+              <VIcon
+                icon="tabler-dots-vertical"
+              />
+            </v-btn>
+          </v-btn-toggle>
+        </template>
 
-          <!-- Dialog close btn -->
-          <DialogCloseBtn @click="isDialogVisible = !isDialogVisible" />
+        <v-list class="border-label-info">
+          <v-list-item >
+            <VDialog
+              v-model="isDialogVisible"
+              persistent
+              class="v-dialog-sm"
+            >
+              <!-- Dialog Activator -->
+              <template #activator="{ props }">
+                <v-list-item-content>
+                  <v-list-item-title v-bind="props">
+                    Delete
+                  </v-list-item-title>
+                </v-list-item-content>
+              </template>
 
-          <!-- Dialog Content -->
-          <VCard title="Use Google's location service?">
-            <VCardText>
-              Delete {{ subscription.name }} ?
-            </VCardText>
+              <!-- Dialog close btn -->
+              <DialogCloseBtn @click="isDialogVisible = !isDialogVisible" />
 
-            <VCardText class="d-flex justify-end gap-3 flex-wrap">
-              <VBtn
-                color="secondary"
-                variant="tonal"
-                @click="isDialogVisible = false"
-              >
-                Disagree
-              </VBtn>
-              <VBtn
-                @click="deleteSubscription()"
-                :loading="loading"
-              >
-                Agree
-              </VBtn>
-            </VCardText>
-          </VCard>
-        </VDialog>
+              <!-- Dialog Content -->
+              <VCard title="Use Google's location service?">
+                <VCardText>
+                  Delete {{ subscription.name }} ?
+                </VCardText>
 
-      </div>
+                <VCardText class="d-flex justify-end gap-3 flex-wrap">
+                  <VBtn
+                    color="secondary"
+                    variant="tonal"
+                    @click="isDialogVisible = false"
+                  >
+                    Disagree
+                  </VBtn>
+                  <VBtn
+                    @click="deleteSubscription()"
+                    :loading="loading"
+                  >
+                    Agree
+                  </VBtn>
+                </VCardText>
+              </VCard>
+            </VDialog>
+          </v-list-item>
+        </v-list>
+
+      </v-menu>
+
+
     </td>
 
   </tr>

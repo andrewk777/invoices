@@ -12,6 +12,9 @@ const props = defineProps({
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 const invoice = ref(props.invoice);
+const actionItems = [
+  { title: 'Download Receipt' },
+];
 
 const downloadInvoiceReceipt = () => {
 
@@ -97,28 +100,46 @@ const downloadInvoiceReceipt = () => {
     </td>
 
     <td>
-      <div class="d-flex">
-        <router-link
-          :to="{ name: 'InvoicesEdit', params: { hash: invoice.hash } }"
-          class="btn btn-primary btn-sm mr-2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="icon icon-tabler icon-tabler-pencil-plus"
-            width="30" height="30" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
-            <path d="M13.5 6.5l4 4" />
-            <path d="M16 19h6" />
-            <path d="M19 16v6" />
-          </svg>
-        </router-link>
 
-        <a href="" @click.prevent="downloadInvoiceReceipt">
-          <DocumentLicenseIcon />
-        </a>
-      </div>
+      <v-menu>
+
+        <template v-slot:activator="{ props }">
+          <v-btn-toggle
+            variant="text"
+            density="compact"
+            class="pa-0 h-auto rounded-1"
+          >
+            <router-link
+              :to="{ name: 'InvoicesEdit', params: { hash: invoice.hash } }"
+              class="btn btn-primary btn-sm mr-2"
+            >
+              <v-btn class="ma-0 rounded-0">View</v-btn>
+            </router-link>
+
+            <v-btn
+              color="primary"
+              v-bind="props"
+              density="compact"
+              class="rounded-0"
+              variant="tonal"
+            >
+              <VIcon
+                icon="tabler-dots-vertical"
+              />
+            </v-btn>
+          </v-btn-toggle>
+        </template>
+
+        <v-list class="border-label-info">
+          <v-list-item >
+            <a href="" @click.prevent="downloadInvoiceReceipt">
+              <v-list-item-title>Download Receipt</v-list-item-title>
+            </a>
+          </v-list-item>
+        </v-list>
+
+      </v-menu>
+
     </td>
 
   </tr>
