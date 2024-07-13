@@ -31,7 +31,7 @@ class SubscriptionRepository
             $subscription = $this->subscription()->create($inputs['subscription']);
 
             foreach ($inputs['charges'] as $charge){
-                $this->subscription()->create([
+                $this->subscriptionItem()->create([
                     'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                     'subscription_id' => $subscription->id,
                     'description' => $charge['description'],
@@ -115,7 +115,9 @@ class SubscriptionRepository
 
         DB::beginTransaction();
         try {
-            $subscription->charges()->delete();
+            if ($subscription->charges()->exists()){
+                $subscription->charges()->delete();
+            }
             $subscription->delete();
 
             DB::commit();

@@ -26,7 +26,7 @@ class UpdateSubscriptionRequest extends FormRequest
     {
         $hash = $this->route('hash');
         return [
-            'company_name' => [
+            'subscription.name' => [
                 'required',
                 'string',
                 'max:255',

@@ -9,7 +9,7 @@ import {useRoute} from 'vue-router';
 import AppTextarea from "@core/components/app-form-elements/AppTextarea.vue";
 
 const route = useRoute();
-const hash = ref(route.params.hash);
+const hash = ref(route.params.hash || '');
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 
@@ -127,10 +127,16 @@ const submitSubscription = async (event, action = null) => {
     }
 
     if (response.data.success){
+
       submitted.value = true;
+      if(!hash.value){
+        hash.value = response.data.subscription.hash;
+        console.log("Saved Hash Value", hash.value);
+      }
       if(action === 'close') {
         window.location.href = '/subscriptions';
       }
+
     }
 
   } catch (error) {
@@ -274,6 +280,7 @@ const selectClient = (event) => {
   console.log("Select To Client", event);
   toClient.value = clients.value.find(client => client.id === event);
   clientCreditCards.value = toClient.value.credit_cards;
+  form.subscription.credit_card_id = '';
   console.log("Selected Client", toClient.value);
 }
 
