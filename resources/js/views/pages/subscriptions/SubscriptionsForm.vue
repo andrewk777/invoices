@@ -67,7 +67,7 @@ const createTag = () => {
 };
 
 const removeTag = (index) => {
-  tags.value.splice(index, 1);
+  subscriptionTags.value.splice(index, 1);
 };
 
 const frequencies = ref([
@@ -94,8 +94,9 @@ const submitSubscription = async (event, action = null) => {
 
   console.log("Before FormData", form);
 
-  if(form.subscription.charge_cc === true && form.subscription.credit_card_id === ''){
+  if(form.subscription.charge_cc === true && !form.subscription.credit_card_id){
     errors.value.credit_card = ['Please select a credit card'];
+    return;
   }
 
   // Delete all errors
@@ -167,6 +168,12 @@ const populateSubscription = (subscription) => {
   });
 }
 
+const populateStringTags = (tags) => {
+  if (tags) {
+    subscriptionTags.value = tags.split(',');
+  }
+};
+
 const populateCharges = (charges) => {
   charges.forEach(function (item, index) {
     // Initialize the item at index if it does not exist
@@ -214,6 +221,7 @@ const getSubscription = async (hash) => {
       console.log("Subscription Show Value", subscription.value)
 
       populateSubscription(subscription.value);
+      populateStringTags(subscription.value.tags);
       selectClient(subscription.value.client_id);
       selectMyCompany(subscription.value.my_company_id);
 

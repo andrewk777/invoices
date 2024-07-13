@@ -24,6 +24,12 @@ class SubscriptionRepository
     public function storeSubscription($request): array
     {
         $inputs = $request->all();
+        if($inputs['subscription']['charge_cc'] === true && empty($inputs['subscription']['credit_card_id'])){
+            return [
+                'success' => false,
+                'errors' => ['credit_card' => ['Please select a credit card']],
+            ];
+        }
 
         DB::beginTransaction();
         try {
@@ -64,6 +70,13 @@ class SubscriptionRepository
     {
         $inputs = $request->all();
         $inputs['subscription'] = $request->subscription;
+
+        if($inputs['subscription']['charge_cc'] === true && empty($inputs['subscription']['credit_card_id'])){
+            return [
+                'success' => false,
+                'errors' => ['credit_card' => ['Please select a credit card']],
+            ];
+        }
 
         $subscription = $this->subscription()->where('hash', $hash)->first();
 

@@ -12,19 +12,56 @@ const props = defineProps({
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 const subscription = ref(props.subscription);
+const isDialogVisible = ref(false);
+const deleted = ref(false);
+const loading = ref(false);
+const errors = ref({});
 
 const chargeCreditCard = () => {
 
 }
 
-const deleteSubscription = () => {
+const deleteSubscription = async () => {
+  loading.value = true;
 
+  try {
+    let response;
+    response = await axios.delete('/api/subscriptions/delete/' + subscription.value.hash, {
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer " + token.value,
+      }
+    });
+
+    if (response.data.success){
+      deleted.value = true;
+      isDialogVisible.value = false;
+    }
+
+  } catch (error) {
+    if (error.response) {
+      if (Object.keys(error.response?.data?.errors).length > 0) {
+        errors.value = error.response?.data?.errors;
+        if (import.meta.env.VITE_APP_ENV === 'local') {
+          console.log("Validation errors", errors.value);
+        }
+      }
+
+      if (error.response?.data?.server_error) {
+        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
+      }
+    }
+
+    console.log(error);
+  }
+
+  loading.value = false;
 }
 
 </script>
 
 <template>
-  <tr>
+  <tr v-if="!deleted">
 
     <td>
       <p>
@@ -71,6 +108,7 @@ const deleteSubscription = () => {
     <td>
       <p class="text-center">
         <VIcon
+          color="success"
           icon="tabler-credit-card"
         />
       </p>
@@ -88,11 +126,46 @@ const deleteSubscription = () => {
           />
         </router-link>
 
-        <a href="" @click.prevent="deleteSubscription">
-          <VIcon
-            icon="tabler-trash"
-          />
-        </a>
+        <VDialog
+          v-model="isDialogVisible"
+          persistent
+          class="v-dialog-sm"
+        >
+          <!-- Dialog Activator -->
+          <template #activator="{ props }">
+            <VIcon
+              v-bind="props"
+              color="error"
+              icon="tabler-trash"
+            />
+          </template>
+
+          <!-- Dialog close btn -->
+          <DialogCloseBtn @click="isDialogVisible = !isDialogVisible" />
+
+          <!-- Dialog Content -->
+          <VCard title="Use Google's location service?">
+            <VCardText>
+              Delete {{ subscription.name }} ?
+            </VCardText>
+
+            <VCardText class="d-flex justify-end gap-3 flex-wrap">
+              <VBtn
+                color="secondary"
+                variant="tonal"
+                @click="isDialogVisible = false"
+              >
+                Disagree
+              </VBtn>
+              <VBtn
+                @click="deleteSubscription()"
+                :loading="loading"
+              >
+                Agree
+              </VBtn>
+            </VCardText>
+          </VCard>
+        </VDialog>
 
       </div>
     </td>

@@ -35,7 +35,7 @@ class SubscriptionFactory extends Factory
             'name' => $this->faker->name,
             'my_company_id' => MyCompany::inrandomOrder()->first()->id,
             'client_id' => $client->id,
-            'tags' => $this->faker->words,
+            'tags' => implode(', ', $this->faker->words(3)),
             'currency' => $this->faker->randomElement(['CAD', 'USD']),
             'credit_card_id' => $this->faker->randomNumber(),
             'next_charge_date' => $this->faker->dateTime(),

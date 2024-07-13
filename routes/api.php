@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/clients/show/{hash}', [ClientController::class, 'show']);
     Route::get('/clients/{hash}/users', [ClientController::class, 'users']);
     Route::post('/clients/update/{hash}', [ClientController::class, 'update']);
-    Route::delete('/clients/destroy/{hash}', [ClientController::class, 'destroy']);
+    Route::delete('/clients/delete/{hash}', [ClientController::class, 'destroy']);
 
     Route::get('/clients/credit-cards/{hash}', [CreditCardController::class, 'index']);
     Route::post('/clients/credit-cards/store', [CreditCardController::class, 'store']);
@@ -46,7 +46,7 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/invoices/show/{hash}', [InvoiceController::class, 'show']);
     Route::get('/invoices/receipt/{hash}/download', [InvoiceController::class, 'receipt']);
     Route::post('/invoices/update/{hash}', [InvoiceController::class, 'update']);
-    Route::delete('/invoices/destroy/{hash}', [InvoiceController::class, 'destroy']);
+    Route::delete('/invoices/delete/{hash}', [InvoiceController::class, 'destroy']);
 
     // Subscriptions
     Route::get('/subscriptions', [SubscriptionController::class, 'index']);
@@ -54,7 +54,7 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::post('/subscriptions/store', [SubscriptionController::class, 'store']);
     Route::get('/subscriptions/show/{hash}', [SubscriptionController::class, 'show']);
     Route::post('/subscriptions/update/{hash}', [SubscriptionController::class, 'update']);
-    Route::delete('/subscriptions/destroy/{hash}', [SubscriptionController::class, 'destroy']);
+    Route::delete('/subscriptions/delete/{hash}', [SubscriptionController::class, 'destroy']);
 
     Route::get('/logout', [LoginController::class, 'logout']);
 });
