@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Subscription\StoreSubscriptionRequest;
+use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
 use App\Http\Resources\Subscription\SubscriptionResource;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\Subscription\SubscriptionRepository;
@@ -42,7 +44,7 @@ class SubscriptionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreSubscriptionRequest $request): JsonResponse
     {
         try {
             $data = $this->subscription->storeSubscription($request);
@@ -79,7 +81,7 @@ class SubscriptionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $hash): JsonResponse
+    public function update(UpdateSubscriptionRequest $request, string $hash): JsonResponse
     {
         try {
             $data = $this->subscription->updateSubscription($request, $hash);

@@ -30,13 +30,9 @@ const emittedClient = (event) => {
     <td>{{ client.company_email }}</td>
 
     <td>
-      <router-link
-        v-if="client.credit_cards?.length"
-        class="btn btn-info waves-effect waves-light"
-        exact
-        :to="{name: 'ClientsEdit', params: { hash: client.hash }}">
-        <i class="fa fa-credit-card"></i>
-      </router-link>
+      <VIcon
+        icon="tabler-credit-card"
+      />
     </td>
 
     <td>

@@ -40,7 +40,6 @@ class SubscriptionResource extends JsonResource
             'expiration_date' => $this->expiration_date,
             'charge_cc' => $this->charge_cc,
             'email_invoice' => $this->email_invoice,
-            'email_template_id' => $this->email_template_id,
 
             'subtotal' => $this->subtotal,
             'taxes' => $this->taxes,

@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Client;
+use App\Models\ClientUser;
+use App\Models\CreditCard;
 use App\Models\MyCompany;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,11 +24,17 @@ class SubscriptionFactory extends Factory
         $taxes = $this->faker->randomFloat('2', '0', '40');
         $total = $subtotal + $taxes;
 
+        $client = Client::factory()->create();
+        $client->creditCards()->saveMany(CreditCard::factory(2)->create());
+        $client->users()->saveMany(ClientUser::factory(2)->create());
+        $client->defaultCreditCard()->associate($client->creditCards->first());
+        $client->save();
+
         return [
             'hash' => $this->faker->uuid,
             'name' => $this->faker->name,
             'my_company_id' => MyCompany::inrandomOrder()->first()->id,
-            'client_id' => Client::InRandomOrder()->first()->id,
+            'client_id' => $client->id,
             'tags' => $this->faker->words,
             'currency' => $this->faker->randomElement(['CAD', 'USD']),
             'credit_card_id' => $this->faker->randomNumber(),

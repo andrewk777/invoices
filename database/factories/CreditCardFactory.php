@@ -19,7 +19,7 @@ class CreditCardFactory extends Factory
     {
         return [
             'hash' => $this->faker->sha1,
-            'client_id' => Client::factory()->create()->id,
+//            'client_id' => Client::factory()->create()->id,
             'cc_provider' => $this->faker->randomElement(['Stripe', 'Paypal', 'Braintree', 'Authorize']),
             'cc_number' => $this->faker->creditCardNumber(),
             'cc_exp_month' => $this->faker->numberBetween('1', '12'),

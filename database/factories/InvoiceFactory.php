@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Client;
+use App\Models\ClientUser;
+use App\Models\CreditCard;
 use App\Models\MyCompany;
 use Faker\Provider\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -25,10 +27,16 @@ class InvoiceFactory extends Factory
         $total_paid = $this->faker->randomFloat(2, 0, $total);
         $balance = $total - $total_paid;
 
+        $client = Client::factory()->create();
+        $client->creditCards()->saveMany(CreditCard::factory(2)->create());
+        $client->users()->saveMany(ClientUser::factory(2)->create());
+        $client->defaultCreditCard()->associate($client->creditCards->first());
+        $client->save();
+
         return [
             'hash' => $this->faker->uuid(),
             'my_company_id' => MyCompany::inRandomOrder()->first()->id,
-            'client_id' => Client::factory()->create()->id,
+            'client_id' => $client->id,
             'invoice_num' => $this->faker->unique()->numberBetween(1000, 9999),
             'invoice_type' => $this->faker->randomElement(['standard', 'credit_memo']),
             'status' => $this->faker->randomElement(['draft', 'approved', 'sent', 'partially_paid', 'paid']),

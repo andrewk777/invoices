@@ -71,18 +71,18 @@ const removeTag = (index) => {
 };
 
 const frequencies = ref([
-  {value: 'monthly', text: 'Monthly'},
-  {value: 'every-2-months', text: 'Every 2 Months'},
-  {value: 'every-3-months', text: 'Every 3 Months'},
-  {value: 'every-4-months', text: 'Every 4 Months'},
-  {value: 'every-5-months', text: 'Every 5 Months'},
-  {value: 'every-6-months', text: 'Every 6 Months'},
-  {value: 'every-7-months', text: 'Every 7 Months'},
-  {value: 'every-8-months', text: 'Every 8 Months'},
-  {value: 'every-9-months', text: 'Every 9 Months'},
-  {value: 'every-10-months', text: 'Every 10 Months'},
-  {value: 'every-11-months', text: 'Every 11 Months'},
-  {value: 'yearly', text: 'Yearly'},
+  {value: 1, text: 'Monthly'},
+  {value: 2, text: 'Every 2 Months'},
+  {value: 3, text: 'Every 3 Months'},
+  {value: 4, text: 'Every 4 Months'},
+  {value: 5, text: 'Every 5 Months'},
+  {value: 6, text: 'Every 6 Months'},
+  {value: 7, text: 'Every 7 Months'},
+  {value: 8, text: 'Every 8 Months'},
+  {value: 9, text: 'Every 9 Months'},
+  {value: 10, text: 'Every 10 Months'},
+  {value: 11, text: 'Every 11 Months'},
+  {value: 12, text: 'Yearly'},
 ]);
 
 const currencies = ref([

@@ -70,11 +70,9 @@ const deleteSubscription = () => {
 
     <td>
       <p class="text-center">
-        <a href="" @click.prevent="chargeCreditCard">
-          <VIcon
-            icon="tabler-credit-card"
-          />
-        </a>
+        <VIcon
+          icon="tabler-credit-card"
+        />
       </p>
     </td>
 
