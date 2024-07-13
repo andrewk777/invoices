@@ -17,7 +17,7 @@ const dataLoaded = ref(false);
 const searchActive = ref(false);
 const searchTotal = ref(0);
 const search = ref('');
-const savedSearch = computed(() => localStorage.getItem('client-search'));
+const savedSearch = computed(() => localStorage.getItem('invoice-search'));
 const search_values = ref([]);
 
 const getInvoices = (page = 1) => {
