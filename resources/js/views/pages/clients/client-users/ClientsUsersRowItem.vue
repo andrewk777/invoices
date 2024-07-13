@@ -69,26 +69,6 @@ const updateClientUser = (clientUser) => {
       </div>
     </td>
     <td>
-      <IconBtn>
-        <VIcon
-          v-if="!loading && item.system_access"
-          icon="tabler-accessible"
-          @click="clientUserAccess"
-        />
-        <VIcon
-          v-else-if="!loading && !item.system_access"
-          icon="tabler-accessible-off"
-          @click="clientUserAccess"
-        />
-        <VProgressCircular
-          v-else
-          indeterminate
-          color="primary"
-          size="24"
-        />
-      </IconBtn>
-    </td>
-    <td>
       <ClientsUsersFormEdit
         :editDialogueVisible="editDialogueVisible"
         :client="client"

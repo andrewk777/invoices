@@ -114,11 +114,6 @@ const headers = [
   },
   {
     title: 'ACTION',
-    key: 'access',
-    sortable: false,
-  },
-  {
-    title: 'ACTION',
     key: 'edit',
     sortable: false,
   },

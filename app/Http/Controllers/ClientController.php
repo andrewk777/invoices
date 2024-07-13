@@ -25,7 +25,7 @@ class ClientController extends Controller
     {
         try {
             $data = $this->client->client()
-                ->with('creditCards:id,hash,client_id,cc_number,cc_exp_month,cc_exp_year')
+                ->with('creditCards:id,hash,client_id,cc_number,cc_exp_month,cc_exp_year,cc_type')
                 ->orderBy('id', 'desc')->get();
             return response()->json([
                 'success' => true,
