@@ -574,10 +574,18 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="6" md="3" class="text-no-wrap d-flex">
+            <VCol cols="12" md="3" class="text-no-wrap d-flex">
               <VCheckbox
                 v-model="form.subscription.can_pay_with_cc"
                 label="Customers can pay with CC"
+                class="mb-4"
+              />
+            </VCol>
+
+            <VCol cols="12" md="3" class="text-no-wrap d-flex">
+              <VCheckbox
+                v-model="form.subscription.email_invoice"
+                label="Email Invoice"
                 class="mb-4"
               />
             </VCol>

@@ -570,7 +570,7 @@ onBeforeMount(async () => {
 <!--              />-->
 <!--            </VCol>-->
 
-            <VCol cols="4" md="4" class="text-no-wrap">
+            <VCol cols="12" md="4" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Invoice To:
               </h6>
@@ -594,7 +594,7 @@ onBeforeMount(async () => {
               </div>
             </VCol>
 
-            <VCol cols="4" md="4" class="text-no-wrap">
+            <VCol cols="12" md="4" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Status:
               </h6>
@@ -610,7 +610,7 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="4" md="4" class="text-no-wrap">
+            <VCol cols="12" md="4" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Currency:
               </h6>
@@ -627,7 +627,7 @@ onBeforeMount(async () => {
               />
             </VCol>
 
-            <VCol cols="6" md="6" class="text-no-wrap d-flex">
+            <VCol cols="12" md="6" class="text-no-wrap d-flex">
                 <VCheckbox
                   v-model="invoiceData.invoice.na"
                   label="N/A"
