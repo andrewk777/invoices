@@ -90,21 +90,21 @@ onMounted(() => {
 
           <VDivider class="my-2" />
 
-          <!-- 👉 Settings -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="tabler-settings"
-                size="22"
-              />
-            </template>
+<!--          &lt;!&ndash; 👉 Settings &ndash;&gt;-->
+<!--          <VListItem link>-->
+<!--            <template #prepend>-->
+<!--              <VIcon-->
+<!--                class="me-2"-->
+<!--                icon="tabler-settings"-->
+<!--                size="22"-->
+<!--              />-->
+<!--            </template>-->
 
-            <VListItemTitle>Settings</VListItemTitle>
-          </VListItem>
+<!--            <VListItemTitle>Settings</VListItemTitle>-->
+<!--          </VListItem>-->
 
-          <!-- Divider -->
-          <VDivider class="my-2" />
+<!--          &lt;!&ndash; Divider &ndash;&gt;-->
+<!--          <VDivider class="my-2" />-->
 
           <!-- 👉 Logout -->
           <VListItem @click.prevent="logout">

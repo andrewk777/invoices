@@ -45,7 +45,7 @@ const submitLogin = async () => {
         console.log(response.data);
       }
 
-      window.location.href = '/clients';
+      window.location.href = '/invoices';
     }
 
   } catch (error) {
