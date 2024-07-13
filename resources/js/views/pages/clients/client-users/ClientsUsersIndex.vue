@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onBeforeMount } from 'vue'
 import ClientsUsersForm from "@/views/pages/clients/client-users/ClientsUsersForm.vue";
+import ClientsUsersRowItem from "@/views/pages/clients/client-users/ClientsUsersRowItem.vue";
 import axios from "axios";
 import DialogCloseBtn from "@core/components/DialogCloseBtn.vue";
 
@@ -41,10 +42,13 @@ const openModal = () => {
 
 const closeModal = () => {
   openFormDialogue.value = false;
+  editDialogueVisible.value = false; // Set editDialogueVisible to false
 };
 
 const addClientUser = clientUser => {
   clientUsers.value.push(clientUser);
+  closeModal();
+  editDialogueVisible.value = false;
 };
 
 const updateClientUser = (clientUser) => {
@@ -163,7 +167,16 @@ onBeforeMount(() => {
             :updatedClient="updatedClient"
             @close-modal="closeModal"
             @add-client-user="addClientUser"
-          />
+          >
+            <template #activator="{ props }">
+              <VBtn
+                v-bind="props"
+                size="small"
+              >
+                Add User
+              </VBtn>
+            </template>
+          </ClientsUsersForm>
         </VCol>
       </VRow>
     </VCardText>
@@ -176,80 +189,15 @@ onBeforeMount(() => {
       :items-per-page="5"
       class="text-no-wrap"
     >
-      <!-- Table row templates -->
-      <template #item.name="{ item }">
-        <div class="d-flex align-center">
-          <div class="d-flex flex-column ms-3">
-            <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name }}</span>
-          </div>
-        </div>
-      </template>
-
-      <template #item.email="{ item }">
-        <div class="d-flex align-center">
-          <div class="d-flex flex-column ms-3">
-            <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.email }}</span>
-          </div>
-        </div>
-      </template>
-
-      <template #item.last_login="{ item }">
-        <div class="d-flex align-center">
-          <div class="d-flex flex-column ms-3">
-            <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.last_login }}</span>
-          </div>
-        </div>
-      </template>
-
-      <!-- Status -->
-      <template #item.system_access="{ item }">
-        <div class="d-flex align-center">
-          <div class="d-flex flex-column ms-3">
-            <span class="d-block font-weight-medium text-truncate text-high-emphasis">
-              {{ item.system_access ? 'Yes' : 'No' }}
-            </span>
-          </div>
-        </div>
-      </template>
-
-      <!-- Access -->
-      <template #item.access="{ item }">
-        <IconBtn>
-          <VIcon
-            v-if="!loading && item.system_access"
-            icon="tabler-accessible"
-            @click="clientUserAccess(item.hash)"
-          />
-
-          <VIcon
-            v-else-if="!loading && !item.system_access"
-            icon="tabler-accessible-off"
-            @click="clientUserAccess(item.hash)"
-          />
-
-          <VProgressCircular
-            v-else
-            indeterminate
-            color="primary"
-            size="24"
-          />
-        </IconBtn>
-      </template>
-
-      <!-- Edit -->
-      <template #item.edit="{ item }">
-
-        <ClientsUsersForm
-          :editDialogueVisible="editDialogueVisible"
-          :client="client"
+      <template #item="{ item }">
+        <ClientsUsersRowItem
+          :item="item"
           :token="token"
+          :client="client"
           :updatedClient="updatedClient"
-          :clientUser="item"
-          @close-modal="closeModal"
-          @close-edit-dialogue="editDialogueVisible = false"
-          @edit-client-user="updateClientUser"
+          @client-user-access="clientUserAccess"
+          @update-client-user="updateClientUser"
         />
-
       </template>
     </VDataTable>
   </div>

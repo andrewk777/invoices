@@ -13,10 +13,18 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  updatedClient: {
+    type: Object,
+    required: true,
+  },
+  clientUser: {
+    type: Object,
+    default: null,
+  },
 });
 
 const emit = defineEmits([
-  'add-client-user',
+  'close-edit-dialogue',
 ]);
 
 const isDialogVisible = ref(false);
@@ -25,15 +33,21 @@ const submitted = ref(false);
 const loading = ref(false);
 const client = ref(props.client);
 const token = ref(props.token);
+const clientUser = ref(props.clientUser);
 
 const form = reactive({
-  name: '',
-  email: '',
+  name: props.clientUser?.name || '',
+  email: props.clientUser?.email || '',
   password: '',
-  system_access: false,
+  system_access: props.clientUser?.system_access || false,
 });
 
-const addUser = async () => {
+const closeAllDialogues = () => {
+  isDialogVisible.value = false;
+  emit('close-edit-dialogue');
+}
+
+const editUser = async () => {
   // Delete all errors
   Object.keys(errors.value).forEach(function (key) {
     delete errors.value[key];
@@ -42,14 +56,16 @@ const addUser = async () => {
   submitted.value = false;
   loading.value = true;
 
-    await axios.post(`/api/clients/${client.value.hash}/user/store`, form, {
+    await axios.put(`/api/clients/${client.value.hash}/user/${props.clientUser.hash}/update`, form, {
       headers: {
         'Accept': 'application/json',
         "Authorization": "Bearer " + token.value,
       }
     }).then((response) => {
-      if (response.data.success){
-        emit('add-client-user', response.data.client_user);
+      if (response.data.success) {
+        clientUser.value = response.data.client_user;
+        emit('edit-client-user', response.data.client_user);
+        emit('close-modal'); // Emit event to close the form dialog
         submitted.value = true;
         isDialogVisible.value = false;
       }
@@ -62,6 +78,10 @@ const addUser = async () => {
 }
 
 onMounted(() => {
+  if (props.clientUser) {
+    console.log('Edit user', props.clientUser);
+  }
+
   if (props.client) {
     console.log('Client', client.value);
   }
@@ -76,19 +96,20 @@ onMounted(() => {
   >
     <!-- Dialog Activator -->
     <template #activator="{ props }">
-      <VBtn
-        v-bind="props"
-        size="small"
-      >
-        Add User
-      </VBtn>
+
+      <IconBtn>
+        <VIcon
+          v-bind="props"
+          icon="tabler-edit"
+        />
+      </IconBtn>
     </template>
 
     <!-- Dialog close btn -->
     <DialogCloseBtn @click="isDialogVisible = !isDialogVisible" />
 
     <!-- Dialog Content -->
-    <VCard :title="'Add User'">
+    <VCard :title="'Edit User'">
       <VCardText>
         <VRow>
 
@@ -108,7 +129,7 @@ onMounted(() => {
               v-if="submitted"
               type="success"
             >
-              {{ 'User added successfully' }}
+              {{ 'User updated successfully'}}
             </VAlert>
           </VCol>
 
@@ -179,10 +200,10 @@ onMounted(() => {
           Close
         </VBtn>
         <VBtn
-          @click="addUser"
+          @click="editUser"
           :loading="loading"
         >
-          {{'Save'}}
+          {{ 'Update' }}
         </VBtn>
       </VCardText>
     </VCard>

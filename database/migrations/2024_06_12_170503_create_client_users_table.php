@@ -13,7 +13,7 @@ class CreateClientUsersTable extends Migration
             $table->string('hash', 50)->unique();
             $table->unsignedBigInteger('client_id')->nullable();
             $table->string('name')->nullable();
-            $table->string('email')->unique()->nullable();
+            $table->string('email')->nullable();
             $table->string('password')->nullable();
             $table->timestamp('last_login')->nullable();
             $table->boolean('system_access')->default(false);
