@@ -29,6 +29,7 @@ const props = defineProps({
       'disabled': item.disable,
     }]"
   >
+
     <Component
       :is="item.to ? 'RouterLink' : 'a'"
       v-bind="getComputedNavLinkToProp(item)"

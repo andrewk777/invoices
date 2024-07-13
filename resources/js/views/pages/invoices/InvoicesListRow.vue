@@ -62,7 +62,7 @@ const downloadInvoiceReceipt = () => {
 
     <td>
       <p>
-        {{ invoice.client?.main_contact_first_name }} {{ invoice.client?.main_contact_last_name }}
+        {{ invoice.client?.company_name }}
       </p>
     </td>
 

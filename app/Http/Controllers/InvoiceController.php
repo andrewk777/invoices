@@ -29,7 +29,7 @@ class InvoiceController extends Controller
                 ->with(
                     'company:id,name',
                     'client:id,company_name,company_email,company_address,company_phone',
-                )->orderBy('invoice_num')->get();
+                )->orderBy('invoice_num', 'desc')->get();
 
             return response()->json([
                 'success' => true,

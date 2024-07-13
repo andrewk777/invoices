@@ -78,7 +78,7 @@ const headers = [
   },
   {
     title: 'From Company',
-    key: 'invoice.company.name',
+    key: 'company.name',
   },
   {
     title: 'Status',
@@ -86,7 +86,7 @@ const headers = [
   },
   {
     title: 'Customer',
-    key: 'invoice.client.company_name',
+    key: 'client.company_name',
   },
   {
     title: 'Invoice Date',

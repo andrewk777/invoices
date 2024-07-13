@@ -36,19 +36,28 @@ const authenticatedRoutes = [
         path: '/clients',
         name: 'ClientsView',
         component: () => import('@/views/pages/clients/ClientsIndex.vue'),
-        meta: { title: 'Clients' },
+        meta: {
+            title: 'Clients',
+            navActiveLink: 'ClientsView'
+        },
     },
     {
         path: '/clients/create',
         name: 'ClientsCreate',
         component: () => import('@/views/pages/clients/ClientsForm.vue'),
-        meta: { title: 'Create Client' },
+        meta: {
+            title: 'Create Client',
+            navActiveLink: 'ClientsView'
+        },
     },
     {
         path: '/clients/edit/:hash',
         name: 'ClientsEdit',
         component: () => import('@/views/pages/clients/ClientsForm.vue'),
-        meta: { title: 'Edit Client' },
+        meta: {
+            title: 'Edit Client',
+            navActiveLink: 'ClientsView'
+        },
     },
     {
         path: '/invoices',
@@ -60,13 +69,19 @@ const authenticatedRoutes = [
         path: '/invoices/create',
         name: 'InvoicesCreate',
         component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
-        meta: { title: 'Create Invoice' },
+        meta: {
+            title: 'Create Invoice',
+            navActiveLink: 'InvoicesView'
+        },
     },
     {
         path: '/invoices/edit/:hash',
         name: 'InvoicesEdit',
         component: () => import('@/views/pages/invoices/InvoicesForm.vue'),
-        meta: { title: 'Edit Invoice' },
+        meta: {
+            title: 'Edit Invoice',
+            navActiveLink: 'InvoicesView'
+        },
     },
     {
         path: '/subscriptions',
@@ -78,13 +93,19 @@ const authenticatedRoutes = [
         path: '/subscriptions/create',
         name: 'SubscriptionsCreate',
         component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
-        meta: { title: 'Create Subscription' },
+        meta: {
+            title: 'Create Subscription',
+            navActiveLink: 'SubscriptionsView'
+        },
     },
     {
         path: '/subscriptions/edit/:hash',
         name: 'SubscriptionsEdit',
         component: () => import('@/views/pages/subscriptions/SubscriptionsForm.vue'),
-        meta: { title: 'Edit Subscription' },
+        meta: {
+            title: 'Edit Subscription',
+            navActiveLink: 'SubscriptionsView'
+        },
     },
     // {
     //     path: '/users',
