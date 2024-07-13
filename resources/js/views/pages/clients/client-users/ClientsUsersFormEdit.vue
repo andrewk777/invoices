@@ -39,7 +39,7 @@ const form = reactive({
   name: props.clientUser?.name || '',
   email: props.clientUser?.email || '',
   password: '',
-  system_access: props.clientUser?.system_access || false,
+  system_access: props.clientUser?.system_access === 1,
 });
 
 const closeAllDialogues = () => {
@@ -74,6 +74,11 @@ const editUser = async () => {
       console.log(error);
     });
 
+  // submitted.value = false;
+  // // Delete all errors
+  // Object.keys(errors.value).forEach(function (key) {
+  //   delete errors.value[key];
+  // });
   loading.value = false;
 }
 
@@ -97,12 +102,18 @@ onMounted(() => {
     <!-- Dialog Activator -->
     <template #activator="{ props }">
 
-      <IconBtn>
-        <VIcon
-          v-bind="props"
-          icon="tabler-edit"
-        />
-      </IconBtn>
+      <v-list-item-title v-bind="props">
+        <a href="javascript:void(0);" class="m-2">
+          Edit
+        </a>
+      </v-list-item-title>
+
+<!--      <IconBtn>-->
+<!--        <VIcon-->
+<!--          v-bind="props"-->
+<!--          icon="tabler-edit"-->
+<!--        />-->
+<!--      </IconBtn>-->
     </template>
 
     <!-- Dialog close btn -->
@@ -124,13 +135,13 @@ onMounted(() => {
               </p>
             </VAlert>
 
-            <VAlert
-              class="text-center"
-              v-if="submitted"
-              type="success"
-            >
-              {{ 'User updated successfully'}}
-            </VAlert>
+<!--            <VAlert-->
+<!--              class="text-center"-->
+<!--              v-if="submitted"-->
+<!--              type="success"-->
+<!--            >-->
+<!--              {{ 'User updated successfully'}}-->
+<!--            </VAlert>-->
           </VCol>
 
           <VCol

@@ -192,7 +192,6 @@ const deleteSubscription = async () => {
 
       </v-menu>
 
-
     </td>
 
   </tr>

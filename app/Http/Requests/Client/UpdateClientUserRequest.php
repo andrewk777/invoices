@@ -5,6 +5,7 @@ namespace App\Http\Requests\Client;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateClientUserRequest extends FormRequest
 {
@@ -23,9 +24,16 @@ class UpdateClientUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $hash = $this->route('client_user_hash');
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('client_users', 'email')->ignore($hash, 'hash'),
+            ],
             'password' => 'nullable|string|min:8',
             'system_access' => 'nullable',
         ];

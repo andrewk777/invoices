@@ -49,6 +49,16 @@ const addUser = async () => {
       }
     }).then((response) => {
       if (response.data.success){
+
+        // clear form fields
+        Object.keys(form).forEach(function (key) {
+          if(key === 'system_access'){
+            form[key] = false;
+          }else{
+            form[key] = '';
+          }
+        });
+
         emit('add-client-user', response.data.client_user);
         submitted.value = true;
         isDialogVisible.value = false;
@@ -58,6 +68,11 @@ const addUser = async () => {
       console.log(error);
     });
 
+  // submitted.value = false;
+  // // Delete all errors
+  // Object.keys(errors.value).forEach(function (key) {
+  //   delete errors.value[key];
+  // });
   loading.value = false;
 }
 
@@ -103,13 +118,13 @@ onMounted(() => {
               </p>
             </VAlert>
 
-            <VAlert
-              class="text-center"
-              v-if="submitted"
-              type="success"
-            >
-              {{ 'User added successfully' }}
-            </VAlert>
+<!--            <VAlert-->
+<!--              class="text-center"-->
+<!--              v-if="submitted"-->
+<!--              type="success"-->
+<!--            >-->
+<!--              {{ 'User added successfully' }}-->
+<!--            </VAlert>-->
           </VCol>
 
           <VCol

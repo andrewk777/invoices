@@ -66,3 +66,4 @@ todo.txt
 /.vscode
 /.pnpm-store
 themeConfig.js
+vite.config.js
