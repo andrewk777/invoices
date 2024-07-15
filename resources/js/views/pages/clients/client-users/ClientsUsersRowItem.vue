@@ -78,18 +78,6 @@ const updateClientUser = (clientUser) => {
             density="compact"
             class="pa-0 h-auto rounded-1"
           >
-
-            <ClientsUsersFormEdit
-              :editDialogueVisible="editDialogueVisible"
-              :client="client"
-              :token="token"
-              :updatedClient="updatedClient"
-              :clientUser="item"
-              @close-modal="editDialogueVisible = false"
-              @close-edit-dialogue="editDialogueVisible = false"
-              @edit-client-user="updateClientUser"
-            />
-
             <v-btn
               color="primary"
               v-bind="props"

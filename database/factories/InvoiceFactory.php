@@ -21,8 +21,8 @@ class InvoiceFactory extends Factory
      */
     public function definition(): array
     {
-        $subtotal = $this->faker->randomFloat(2, 0, 500.99);
-        $taxes = $this->faker->randomFloat(2, 0, 50.00);
+        $subtotal = $this->faker->randomFloat(2, 0, 200.99);
+        $taxes = $this->faker->randomFloat(2, 0, 20);
         $total = $subtotal + $taxes;
         $total_paid = $this->faker->randomFloat(2, 0, $total);
         $balance = $total - $total_paid;

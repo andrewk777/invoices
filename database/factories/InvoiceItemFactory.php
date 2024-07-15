@@ -21,8 +21,8 @@ class InvoiceItemFactory extends Factory
             'hash' => $this->faker->uuid(),
             //'invoice_id' => Invoice::factory()->create()->id,
             'description' => $this->faker->sentence(),
-            'qty' => $this->faker->randomNumber(),
-            'rate' => $this->faker->randomFloat(2, 0, 999999.99),
+            'qty' => $this->faker->numberBetween(1, 10),
+            'rate' => $this->faker->randomFloat(2, 0, 100.99),
             'tax' => $this->faker->boolean(),
         ];
     }
