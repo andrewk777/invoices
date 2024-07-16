@@ -2,13 +2,16 @@
 import {onBeforeMount, reactive, ref, watch, onMounted} from 'vue'
 import InvoiceSendInvoiceDrawer from '@/views/apps/invoice/InvoiceSendInvoiceDrawer.vue'
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
-import axios from "axios";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.vue";
 import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
 import {useRoute} from 'vue-router';
 import AppTextarea from "@core/components/app-form-elements/AppTextarea.vue";
 import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
+
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
+import axios from "axios";
 
 const route = useRoute();
 const hash = ref(route.params.hash);
@@ -80,14 +83,14 @@ const submitInvoice = async (event, action = null) => {
   try {
     let response;
     if (hash.value) {
-      response = await axios.post('/api/invoices/update/' + hash.value, invoiceData, {
+      response = await apiClientAuto.post('/invoices/update/' + hash.value, invoiceData, {
         headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer " + token.value,
         }
       });
     } else {
-      response = await axios.post('/api/invoices/store', invoiceData, {
+      response = await apiClientAuto.post('/invoices/store', invoiceData, {
         headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer " + token.value,
@@ -107,18 +110,7 @@ const submitInvoice = async (event, action = null) => {
     }
 
   } catch (error) {
-    if (error.response && [401, 402, 422].includes(error.response.status)) {
-      if (Object.keys(error.response?.data?.errors).length > 0) {
-        errors.value = error.response?.data?.errors;
-
-      }
-
-      if (error.response?.data?.server_error) {
-        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
-      }
-    }
-
-
+    handleErrors(error, errors.value);
   }
 
   loading.value = false;
@@ -186,15 +178,10 @@ const populateInvoicePayment = (invoice_payments) => {
 
 const getInvoice = async (hash) => {
   try {
-    const response = await axios.get('/api/invoices/show/' + hash, {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-      params: {
-        hash: hash
-      }
-    });
+    const params = {
+      hash: hash
+    }
+    const response = await apiClientAuto.get('/invoices/show/' + hash, {params});
 
     if (response.data.success) {
       invoice.value = response.data.invoice;
@@ -260,17 +247,12 @@ const invoice = ref({});
 
 const getCompanies = async () => {
   try {
-    const response = await axios.get('/api/companies', {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-    });
+    const response = await apiClientAuto.get('/companies');
 
     if (response.data.success === true) {
-      myCompanies.value = response.data.companies;
-      invoiceFrom.value = response.data.companies[1];
-      invoiceData.invoice.my_company_id = response.data.companies[1].id
+        myCompanies.value = response.data.companies;
+        invoiceFrom.value = response.data.companies[1];
+        invoiceData.invoice.my_company_id = response.data.companies[1].id
     }
 
   } catch (error) {
@@ -288,13 +270,7 @@ const selectInvoiceTo = (event) => {
 
 const getClients = async () => {
   try {
-    const response = await axios.get('/api/clients', {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-    });
-
+    const response = await apiClientAuto.get('/clients');
     if (response.data.success === true) {
       clients.value = response.data.clients;
     }
@@ -357,7 +333,6 @@ const updateBalanceAndStatusOnSave = () => {
 const downloadInvoiceReceipt = (hash) => {
 
   axios.get(`/api/invoices/receipt/${hash}/download`, {
-
     responseType: 'blob',
     headers: {
       'Accept': 'application/json',

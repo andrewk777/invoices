@@ -1,6 +1,7 @@
 <script setup>
 import {defineProps, reactive, ref, defineEmits, watch, onMounted} from 'vue';
-import axios from "axios";
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 
 const props = defineProps({
   client: {
@@ -87,38 +88,21 @@ const submitCreditCard = async () => {
     }
   });
 
-  await axios.post('/api/clients/credit-cards/store', formData, {
-    headers: {
-      'Accept' : 'application/json',
-      "Authorization" : "Bearer " + props.token,
-    }
-  }).then((response) => {
+  try {
+    const response = await apiClientAuto.post('/clients/credit-cards/store', formData);
 
     if (response.data.success){
       submitted.value = true;
       emit('assign-default-cc', response.data.credit_card.id);
     }
 
-  }).catch((error) => {
-    if(error.response){
+  } catch (error) {
+    handleErrors(error, errors.value);
+  }
 
-      if(Object.keys(error.response?.data?.errors).length > 0){
-        errors.value = error.response?.data?.errors;
-      }
-
-      if(error.response?.data?.server_error){
-        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
-      }
-    }
-
-
-  });
   loading.value = false;
 }
 
-onMounted(() => {
-
-});
 </script>
 
 <template>

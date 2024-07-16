@@ -1,11 +1,13 @@
 <script setup>
 import {computed, onBeforeMount, ref, watch} from 'vue'
-import axios from 'axios'
-
 import InvoicesItem from "@/views/pages/invoices/InvoicesListRow.vue";
 import LaravelVuePagination from 'laravel-vue-pagination';
 import baseService from '@/utils/base-service.js'
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
+
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
+import config from "@/utils/config.js";
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 const loading = ref(false);
@@ -20,51 +22,52 @@ const search = ref('');
 const savedSearch = computed(() => localStorage.getItem('invoice-search'));
 const search_values = ref([]);
 
-const getInvoices = (page = 1) => {
+const getInvoices = async (page = 1) => {
   searchActive.value = false;
   dataLoaded.value = false;
-  axios.get('/api/invoices?page=' + page, {
-    headers: {
-      "Authorization" : "Bearer " + token.value,
-      'Accept' : 'application/json',
-    },
-  }).then((response) => {
+
+  try{
+    const response = await apiClientAuto.get('/invoices?page=' + page);
     if(response.data.success === true){
       invoices.value = response.data.invoices;
       total.value = response.data.total;
     }
     dataLoaded.value = true;
 
-  }).catch((error) => {
+  } catch (error) {
+    if(config.APP_ENV === 'local'){
+      console.error('Error getting invoices:', error);
+    }
+  }
 
-  });
 }
 
-const searchInvoices = () => {
+const searchInvoices = async () => {
   if (search.value.trim() === '') {
     localStorage.removeItem('invoice-search');
-    getInvoices();
+    await getInvoices();
     return;
   }
 
   // Store search result to be loaded on page refresh
   localStorage.setItem('invoice-search', search.value);
-
   dataLoaded.value = false;
-  axios.get('/api/invoices/search?query=' + search.value, {
-    headers: {
-      "Authorization" : "Bearer " + token.value,
-      'Accept' : 'application/json',
-    },
-  }).then((response) => {
-    if(response.data.success === true){
-      invoices.value = response.data.invoices;
-      searchTotal.value = response.data.total;
-    }
-    dataLoaded.value = true;
-  }).catch((error) => {
 
-  });
+    try{
+      const response = await apiClientAuto.get('/invoices/search?query=' + search.value);
+      if(response.data.success === true){
+        invoices.value = response.data.invoices;
+        searchTotal.value = response.data.total;
+      }
+      dataLoaded.value = true;
+
+    } catch (error) {
+
+      if(config.APP_ENV === 'local'){
+        console.error('Error searching invoices:', error);
+      }
+
+    }
 }
 
 const headers = [
