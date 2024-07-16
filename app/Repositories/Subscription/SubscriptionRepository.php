@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Subscription;
 
+use App\Http\Resources\Subscription\SubscriptionIndexResource;
 use App\Http\Resources\Subscription\SubscriptionResource;
 use App\Models\Subscription;
 use App\Models\SubscriptionItem;
@@ -184,7 +185,7 @@ class SubscriptionRepository
         if($subscriptions->count() > 0){
             return [
                 'success' => true,
-                'subscriptions' => SubscriptionResource::collection($subscriptions),
+                'subscriptions' => SubscriptionIndexResource::collection($subscriptions),
                 'total' => $subscriptions->count(),
                 'search_values' => Session::get('search_values')
             ];

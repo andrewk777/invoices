@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Subscription\StoreSubscriptionRequest;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
+use App\Http\Resources\Subscription\SubscriptionIndexResource;
 use App\Http\Resources\Subscription\SubscriptionResource;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\Subscription\SubscriptionRepository;
@@ -32,7 +33,7 @@ class SubscriptionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'subscriptions' => SubscriptionResource::collection($response),
+                'subscriptions' => SubscriptionIndexResource::collection($response),
                 'total' => $response->count(),
             ]);
 
