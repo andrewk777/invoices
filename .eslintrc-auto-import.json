@@ -355,6 +355,7 @@
     "authService": true,
     "baseService": true,
     "routeService": true,
-    "validationService": true
+    "validationService": true,
+    "config": true
   }
 }
