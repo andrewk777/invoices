@@ -96,6 +96,7 @@ const deleteSubscription = async () => {
     <td>
       <p class="text-center">
         <VIcon
+          v-if="subscription.charge_cc"
           color="success"
           icon="tabler-credit-card"
         />
