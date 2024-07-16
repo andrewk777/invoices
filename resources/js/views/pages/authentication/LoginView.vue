@@ -40,25 +40,14 @@ const submitLogin = async () => {
       };
       // Store logged-in user in local storage
       localStorage.setItem('invoice-client-token', JSON.stringify(user));
-
-      if(import.meta.env.VITE_APP_ENV === 'local') {
-        console.log(response.data);
-      }
-
       window.location.href = '/invoices';
     }
 
   } catch (error) {
 
-    console.log("Error Response", error?.response);
-
     if (error?.response?.data.success === false) {
       if(error.response.data.server_error) {
 
-        if (window.Laravel.env !== 'production') {
-          console.log("Server error", error.response.data.error_message);
-          console.log("Server error", error.response.data.error_message);
-        }
         errors.server_error = 'Oh oh, error occurred. please contact the admin';
       }
 

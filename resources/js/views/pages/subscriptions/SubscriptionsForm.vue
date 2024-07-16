@@ -61,9 +61,6 @@ const createTag = () => {
     subscriptionTagsInput.value = '';
     form.subscription.tags = subscriptionTags.value.join(',');
   }
-  console.log("Tags", subscriptionTags.value);
-  console.log("Input Tags", subscriptionTagsInput.value);
-  console.log("Form Tags", form.subscription.tags);
 };
 
 const removeTag = (index) => {
@@ -91,8 +88,6 @@ const currencies = ref([
 ]);
 
 const submitSubscription = async (event, action = null) => {
-
-  console.log("Before FormData", form);
 
   if(form.subscription.charge_cc === true && !form.subscription.credit_card_id){
     errors.value.credit_card = ['Please select a credit card'];
@@ -132,7 +127,6 @@ const submitSubscription = async (event, action = null) => {
       submitted.value = true;
       if(!hash.value){
         hash.value = response.data.subscription.hash;
-        console.log("Saved Hash Value", hash.value);
       }
       if(action === 'close') {
         window.location.href = '/subscriptions';
@@ -144,9 +138,7 @@ const submitSubscription = async (event, action = null) => {
     if (error.response) {
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
-        if (import.meta.env.VITE_APP_ENV === 'local') {
-          console.log("Validation errors", errors.value);
-        }
+
       }
 
       if (error.response?.data?.server_error) {
@@ -154,7 +146,7 @@ const submitSubscription = async (event, action = null) => {
       }
     }
 
-    console.log(error);
+
   }
 
   loading.value = false;
@@ -218,8 +210,6 @@ const getSubscription = async (hash) => {
     if (response.data.success) {
       subscription.value = response.data.subscription;
 
-      console.log("Subscription Show Value", subscription.value)
-
       populateSubscription(subscription.value);
       populateStringTags(subscription.value.tags);
       selectClient(subscription.value.client_id);
@@ -229,27 +219,21 @@ const getSubscription = async (hash) => {
         populateCharges(subscription.value.charges);
       }
 
-      if (import.meta.env.VITE_APP_ENV === 'local') {
-        console.log("Invoice Show", subscription.value);
-      }
     }
   } catch (error) {
-    console.log(error);
+
   }
 
   loading.value = false;
 }
 
 const addCharge = value => {
-  console.log("Add Charge Value", value)
-  //invoiceData?.invoice_items.push(value);
   form.charges.push({
     description: '',
     rate: '',
     qty: '',
     tax: 'HST',
   });
-  console.log("Added Charge to Array", form.charges);
 }
 
 const removeCharge = index => {
@@ -270,26 +254,19 @@ const getCompanies = async () => {
       fromMyCompany.value = response.data.companies[1];
       form.subscription.my_company_id = response.data.companies[1].id
     }
-
-    if (import.meta.env.VITE_APP_ENV === 'local') {
-      console.log("Get Companies", myCompanies.value);
-    }
   } catch (error) {
-    console.log(error);
+
   }
 }
 
 const selectMyCompany = (event) => {
-  console.log("Select My Company From", event);
   fromMyCompany.value = myCompanies.value.find(company => company.id === event);
 }
 
 const selectClient = (event) => {
-  console.log("Select To Client", event);
   toClient.value = clients.value.find(client => client.id === event);
   clientCreditCards.value = toClient.value.credit_cards;
   form.subscription.credit_card_id = toClient.value.default_credit_card_id;
-  console.log("Selected Client", toClient.value);
 }
 
 const getClients = async () => {
@@ -305,11 +282,8 @@ const getClients = async () => {
       clients.value = response.data.clients;
     }
 
-    if (import.meta.env.VITE_APP_ENV === 'local') {
-      console.log("Get Companies", myCompanies.value);
-    }
   } catch (error) {
-    console.log(error);
+
   }
 }
 
@@ -348,8 +322,6 @@ onBeforeMount(async () => {
     await getSubscription(hash.value);
   }
 
-  // console.log(myCompanies.value);
-  // console.log("Token", token.value);
 })
 </script>
 

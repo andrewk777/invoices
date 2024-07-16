@@ -35,12 +35,8 @@ const getInvoices = (page = 1) => {
     }
     dataLoaded.value = true;
 
-    if(import.meta.env.VITE_APP_ENV === 'local'){
-      console.log(invoices.value);
-    }
-
   }).catch((error) => {
-    console.log(error);
+
   });
 }
 
@@ -67,7 +63,7 @@ const searchInvoices = () => {
     }
     dataLoaded.value = true;
   }).catch((error) => {
-    console.log(error);
+
   });
 }
 

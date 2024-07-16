@@ -73,12 +73,8 @@ const getCompanies = () => {
       myCompanies.value = response.data.companies;
     }
 
-    if(import.meta.env.VITE_APP_ENV === 'local'){
-      console.log("Get Companies", myCompanies.value);
-    }
-
   }).catch((error) => {
-    console.log(error);
+    // console.log(error);
   });
 }
 
@@ -92,12 +88,8 @@ const getClients = () => {
       myCompanies.value = response.data.companies;
     }
 
-    if(import.meta.env.VITE_APP_ENV === 'local'){
-      console.log("Get Companies", myCompanies.value);
-    }
-
   }).catch((error) => {
-    console.log(error);
+    // console.log(error);
   });
 }
 

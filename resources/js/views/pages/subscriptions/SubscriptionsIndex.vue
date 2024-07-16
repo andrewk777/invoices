@@ -80,9 +80,8 @@ const getSubscriptions = (page = 1) => {
       total.value = response.data.total;
     }
     dataLoaded.value = true;
-    console.log(subscriptions.value);
   }).catch((error) => {
-    console.log(error);
+
   });
 }
 
@@ -109,7 +108,7 @@ const searchSubscriptions = () => {
     }
     dataLoaded.value = true;
   }).catch((error) => {
-    console.log(error);
+
   });
 }
 

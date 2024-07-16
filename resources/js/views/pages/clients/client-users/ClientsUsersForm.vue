@@ -65,7 +65,7 @@ const addUser = async () => {
       }
     }).catch((error) => {
       baseService.handleObjectErrors(error, errors);
-      console.log(error);
+
     });
 
   // submitted.value = false;
@@ -77,9 +77,7 @@ const addUser = async () => {
 }
 
 onMounted(() => {
-  if (props.client) {
-    console.log('Client', client.value);
-  }
+
 });
 </script>
 

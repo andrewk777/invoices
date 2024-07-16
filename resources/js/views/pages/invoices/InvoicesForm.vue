@@ -67,8 +67,6 @@ const statuses = ref([
 
 const submitInvoice = async (event, action = null) => {
 
-  console.log("Before FormData", invoiceData);
-
   updateBalanceAndStatusOnSave();
 
   // Delete all errors
@@ -112,9 +110,7 @@ const submitInvoice = async (event, action = null) => {
     if (error.response && [401, 402, 422].includes(error.response.status)) {
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
-        if (import.meta.env.VITE_APP_ENV === 'local') {
-          console.log("Validation errors", errors.value);
-        }
+
       }
 
       if (error.response?.data?.server_error) {
@@ -122,7 +118,7 @@ const submitInvoice = async (event, action = null) => {
       }
     }
 
-    console.log(error);
+
   }
 
   loading.value = false;
@@ -203,8 +199,6 @@ const getInvoice = async (hash) => {
     if (response.data.success) {
       invoice.value = response.data.invoice;
 
-      console.log("Invoice Show Value", invoice.value)
-
       populateInvoice(invoice.value);
       selectInvoiceTo(invoice.value.client_id);
       if(invoice.value.items.length > 0){
@@ -213,13 +207,9 @@ const getInvoice = async (hash) => {
       if(invoice.value.payments.length > 0){
         populateInvoicePayment(invoice.value.payments);
       }
-
-      if (import.meta.env.VITE_APP_ENV === 'local') {
-        console.log("Invoice Show", invoice.value);
-      }
     }
   } catch (error) {
-    console.log(error);
+
   }
 
   loading.value = false;
@@ -237,7 +227,6 @@ const addPayment = value => {
     date: paymentToday,
     note: '',
   });
-  console.log("Added Payment to Array", invoiceData.invoice_payments);
 }
 
 const removePayment = index => {
@@ -245,15 +234,12 @@ const removePayment = index => {
 }
 
 const addCharge = value => {
-  console.log("Add Charge Value", value)
-  //invoiceData?.invoice_items.push(value);
   invoiceData?.invoice_items.push({
     description: '',
     rate: '',
     qty: '',
     tax: 'HST',
   });
-  console.log("Added Charge to Array", invoiceData.invoice_items);
 }
 
 const removeCharge = index => {
@@ -261,13 +247,8 @@ const removeCharge = index => {
 }
 
 const updateInvoiceDue = (event) => {
-  console.log("Update Invoice Due", event.target.value);
-  // Parse the input date string to a Date object
   const selectedDate = new Date(event.target.value);
-  // Add 10 days to the date
   selectedDate.setDate(selectedDate.getDate() + 10);
-  // Convert the updated Date object back to a string in YYYY-MM-DD format
-  // Update invoice_due with the new date
   invoiceData.invoice.invoice_due = selectedDate.toISOString().split('T')[0];
 }
 
@@ -292,23 +273,17 @@ const getCompanies = async () => {
       invoiceData.invoice.my_company_id = response.data.companies[1].id
     }
 
-    if (import.meta.env.VITE_APP_ENV === 'local') {
-      console.log("Get Companies", myCompanies.value);
-    }
   } catch (error) {
-    console.log(error);
+
   }
 }
 
 const selectInvoiceFrom = (event) => {
-  console.log("Select Invoice From", event);
   invoiceFrom.value = myCompanies.value.find(company => company.id === event);
 }
 
 const selectInvoiceTo = (event) => {
-  console.log("Select Invoice To", event);
   invoiceTo.value = clients.value.find(client => client.id === event);
-  console.log("Selected Client", invoiceTo.value);
 }
 
 const getClients = async () => {
@@ -323,12 +298,8 @@ const getClients = async () => {
     if (response.data.success === true) {
       clients.value = response.data.clients;
     }
-
-    if (import.meta.env.VITE_APP_ENV === 'local') {
-      console.log("Get Companies", myCompanies.value);
-    }
   } catch (error) {
-    console.log(error);
+
   }
 }
 
@@ -365,7 +336,6 @@ const calculateBalance = () => {
 }
 
 const updateBalanceFromStatus = (event) => {
-  console.log("Update Balance From Status", event.target.value);
   if (event.target.value === 'draft') {
     invoiceData.invoice.balance = invoiceData.invoice.total;
 
@@ -421,8 +391,6 @@ onBeforeMount(async () => {
   if (hash.value) {
     await getInvoice(hash.value);
   }
-  console.log(myCompanies.value);
-  console.log("Token", token.value);
 });
 
 </script>

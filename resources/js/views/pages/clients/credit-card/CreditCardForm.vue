@@ -19,7 +19,6 @@ const props = defineProps({
 
 watch(() => props.updatedClient, (updatedClient) => {
   client.value = updatedClient;
-  console.log("Watch Client updated", client.value);
 });
 
 const emit = defineEmits(['close-cc-dialogue', 'assign-default-cc']);
@@ -71,9 +70,6 @@ const maxLength = (event, max) => {
 }
 
 const submitCreditCard = async () => {
-
-  console.log("Form data", form);
-
   // Delete all errors
   Object.keys(errors.value).forEach(function(key) {
     delete errors.value[key];
@@ -85,7 +81,7 @@ const submitCreditCard = async () => {
   const formData = new FormData();
   // iterate and add form data
   Object.keys(form).forEach(function(key) {
-    console.log(key); // key
+
     if(form[key] !== null && form[key] !== ''){
       formData.append(key, form[key]);
     }
@@ -105,13 +101,9 @@ const submitCreditCard = async () => {
 
   }).catch((error) => {
     if(error.response){
-      console.log(error.response);
 
       if(Object.keys(error.response?.data?.errors).length > 0){
         errors.value = error.response?.data?.errors;
-        if(import.meta.env.VITE_APP_ENV === 'local'){
-          console.log("Validation errors", errors.value);
-        }
       }
 
       if(error.response?.data?.server_error){
@@ -119,14 +111,13 @@ const submitCreditCard = async () => {
       }
     }
 
-    console.log(error);
+
   });
   loading.value = false;
 }
 
 onMounted(() => {
-  console.log("Client Updated", client.value);
-  console.log("Token", props.token);
+
 });
 </script>
 

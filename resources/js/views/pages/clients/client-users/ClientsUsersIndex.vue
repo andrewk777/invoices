@@ -73,13 +73,11 @@ const clientUserAccess = async (hash) => {
     }
   }).catch((error) => {
     if (error.response){
-      console.log(error.response);
+
 
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
-        if (import.meta.env.VITE_APP_ENV === 'local') {
-          console.log("Validation errors", errors.value);
-        }
+
       }
 
       if (error.response?.data?.server_error) {
@@ -87,7 +85,7 @@ const clientUserAccess = async (hash) => {
       }
     }
 
-    console.log(error);
+
   });
   loading.value = false;
 }
@@ -120,7 +118,7 @@ const headers = [
 ]
 
 onBeforeMount(() => {
-  console.log("Client in ClientsUsersIndex", client.value);
+
 });
 
 </script>

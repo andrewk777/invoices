@@ -71,25 +71,14 @@ const editUser = async () => {
       }
     }).catch((error) => {
       baseService.handleObjectErrors(error, errors);
-      console.log(error);
+
     });
 
-  // submitted.value = false;
-  // // Delete all errors
-  // Object.keys(errors.value).forEach(function (key) {
-  //   delete errors.value[key];
-  // });
   loading.value = false;
 }
 
 onMounted(() => {
-  if (props.clientUser) {
-    console.log('Edit user', props.clientUser);
-  }
 
-  if (props.client) {
-    console.log('Client', client.value);
-  }
 });
 </script>
 

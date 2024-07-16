@@ -84,7 +84,7 @@ const submitClient = async (action = null) => {
   const formData = new FormData();
   // iterate and add form data
   Object.keys(form).forEach(function (key) {
-    console.log(key); // key
+
     if (form[key] !== null && form[key] !== '') {
       formData.append(key, form[key]);
     }
@@ -112,21 +112,14 @@ const submitClient = async (action = null) => {
     }
   }).catch((error) => {
     if ([401, 402, 422].includes(error.response.status)) {
-      console.log(error.response);
-
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
-        if (import.meta.env.VITE_APP_ENV === 'local') {
-          console.log("Validation errors", errors.value);
-        }
       }
 
       if (error.response?.data?.server_error) {
         errors.value.server_error = 'Server error. Please try again later or contact your admin.';
       }
     }
-
-    console.log(error);
   });
   loading.value = false;
 }
@@ -143,7 +136,7 @@ const updateClient = async (hash, action = null) => {
   const formData = new FormData();
   // iterate and add form data
   Object.keys(form).forEach(function (key) {
-    console.log(key); // key
+
     if (form[key] !== null && form[key] !== '') {
       formData.append(key, form[key]);
     }
@@ -164,7 +157,7 @@ const updateClient = async (hash, action = null) => {
     }
   }).catch((error) => {
     if (error.response && [401, 402, 422].includes(error.response.status)) {
-      console.log(error.response);
+
 
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
@@ -175,7 +168,7 @@ const updateClient = async (hash, action = null) => {
       }
     }
 
-    console.log(error);
+
   });
   loading.value = false;
 }
@@ -191,17 +184,15 @@ const getClient = async (hash) => {
       hash: hash.value
     }
   }).then((response) => {
+
     if (response.data.success) {
       client.value = response.data.client;
       populateForm(client.value);
       creditCards.value = client.value.credit_cards;
-
-      if (import.meta.env.VITE_APP_ENV === 'local') {
-        console.log("Client Show", client.value);
-      }
     }
+
   }).catch((error) => {
-    console.log(error);
+
   });
   loading.value = false;
 }

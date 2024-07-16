@@ -32,7 +32,7 @@ const logout = async () => {
 };
 
 onMounted(() => {
-  console.log("AUTH USER", user.value);
+
 });
 
 </script>

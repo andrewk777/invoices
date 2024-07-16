@@ -66,9 +66,8 @@ const getClients = (page = 1) => {
       total.value = response.data.total;
     }
     dataLoaded.value = true;
-    console.log(clients.value);
   }).catch((error) => {
-    console.log(error);
+
   });
 }
 
@@ -96,7 +95,7 @@ const searchClients = () => {
     }
     dataLoaded.value = true;
   }).catch((error) => {
-    console.log(error);
+
   });
 }
 
