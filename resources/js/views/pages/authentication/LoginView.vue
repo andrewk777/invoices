@@ -54,16 +54,16 @@ const submitLogin = async () => {
 
     if (error?.response?.data.success === false) {
       if(error.response.data.server_error) {
-        console.log("Server error", error.response.data.error_message);
-        console.log("Server error", error.response.data.error_message);
+
+        if (window.Laravel.env !== 'production') {
+          console.log("Server error", error.response.data.error_message);
+          console.log("Server error", error.response.data.error_message);
+        }
         errors.server_error = 'Oh oh, error occurred. please contact the admin';
       }
 
       if (error.response?.data?.errors) {
-        console.log("Data Errors", error.response?.data?.errors);
-        // if errors exist in response, check if it's an object and convert to array
         errors = error.response?.data?.errors;
-        console.log("Errors", errors);
       }
     }
   }

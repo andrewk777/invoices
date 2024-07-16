@@ -29,6 +29,7 @@
     "@vueuse/math": "10.9.0",
     "apexcharts": "3.46.0",
     "axios": "^1.7.2",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "bootstrap": "^5.3.3",
     "chart.js": "4.4.2",
     "cookie-es": "1.0.0",
