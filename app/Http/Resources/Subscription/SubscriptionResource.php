@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Subscription;
 
 use App\Http\Resources\Client\ClientResource;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,13 +32,13 @@ class SubscriptionResource extends JsonResource
             'tags' => $this->tags,
             'currency' => $this->currency,
             'credit_card_id' => $this->credit_card_id,
-            'next_charge_date' => $this->next_charge_date,
+            'next_charge_date' => Carbon::parse($this->next_charge_date)->format('F j, Y'),
             'due_in_days' => $this->due_in_days,
             'frequency_day' => $this->frequency_day,
             'frequency_month' => $this->frequency_month,
             'can_pay_with_cc' => $this->can_pay_with_cc,
-            'starting_date' => $this->starting_date,
-            'expiration_date' => $this->expiration_date,
+            'starting_date' => Carbon::parse($this->starting_date)->format('F j, Y'),
+            'expiration_date' => Carbon::parse($this->expiration_date)->format('F j, Y'),
             'charge_cc' => $this->charge_cc,
             'email_invoice' => $this->email_invoice,
 

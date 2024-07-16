@@ -288,13 +288,13 @@ const selectClient = (event) => {
   console.log("Select To Client", event);
   toClient.value = clients.value.find(client => client.id === event);
   clientCreditCards.value = toClient.value.credit_cards;
-  form.subscription.credit_card_id = '';
+  form.subscription.credit_card_id = toClient.value.default_credit_card_id;
   console.log("Selected Client", toClient.value);
 }
 
 const getClients = async () => {
   try {
-    const response = await axios.get('/api/clients', {
+    const response = await axios.get('/api/clients/min', {
       headers: {
         "Authorization": "Bearer " + token.value,
         'Accept': 'application/json',
@@ -530,17 +530,28 @@ onBeforeMount(async () => {
                 <p><strong>Email:</strong> {{ toClient.company_email }}</p>
                 <p><strong>Mobile:</strong> {{ toClient.company_phone }}</p>
                 <p><strong>Address:</strong> {{ toClient.company_address }}</p>
+                <router-link
+                  :to="{ name: 'ClientsEdit', params: { hash: toClient.hash }}"
+                  target="_blank"
+                >
+                  <VBtn
+                    color="primary"
+                    variant="text"
+                  >
+                    View Client
+                  </VBtn>
+                </router-link>
               </div>
             </VCol>
 
-            <VCol cols="12" md="3" class="text-no-wrap" v-if="clientCreditCards.length > 0">
+            <VCol cols="12" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
                 Client CC:
               </h6>
 
               <AppAutocomplete
                 v-model="form.subscription.credit_card_id"
-                :items="clientCreditCards"
+                :items="clientCreditCards || []"
                 item-title="cc_last_4_digits"
                 item-value="id"
                 placeholder="Select Credit Card"
@@ -810,23 +821,6 @@ onBeforeMount(async () => {
             View all
           </VBtn>
         </router-link>
-
-        <a href="" v-if="hash">
-          <VBtn
-            class="mt-2"
-            block
-            color="warning"
-            variant="tonal"
-          >
-            <VIcon
-              left
-              icon="tabler-credit-card"
-            />
-            Charge Credit Card
-          </VBtn>
-        </a>
-
-
 
       </VCol>
 

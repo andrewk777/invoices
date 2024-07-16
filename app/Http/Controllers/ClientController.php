@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Client\StoreClientRequest;
 use App\Http\Requests\Client\UpdateClientRequest;
+use App\Http\Resources\Client\ClientMinResource;
 use App\Http\Resources\Client\ClientResource;
+use App\Http\Resources\CreditCard\CreditCardResource;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\Client\ClientRepository;
 use Illuminate\Http\JsonResponse;
@@ -51,11 +53,13 @@ class ClientController extends Controller
     public function indexMin(): JsonResponse
     {
         try {
-            $data = $this->client->client()->select('id', 'company_name')
+            $data = $this->client->client()
+                ->with('creditCards')
+                ->select('id', 'hash', 'company_name', 'company_email', 'company_address', 'company_phone', 'default_credit_card_id')
                 ->orderBy('id', 'desc')->get();
             return response()->json([
                 'success' => true,
-                'clients' => $data,
+                'clients' => ClientMinResource::collection($data),
                 'total' => $data->count(),
             ]);
 

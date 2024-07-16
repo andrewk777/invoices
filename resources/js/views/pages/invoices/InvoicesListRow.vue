@@ -75,6 +75,14 @@ const downloadInvoiceReceipt = () => {
       </VBtn>
 
       <VBtn
+        v-else-if="invoice.status === 'Approved'"
+        variant="tonal" color="success"
+        size="small"
+      >
+        {{ invoice.status }}
+      </VBtn>
+
+      <VBtn
         v-else
         variant="tonal" color="error"
         size="small"

@@ -51,6 +51,12 @@ const headers = [
   },
 
   {
+    title: 'Email Invoice',
+    key: 'email_invoice',
+    sortable: true,
+  },
+
+  {
     title: 'Charge Credit Card',
     sortable: false,
   },

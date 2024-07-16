@@ -17,10 +17,6 @@ const deleted = ref(false);
 const loading = ref(false);
 const errors = ref({});
 
-const chargeCreditCard = () => {
-
-}
-
 const deleteSubscription = async () => {
   loading.value = true;
 
@@ -101,7 +97,16 @@ const deleteSubscription = async () => {
 
     <td>
       <p>
-        {{ subscription.due_in_days }}
+        {{ subscription.expiration_date }}
+      </p>
+    </td>
+
+    <td>
+      <p class="text-center" v-if="subscription.email_invoice">
+        <VIcon
+          color="success"
+          icon="tabler-mail"
+        />
       </p>
     </td>
 
