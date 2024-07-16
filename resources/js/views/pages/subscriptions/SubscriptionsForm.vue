@@ -496,7 +496,7 @@ onBeforeMount(async () => {
 
             <VCol cols="12" md="3" class="text-no-wrap">
               <h6 class="text-h6 mb-4">
-                Frequency:
+                Frequency Month:
               </h6>
               <AppAutocomplete
                 v-model="form.subscription.frequency_month"
@@ -506,6 +506,17 @@ onBeforeMount(async () => {
                 placeholder="Select Frequency"
                 class="mb-4"
                 style="inline-size: 11.875rem;"
+              />
+            </VCol>
+
+            <VCol cols="12" md="3" class="text-no-wrap">
+              <h6 class="text-h6 mb-4">Frequency Day:</h6>
+
+              <AppTextField
+                v-model="form.subscription.frequency_day"
+                placeholder="Frequency Day"
+                class="mb-4"
+                type="number"
               />
             </VCol>
 
