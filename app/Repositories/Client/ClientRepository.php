@@ -26,7 +26,6 @@ class ClientRepository
     public function storeClient($request): array
     {
         $inputs = $request->all();
-        $inputs['hash'] = BaseRepository::randomCharacters(50, '0123456789ABSDEFGHIJKLMNOPQRSTUVWXYZ');
         $client = $this->client()->create($inputs);
 
         return [

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Webpatser\Uuid\Uuid;
 
 class Subscription extends Model
 {
@@ -35,6 +36,14 @@ class Subscription extends Model
         'taxes',
         'total',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->hash = (string) Uuid::generate(4);
+        });
+    }
 
     protected $casts = [
         'tags' => 'array',

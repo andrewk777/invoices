@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Webpatser\Uuid\Uuid;
 
 class CreditCard extends Model
 {
@@ -25,6 +26,14 @@ class CreditCard extends Model
         'cc_currencies',
         'cc_type',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->hash = (string) Uuid::generate(4);
+        });
+    }
 
     public function client(): BelongsTo
     {

@@ -33,12 +33,10 @@ class SubscriptionRepository
 
         DB::beginTransaction();
         try {
-            $inputs['subscription']['hash'] = BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
             $subscription = $this->subscription()->create($inputs['subscription']);
 
             foreach ($inputs['charges'] as $charge){
                 $this->subscriptionItem()->create([
-                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                     'subscription_id' => $subscription->id,
                     'description' => $charge['description'],
                     'qty' => $charge['qty'],

@@ -16,7 +16,6 @@ class CreditCardRepository
     public function storeClientCreditCard($request): array
     {
         $inputs = $request->all();
-        $inputs['hash'] = BaseRepository::randomCharacters(50, '0123456789ABSDEFGHIJKLMNOPQRSTUVWXYZ');
         $creditCard = $this->creditCard()->with('client')->create($inputs);
 
         $creditCard->client()->update(['default_credit_card_id' => $creditCard->id]);
