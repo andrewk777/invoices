@@ -128,21 +128,22 @@ const deleteSubscription = async () => {
               :to="{ name: 'SubscriptionsEdit', params: { hash: subscription.hash } }"
               class="btn btn-primary btn-sm mr-2"
             >
-              <v-btn class="ma-0 rounded-0">View</v-btn>
+              <v-btn class="ma-0 rounded-0 btn-view">View</v-btn>
             </router-link>
 
             <v-btn
               color="primary"
               v-bind="props"
               density="compact"
-              class="rounded-0"
+              class="rounded-0 px-2 btn-dropdown"
               variant="tonal"
             >
-              <VIcon
-                icon="tabler-dots-vertical"
-              />
+            <VIcon
+              icon="tabler-dots-vertical"
+            />
             </v-btn>
           </v-btn-toggle>
+
         </template>
 
         <v-list class="border-label-info">
@@ -198,5 +199,19 @@ const deleteSubscription = async () => {
 </template>
 
 <style scoped lang="scss">
+.v-btn--size-default {
+  --v-btn-size: 0.9375rem;
+  --v-btn-height: 38px;
+  min-width: 20px;
+  padding: 0 20px;
+  font-size: 13px;
+}
 
+//.btn-dropdown {
+//  padding: 5px;
+//}
+//
+//.btn-view {
+//  padding-left: 5px;
+//}
 </style>

@@ -175,7 +175,7 @@ onBeforeMount(() => {
           clearable
         />
         <VIcon
-          @click="getInvoices"
+          @click="!search ? getInvoices() : searchInvoices()"
           class="ml-2"
           color="primary"
           size="30"

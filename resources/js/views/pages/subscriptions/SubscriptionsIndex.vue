@@ -164,7 +164,7 @@ onBeforeMount(() => {
         clearable
       />
       <VIcon
-        @click="getSubscriptions"
+        @click="!search ? getSubscriptions() : searchSubscriptions()"
         class="ml-2"
         color="primary"
         size="30"

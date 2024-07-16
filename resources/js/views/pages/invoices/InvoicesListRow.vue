@@ -58,9 +58,29 @@ const downloadInvoiceReceipt = () => {
     </td>
 
     <td>
-      <p>
+      <VBtn
+        v-if="invoice.status === 'Paid'"
+        variant="tonal" color="success"
+        size="small"
+      >
         {{ invoice.status }}
-      </p>
+      </VBtn>
+
+      <VBtn
+        v-else-if="invoice.status === 'Partially Paid'"
+        variant="tonal" color="warning"
+        size="small"
+      >
+        {{ invoice.status }}
+      </VBtn>
+
+      <VBtn
+        v-else
+        variant="tonal" color="error"
+        size="small"
+      >
+        {{ invoice.status }}
+      </VBtn>
     </td>
 
     <td>

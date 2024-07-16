@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Invoice;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,10 +20,10 @@ class InvoiceResource extends JsonResource
             'hash' => $this->hash,
             'invoice_num' => $this->invoice_num,
             'invoice_type' => $this->invoice_type,
-            'status' => $this->status,
+            'status' => $this->displayStatus($this->status),
             'currency' => $this->currency,
-            'invoice_date' => $this->invoice_date,
-            'invoice_due' => $this->invoice_due,
+            'invoice_date' => Carbon::parse($this->invoice_date)->format('F j, Y'),
+            'invoice_due' => Carbon::parse($this->invoice_due)->format('F j, Y'),
             'na' => $this->na,
             'can_pay_with_cc' => $this->can_pay_with_cc,
             'subtotal' => $this->subtotal,
@@ -40,4 +41,22 @@ class InvoiceResource extends JsonResource
             'payments' => $this->payments ? InvoicePaymentResource::collection($this->payments) : [],
         ];
     }
+
+    private function displayStatus($status): string
+    {
+       $output = '';
+       if($status === 'draft') {
+           $output = 'Draft';
+       } elseif($status === 'approved') {
+           $output = 'Approved';
+       } elseif($status === 'sent') {
+           $output = 'Sent';
+       } elseif($status === 'partially_paid') {
+           $output = 'Partially Paid';
+       } elseif($status === 'paid') {
+           $output = 'Paid';
+       }
+       return $output;
+    }
+
 }

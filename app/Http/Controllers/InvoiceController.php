@@ -33,7 +33,7 @@ class InvoiceController extends Controller
 
             return response()->json([
                 'success' => true,
-                'invoices' => $data,
+                'invoices' => InvoiceResource::collection($data),
                 'total' => $data->count(),
             ]);
 

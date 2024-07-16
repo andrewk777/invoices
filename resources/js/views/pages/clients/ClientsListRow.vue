@@ -31,17 +31,39 @@ const emittedClient = (event) => {
 
     <td>
       <VIcon
+        v-if="client.credit_cards.length > 0"
         icon="tabler-credit-card"
       />
     </td>
 
     <td>
-      <router-link
-        class="btn btn-warning waves-effect waves-light"
-        exact
-        :to="{name: 'ClientsEdit', params: { hash: client.hash }}">
-        <i class="fa fa-edit"></i>
-      </router-link>
+
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn-toggle
+            variant="text"
+            density="compact"
+            class="pa-0 h-auto rounded-1"
+          >
+            <router-link
+              class="btn btn-warning waves-effect waves-light"
+              exact
+              :to="{name: 'ClientsEdit', params: { hash: client.hash }}"
+            >
+              <v-btn class="ma-0 rounded-0">View</v-btn>
+            </router-link>
+
+          </v-btn-toggle>
+        </template>
+      </v-menu>
+
+<!--      <router-link-->
+<!--        class="btn btn-warning waves-effect waves-light"-->
+<!--        exact-->
+<!--        :to="{name: 'ClientsEdit', params: { hash: client.hash }}"-->
+<!--      >-->
+<!--        <i class="fa fa-edit"></i>-->
+<!--      </router-link>-->
     </td>
   </tr>
 </template>
