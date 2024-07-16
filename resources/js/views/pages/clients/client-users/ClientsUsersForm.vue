@@ -1,8 +1,8 @@
 <script setup>
 import { ref, reactive, defineEmits, defineProps} from 'vue'
 import DialogCloseBtn from "@core/components/DialogCloseBtn.vue";
-import axios from "axios";
-import baseService from "@/utils/base-service.js";
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 
 const props = defineProps({
   client: {
@@ -42,14 +42,10 @@ const addUser = async () => {
   submitted.value = false;
   loading.value = true;
 
-    await axios.post(`/api/clients/${client.value.hash}/user/store`, form, {
-      headers: {
-        'Accept': 'application/json',
-        "Authorization": "Bearer " + token.value,
-      }
-    }).then((response) => {
-      if (response.data.success){
+  try {
+    const response = await apiClientAuto.post(`/clients/${client.value.hash}/user/store`, form);
 
+      if (response.data.success){
         // clear form fields
         Object.keys(form).forEach(function (key) {
           if(key === 'system_access'){
@@ -63,22 +59,13 @@ const addUser = async () => {
         submitted.value = true;
         isDialogVisible.value = false;
       }
-    }).catch((error) => {
-      baseService.handleObjectErrors(error, errors);
 
-    });
+    } catch (error) {
+      handleErrors(error, errors);
+    }
 
-  // submitted.value = false;
-  // // Delete all errors
-  // Object.keys(errors.value).forEach(function (key) {
-  //   delete errors.value[key];
-  // });
   loading.value = false;
 }
-
-onMounted(() => {
-
-});
 </script>
 
 <template>
@@ -116,13 +103,6 @@ onMounted(() => {
               </p>
             </VAlert>
 
-<!--            <VAlert-->
-<!--              class="text-center"-->
-<!--              v-if="submitted"-->
-<!--              type="success"-->
-<!--            >-->
-<!--              {{ 'User added successfully' }}-->
-<!--            </VAlert>-->
           </VCol>
 
           <VCol

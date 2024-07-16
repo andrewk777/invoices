@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive, defineEmits, defineProps} from 'vue'
 import DialogCloseBtn from "@core/components/DialogCloseBtn.vue";
-import axios from "axios";
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 import baseService from "@/utils/base-service.js";
 
 const props = defineProps({
@@ -56,12 +57,9 @@ const editUser = async () => {
   submitted.value = false;
   loading.value = true;
 
-    await axios.put(`/api/clients/${client.value.hash}/user/${props.clientUser.hash}/update`, form, {
-      headers: {
-        'Accept': 'application/json',
-        "Authorization": "Bearer " + token.value,
-      }
-    }).then((response) => {
+  try {
+    const response = await apiClientAuto.put(`/clients/${client.value.hash}/user/${props.clientUser.hash}/update`, form);
+
       if (response.data.success) {
         clientUser.value = response.data.client_user;
         emit('edit-client-user', response.data.client_user);
@@ -69,17 +67,14 @@ const editUser = async () => {
         submitted.value = true;
         isDialogVisible.value = false;
       }
-    }).catch((error) => {
-      baseService.handleObjectErrors(error, errors);
 
-    });
+    } catch(error) {
+      handleErrors(error, errors);
+    }
 
   loading.value = false;
 }
 
-onMounted(() => {
-
-});
 </script>
 
 <template>

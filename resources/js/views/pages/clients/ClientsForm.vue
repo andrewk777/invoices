@@ -85,7 +85,6 @@ const submitClient = async (action = null) => {
   const formData = new FormData();
   // iterate and add form data
   Object.keys(form).forEach(function (key) {
-
     if (form[key] !== null && form[key] !== '') {
       formData.append(key, form[key]);
     }

@@ -2,7 +2,8 @@
 import { ref, computed, onBeforeMount } from 'vue'
 import ClientsUsersForm from "@/views/pages/clients/client-users/ClientsUsersForm.vue";
 import ClientsUsersRowItem from "@/views/pages/clients/client-users/ClientsUsersRowItem.vue";
-import axios from "axios";
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 import DialogCloseBtn from "@core/components/DialogCloseBtn.vue";
 
 const props = defineProps({
@@ -60,33 +61,18 @@ const clientUserAccess = async (hash) => {
   submitted.value = false;
   loading.value = true;
 
-  await axios.get(`/api/clients/user/${hash}/access`, {
-    headers: {
-      'Accept': 'application/json',
-      "Authorization": "Bearer " + token.value,
-    }
-  }).then((response) => {
-    if (response.data.success) {
-      clientUsers.value = response.data.client_users;
-      responseMessage.value = response.data.access;
-      submitted.value = true;
-    }
-  }).catch((error) => {
-    if (error.response){
+  try {
+    const response = await apiClientAuto.get(`/clients/user/${hash}/access`);
 
-
-      if (Object.keys(error.response?.data?.errors).length > 0) {
-        errors.value = error.response?.data?.errors;
-
+      if (response.data.success) {
+        clientUsers.value = response.data.client_users;
+        responseMessage.value = response.data.access;
+        submitted.value = true;
       }
 
-      if (error.response?.data?.server_error) {
-        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
-      }
-    }
-
-
-  });
+  } catch (error) {
+    handleErrors(error, errors.value);
+  }
   loading.value = false;
 }
 
@@ -116,10 +102,6 @@ const headers = [
     sortable: false,
   },
 ]
-
-onBeforeMount(() => {
-
-});
 
 </script>
 
