@@ -1,7 +1,8 @@
 <script setup>
 import { ref, defineProps, reactive } from 'vue'
 import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
-import axios from "axios";
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 
 const props = defineProps({
   subscription: {
@@ -22,12 +23,7 @@ const deleteSubscription = async () => {
 
   try {
     let response;
-    response = await axios.delete('/api/subscriptions/delete/' + subscription.value.hash, {
-      headers: {
-        'Accept': 'application/json',
-        "Authorization": "Bearer " + token.value,
-      }
-    });
+    response = await apiClientAuto.delete('/subscriptions/delete/' + subscription.value.hash);
 
     if (response.data.success){
       deleted.value = true;
@@ -35,17 +31,7 @@ const deleteSubscription = async () => {
     }
 
   } catch (error) {
-    if (error.response) {
-      if (Object.keys(error.response?.data?.errors).length > 0) {
-        errors.value = error.response?.data?.errors;
-      }
-
-      if (error.response?.data?.server_error) {
-        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
-      }
-    }
-
-
+    handleErrors(error);
   }
 
   loading.value = false;

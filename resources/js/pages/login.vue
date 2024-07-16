@@ -17,9 +17,12 @@ const isPasswordVisible = ref(false)
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
-import apiClient from '@/utils/apiClient';
 import validationService from '@/utils/validation-service'
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
+
+
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 
 const form = reactive({
   email: '',
@@ -37,7 +40,7 @@ const submitLogin = async () => {
   validationService.deleteErrorsInObject(errors, null, true);
 
   try {
-    const response = await apiClient.post('/login', form);
+    const response = await apiClientAuto.post('/login', form);
 
     if(response.data.success) {
       // Store relevant user details in local storage
@@ -58,22 +61,7 @@ const submitLogin = async () => {
     }
 
   } catch (error) {
-
-    if (import.meta.env.VITE_APP_ENV === 'local') {
-      console.log("Testing display on production", error);
-    }
-
-    if (error?.response?.data.success === false) {
-      if(error.response.data.server_error) {
-        errors.server_error = 'Oh oh, error occurred. please contact the admin';
-      }
-
-      if (error.response?.data?.errors) {
-        // if errors exist in response, check if it's an object and convert to array
-        errors.value = error.response?.data?.errors;
-      }
-    }
-
+    handleErrors(error, errors);
   }
 
   loading.value = false;

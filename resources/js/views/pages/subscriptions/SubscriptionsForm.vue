@@ -1,12 +1,13 @@
 <script setup>
 import {onBeforeMount, reactive, ref, watch} from 'vue'
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
-import axios from "axios";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.vue";
 import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
 import {useRoute} from 'vue-router';
 import AppTextarea from "@core/components/app-form-elements/AppTextarea.vue";
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 
 const route = useRoute();
 const hash = ref(route.params.hash || '');
@@ -105,25 +106,14 @@ const submitSubscription = async (event, action = null) => {
   try {
     let response;
     if (hash.value) {
-      response = await axios.post('/api/subscriptions/update/' + hash.value, form, {
-        headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer " + token.value,
-        }
-      });
+      response = await apiClientAuto.post('/subscriptions/update/' + hash.value, form);
 
     } else {
-      response = await axios.post('/api/subscriptions/store', form, {
-        headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer " + token.value,
-        }
-      });
+      response = await apiClientAuto.post('/subscriptions/store', form);
 
     }
 
     if (response.data.success){
-
       submitted.value = true;
       if(!hash.value){
         hash.value = response.data.subscription.hash;
@@ -135,18 +125,7 @@ const submitSubscription = async (event, action = null) => {
     }
 
   } catch (error) {
-    if (error.response) {
-      if (Object.keys(error.response?.data?.errors).length > 0) {
-        errors.value = error.response?.data?.errors;
-
-      }
-
-      if (error.response?.data?.server_error) {
-        errors.value.server_error = 'Server error. Please try again later or contact your admin.';
-      }
-    }
-
-
+    handleErrors(error, errors);
   }
 
   loading.value = false;
@@ -197,15 +176,10 @@ const populateCharges = (charges) => {
 
 const getSubscription = async (hash) => {
   try {
-    const response = await axios.get('/api/subscriptions/show/' + hash, {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-      params: {
-        hash: hash
-      }
-    });
+    const params = {
+      hash: hash
+    }
+    const response = await apiClientAuto.get('/subscriptions/show/' + hash, {params});
 
     if (response.data.success) {
       subscription.value = response.data.subscription;
@@ -221,7 +195,7 @@ const getSubscription = async (hash) => {
 
     }
   } catch (error) {
-
+    handleErrors(error, errors);
   }
 
   loading.value = false;
@@ -242,12 +216,7 @@ const removeCharge = index => {
 
 const getCompanies = async () => {
   try {
-    const response = await axios.get('/api/companies', {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-    });
+    const response = await apiClientAuto.get('/companies');
 
     if (response.data.success === true) {
       myCompanies.value = response.data.companies;
@@ -271,19 +240,12 @@ const selectClient = (event) => {
 
 const getClients = async () => {
   try {
-    const response = await axios.get('/api/clients/min', {
-      headers: {
-        "Authorization": "Bearer " + token.value,
-        'Accept': 'application/json',
-      },
-    });
-
-    if (response.data.success === true) {
-      clients.value = response.data.clients;
-    }
-
+    const response = await apiClientAuto.get('/clients/min');
+      if (response.data.success === true) {
+        clients.value = response.data.clients;
+      }
   } catch (error) {
-
+    handleErrors(error, errors);
   }
 }
 

@@ -1,11 +1,14 @@
 const handleObjectErrors = (error, errors) => {
     if (error.response) {
-        console.log(error.response);
+
+       if(config.APP_ENV === 'local'){
+           console.log("Error response", error.response);
+       }
 
         if (Object.keys(error.response?.data?.errors || {}).length > 0) {
             errors.value = error.response?.data?.errors;
-            if (import.meta.env.VITE_APP_ENV === 'local') {
-                console.log("Validation errors", errors.value);
+            if(config.APP_ENV === 'local'){
+                console.log("Validation Errors", error.value);
             }
         }
 

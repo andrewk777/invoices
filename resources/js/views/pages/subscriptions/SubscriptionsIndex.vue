@@ -1,10 +1,10 @@
 <script setup>
 import { computed, onBeforeMount, ref, watch } from 'vue'
-import axios from 'axios'
-
 import baseService from '@/utils/base-service.js'
 import SubscriptionsListRow from "@/views/pages/subscriptions/SubscriptionsListRow.vue";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 const loading = ref(false);
@@ -67,49 +67,47 @@ const headers = [
   },
 ]
 
-const getSubscriptions = (page = 1) => {
+const getSubscriptions = async (page = 1) => {
   dataLoaded.value = false;
-  axios.get('/api/subscriptions?page=' + page, {
-    headers: {
-      "Authorization" : "Bearer " + token.value,
-      'Accept' : 'application/json',
-    },
-  }).then((response) => {
+
+  try{
+    const response = await apiClientAuto.get('/subscriptions?page=' + page);
     if(response.data.success === true){
       subscriptions.value = response.data.subscriptions;
       total.value = response.data.total;
     }
     dataLoaded.value = true;
-  }).catch((error) => {
 
-  });
+  } catch (error) {
+    handleErrors(error);
+  }
+
 }
 
-const searchSubscriptions = () => {
+const searchSubscriptions = async () => {
   if (search.value.trim() === '') {
     localStorage.removeItem('subscription-search');
-    getSubscriptions();
+    await getSubscriptions();
     return;
   }
 
   // Store search result to be loaded on page refresh
   localStorage.setItem('subscription-search', search.value);
-
   dataLoaded.value = false;
-  axios.get('/api/subscriptions/search?query=' + search.value, {
-    headers: {
-      "Authorization" : "Bearer " + token.value,
-      'Accept' : 'application/json',
-    },
-  }).then((response) => {
+
+  try{
+    const response = await apiClientAuto.get('/subscriptions/search?query=' + search.value);
+
     if(response.data.success === true){
       subscriptions.value = response.data.subscriptions;
       searchTotal.value = response.data.total;
     }
     dataLoaded.value = true;
-  }).catch((error) => {
 
-  });
+  } catch (error) {
+    handleErrors(error);
+  }
+
 }
 
 watch(search, (newValue) => {
