@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeMount, ref, watch } from 'vue'
-import axios from 'axios'
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 
 import baseService from '@/utils/base-service.js'
 import ClientsListRow from "@/views/pages/clients/ClientsListRow.vue";
@@ -51,52 +52,50 @@ const headers = [
     sortable: false,
     key: 'experience',
   },
-]
+];
 
-const getClients = (page = 1) => {
+const getClients = async (page = 1) => {
   dataLoaded.value = false;
-  axios.get('/api/clients?page=' + page, {
-    headers: {
-      "Authorization" : "Bearer " + token.value,
-      'Accept' : 'application/json',
-    },
-  }).then((response) => {
+
+  try {
+    const response = await apiClientAuto.get('/clients?page=' + page);
+
     if(response.data.success === true){
       clients.value = response.data.clients;
       total.value = response.data.total;
     }
     dataLoaded.value = true;
-  }).catch((error) => {
 
-  });
+  } catch (error) {
+    handleErrors(error);
+  }
+
 }
 
-const searchClients = () => {
+const searchClients = async () => {
 
   if (search.value.trim() === '') {
     localStorage.removeItem('client-search');
-    getClients();
+    await getClients();
     return;
   }
 
   // Store search result to be loaded on page refresh
   localStorage.setItem('client-search', search.value);
-
   dataLoaded.value = false;
-  axios.get('/api/clients/search?query=' + search.value, {
-    headers: {
-      "Authorization" : "Bearer " + token.value,
-      'Accept' : 'application/json',
-    },
-  }).then((response) => {
-    if(response.data.success === true){
+
+  try {
+    const response = await apiClientAuto.get('/clients/search?query=' + search.value);
+
+    if (response.data.success === true) {
       clients.value = response.data.clients;
       searchTotal.value = response.data.total;
     }
-    dataLoaded.value = true;
-  }).catch((error) => {
 
-  });
+    dataLoaded.value = true;
+  } catch (error) {
+    handleErrors(error);
+  }
 }
 
 watch(search, (newValue) => {

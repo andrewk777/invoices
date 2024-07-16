@@ -1,6 +1,7 @@
 <script setup>
 import {ref, watch, reactive, computed, onMounted} from 'vue';
-import axios from "axios";
+import apiClientAuto from '@/utils/apiCLientAuto.js';
+import handleErrors from "@/utils/handleErrors.js";
 import CreditCardForm from "@/views/pages/clients/credit-card/CreditCardForm.vue";
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 import DialogCloseBtn
@@ -90,13 +91,9 @@ const submitClient = async (action = null) => {
     }
   });
 
-  await axios.post('/api/clients/store', formData, {
-    headers: {
-      'content-type': 'multipart/form-data',
-      'Accept': 'application/json',
-      "Authorization": "Bearer " + token.value,
-    }
-  }).then((response) => {
+  try {
+    const response = await apiClientAuto.post('/clients/store', form);
+
     if (response.data.success) {
 
       hash.value = response.data.client.hash;
@@ -110,7 +107,9 @@ const submitClient = async (action = null) => {
       }
 
     }
-  }).catch((error) => {
+
+  } catch (error) {
+
     if ([401, 402, 422].includes(error.response.status)) {
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
@@ -120,7 +119,9 @@ const submitClient = async (action = null) => {
         errors.value.server_error = 'Server error. Please try again later or contact your admin.';
       }
     }
-  });
+
+  }
+
   loading.value = false;
 }
 
@@ -142,23 +143,18 @@ const updateClient = async (hash, action = null) => {
     }
   });
 
-  await axios.post('/api/clients/update/' + hash, formData, {
-    headers: {
-      'content-type': 'multipart/form-data',
-      'Accept': 'application/json',
-      "Authorization": "Bearer " + token.value,
-    }
-  }).then((response) => {
+  try {
+    const response = await apiClientAuto.post('/clients/update/' + hash, formData);
     if (response.data.success) {
       submitted.value = true;
       if (action === 'close') {
         window.location.href = '/clients';
       }
     }
-  }).catch((error) => {
-    if (error.response && [401, 402, 422].includes(error.response.status)) {
 
+  } catch (error) {
 
+    if (error.response && [401, 402, 422].includes(error.response.status)){
       if (Object.keys(error.response?.data?.errors).length > 0) {
         errors.value = error.response?.data?.errors;
       }
@@ -168,22 +164,14 @@ const updateClient = async (hash, action = null) => {
       }
     }
 
-
-  });
+  }
   loading.value = false;
 }
 
 const getClient = async (hash) => {
-  // Get token from local storage
-  await axios.get('/api/clients/show/' + hash, {
-    headers: {
-      "Authorization": "Bearer " + token.value,
-      'Accept': 'application/json',
-    },
-    params: {
-      hash: hash.value
-    }
-  }).then((response) => {
+
+  try {
+    const response = await apiClientAuto.get('/clients/show/' + hash);
 
     if (response.data.success) {
       client.value = response.data.client;
@@ -191,9 +179,9 @@ const getClient = async (hash) => {
       creditCards.value = client.value.credit_cards;
     }
 
-  }).catch((error) => {
-
-  });
+  } catch (error) {
+    handleErrors(error, errors.value);
+  }
   loading.value = false;
 }
 

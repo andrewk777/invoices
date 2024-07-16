@@ -17,7 +17,7 @@ const isPasswordVisible = ref(false)
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
-import axios from 'axios';
+import apiClient from '@/utils/apiClient';
 import validationService from '@/utils/validation-service'
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 
@@ -37,10 +37,7 @@ const submitLogin = async () => {
   validationService.deleteErrorsInObject(errors, null, true);
 
   try {
-    const response = await axios.post('/api/login', form,
-      {
-        headers: {"Accept": "application/json"}
-      });
+    const response = await apiClient.post('/login', form);
 
     if(response.data.success) {
       // Store relevant user details in local storage

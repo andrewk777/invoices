@@ -356,6 +356,10 @@
     "baseService": true,
     "routeService": true,
     "validationService": true,
-    "config": true
+    "config": true,
+    "apiClient": true,
+    "apiClientMultipart": true,
+    "apiCLientAuto": true,
+    "handleErrors": true
   }
 }
