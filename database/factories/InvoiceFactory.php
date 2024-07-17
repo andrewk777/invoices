@@ -41,8 +41,8 @@ class InvoiceFactory extends Factory
             'invoice_type' => $this->faker->randomElement(['standard', 'credit_memo']),
             'status' => $this->faker->randomElement(['draft', 'approved', 'sent', 'partially_paid', 'paid']),
             'currency' => $this->faker->randomElement(['USD', 'CAD']),
-            'invoice_date' => $this->faker->date(),
-            'invoice_due' => $this->faker->date(),
+            'invoice_date' => $this->faker->dateTimeBetween('2022-01-01', '2025-12-31')->format('Y-m-d'),
+            'invoice_due' => $this->faker->dateTimeBetween('2022-01-01', '2025-12-31')->format('Y-m-d'),
             'na' => $this->faker->boolean(),
             'can_pay_with_cc' => $this->faker->boolean(),
 
