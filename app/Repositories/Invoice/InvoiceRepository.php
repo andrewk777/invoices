@@ -8,6 +8,7 @@ use App\Models\InvoiceItem;
 use App\Models\InvoicePayment;
 use App\Repositories\Base\BaseRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
@@ -170,7 +171,7 @@ class InvoiceRepository
 
     public function searchInvoices($request): array
     {
-        $search = $request->all()['query'];
+        $inputs = $request->all();
         Session::forget(['search_inputs', 'search_values']);
 
         $invoices = $this->invoice()->with('company', 'client')->select(
@@ -187,21 +188,43 @@ class InvoiceRepository
         )->leftjoin('my_companies', 'my_companies.id', '=', 'invoices.my_company_id')
             ->leftjoin('clients', 'clients.id', '=', 'invoices.client_id')
 
-            ->where(function($query) use ($search){
-                $query->when(!empty($search), static function($q) use($search){
-                    $q->where('invoices.invoice_num', 'like' , '%'. $search .'%')
-                        ->orWhere('invoices.total', 'like' , '%'. $search .'%')
-                        ->orWhere('invoices.balance', 'like' , '%'. $search .'%')
-                        ->orWhere('invoices.status', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.company_name', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.company_email', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.company_address', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.company_phone', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.main_contact_first_name', 'like' , '%'. $search .'%')
-                        ->orWhere('clients.main_contact_last_name', 'like' , '%'. $search .'%')
-                        ->orWhere('my_companies.name', 'like' , '%'. $search .'%');
+            ->where(function($query) use ($inputs){
+                $query->when(!empty($inputs['search']), static function($q) use($inputs){
+                    $q->where('invoices.invoice_num', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('invoices.total', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('invoices.balance', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('invoices.status', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('clients.company_name', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('clients.company_email', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('clients.company_address', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('clients.company_phone', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('clients.main_contact_first_name', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('clients.main_contact_last_name', 'like' , '%'. $inputs['search'] .'%')
+                        ->orWhere('my_companies.name', 'like' , '%'. $inputs['search'] .'%');
                 });
 
+                $query->when(!empty($inputs['date']), static function($q) use($inputs){
+                    $dates = explode(' ', $inputs['date']);
+                    $dateFrom = Carbon::parse($dates[0])->format('Y-m-d:00:00:00');
+                    $dateTo = isset($dates[2]) ? Carbon::parse($dates[2])->format('Y-m-d:23:59:59') : Carbon::parse($dates[0])->format('Y-m-d:23:59:59');
+                    $q->whereBetween('invoices.invoice_date', [$dateFrom, $dateTo]);
+                });
+
+                $query->when(!empty($inputs['unpaid']), static function($q) use($inputs){
+                    if($inputs['unpaid'] === "Only Unpaid"){
+                        $q->whereIn('invoices.status', ['draft', 'partially_paid']);
+                    }else{
+                        $q->whereIn('invoices.status', ['draft', 'partially_paid', 'paid', 'approved', 'sent']);
+                    }
+                });
+
+                $query->when(!empty($inputs['na']), static function($q) use($inputs){
+                    if($inputs['na'] === "Show"){
+                        $q->where('invoices.na', true);
+                    }else{
+                        $q->whereNotNull('invoices.na');
+                    }
+                });
             })->latest()->get();
 
         // if a result exists return results, else return empty array

@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(static function (){
     Route::get('/companies', [CompanyController::class, 'index']);
 
     Route::get('/invoices', [InvoiceController::class, 'index']);
-    Route::get('/invoices/search', [InvoiceController::class, 'search']);
+    Route::post('/invoices/search', [InvoiceController::class, 'search']);
     Route::post('/invoices/store', [InvoiceController::class, 'store']);
     Route::get('/invoices/show/{hash}', [InvoiceController::class, 'show']);
     Route::get('/invoices/receipt/{hash}/download', [InvoiceController::class, 'receipt']);

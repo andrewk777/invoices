@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onBeforeMount, ref, watch} from 'vue'
+import {computed, reactive, onBeforeMount, ref, watch} from 'vue'
 import InvoicesItem from "@/views/pages/invoices/InvoicesListRow.vue";
 import LaravelVuePagination from 'laravel-vue-pagination';
 import baseService from '@/utils/base-service.js'
@@ -8,6 +8,7 @@ import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 import apiClientAuto from '@/utils/apiCLientAuto.js';
 import handleErrors from "@/utils/handleErrors.js";
 import config from "@/utils/config.js";
+import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
 
 const token = computed(() => baseService.getTokenFromLocalStorage());
 const loading = ref(false);
@@ -18,9 +19,16 @@ const dataLoaded = ref(false);
 
 const searchActive = ref(false);
 const searchTotal = ref(0);
-const search = ref('');
+// const search = ref('');
 const savedSearch = computed(() => localStorage.getItem('invoice-search'));
 const search_values = ref([]);
+
+const formSearch = reactive({
+  search: '',
+  date: '',
+  unpaid: false,
+  na: false,
+});
 
 const getInvoices = async (page = 1) => {
   searchActive.value = false;
@@ -43,18 +51,23 @@ const getInvoices = async (page = 1) => {
 }
 
 const searchInvoices = async () => {
-  if (search.value.trim() === '') {
+
+  if(config.APP_ENV === 'local'){
+    console.log('Search invoices:', formSearch);
+  }
+
+  if (formSearch.search.trim() === '' && formSearch.date === '' && formSearch.unpaid === false && formSearch.na === false) {
     localStorage.removeItem('invoice-search');
     await getInvoices();
     return;
   }
 
   // Store search result to be loaded on page refresh
-  localStorage.setItem('invoice-search', search.value);
+  localStorage.setItem('invoice-search', formSearch.search);
   dataLoaded.value = false;
 
     try{
-      const response = await apiClientAuto.get('/invoices/search?query=' + search.value);
+      const response = await apiClientAuto.post('/invoices/search', formSearch);
       if(response.data.success === true){
         invoices.value = response.data.invoices;
         searchTotal.value = response.data.total;
@@ -114,16 +127,16 @@ const headers = [
   },
 ]
 
-watch(search, (newValue) => {
+watch(formSearch, (newValue) => {
   if (newValue === null) {
-    search.value = '';
+    formSearch.search = '';
   }
   searchInvoices();
 });
 
 onBeforeMount(() => {
   if(savedSearch.value) {
-    search.value = savedSearch.value;
+    formSearch.search = savedSearch.value;
     searchInvoices();
   }else{
     getInvoices();
@@ -159,11 +172,11 @@ onBeforeMount(() => {
     <VRow>
       <VCol
         cols="12"
-        md="4"
+        md="3"
         class="mb-4 d-flex"
       >
         <AppTextField
-          v-model="search"
+          v-model="formSearch.search"
           @keyup.enter="searchInvoices"
           placeholder="Search ..."
           append-inner-icon="tabler-search"
@@ -174,12 +187,47 @@ onBeforeMount(() => {
           clearable
         />
         <VIcon
-          @click="!search ? getInvoices() : searchInvoices()"
+          @click="!formSearch.search ? getInvoices() : searchInvoices()"
           class="ml-2"
           color="primary"
           size="30"
           icon="tabler-rotate-clockwise"
           title="reload"
+        />
+      </VCol>
+
+      <VCol
+        cols="12"
+        md="3"
+      >
+        <AppDateTimePicker
+          @change="searchInvoices"
+          class="mb-4"
+          v-model="formSearch.date"
+          label="Date Range"
+          placeholder="Select date range"
+          :config="{ mode: 'range' }"
+        />
+      </VCol>
+
+      <VCol
+        cols="12"
+        md="3"
+      >
+        <VSwitch
+          @change="searchInvoices"
+          v-model="formSearch.unpaid"
+          label="Unpaid"
+          true-value="Only Unpaid"
+          false-value="All"
+        />
+
+        <VSwitch
+          @change="searchInvoices"
+          v-model="formSearch.na"
+          label="NA"
+          true-value="Show"
+          false-value="Hide"
         />
       </VCol>
     </VRow>
@@ -195,11 +243,11 @@ onBeforeMount(() => {
       </template>
     </VDataTable>
 
-    <div v-if="search && searchTotal > 0" class="text-center mt-4">
+    <div v-if="formSearch.search && searchTotal > 0" class="text-center mt-4">
       <p>Showing {{ invoices.length }} of {{ searchTotal }} search results.</p>
     </div>
 
-    <div v-if="!search && total > 0" class="text-center mt-4">
+    <div v-if="!formSearch.search && total > 0" class="text-center mt-4">
       <p>Showing {{ invoices.length }} of {{ total }} invoices.</p>
     </div>
 

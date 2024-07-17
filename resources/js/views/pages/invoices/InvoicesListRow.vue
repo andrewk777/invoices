@@ -58,37 +58,37 @@ const downloadInvoiceReceipt = () => {
     </td>
 
     <td>
-      <VBtn
+      <VChip
         v-if="invoice.status === 'Paid'"
-        variant="tonal" color="success"
-        size="small"
+        color="success"
+        :label="false"
       >
         {{ invoice.status }}
-      </VBtn>
+      </VChip>
 
-      <VBtn
+      <VChip
         v-else-if="invoice.status === 'Partially Paid'"
-        variant="tonal" color="warning"
-        size="small"
+        color="warning"
+        :label="false"
       >
         {{ invoice.status }}
-      </VBtn>
+      </VChip>
 
-      <VBtn
+      <VChip
         v-else-if="invoice.status === 'Approved'"
-        variant="tonal" color="success"
-        size="small"
+        color="success"
+        :label="false"
       >
         {{ invoice.status }}
-      </VBtn>
+      </VChip>
 
-      <VBtn
+      <VChip
         v-else
-        variant="tonal" color="error"
-        size="small"
+        color="error"
+        :label="false"
       >
         {{ invoice.status }}
-      </VBtn>
+      </VChip>
     </td>
 
     <td>
@@ -174,5 +174,11 @@ const downloadInvoiceReceipt = () => {
 </template>
 
 <style scoped lang="scss">
-
+.v-btn--size-default {
+  --v-btn-size: 0.9375rem;
+  --v-btn-height: 38px;
+  min-width: 20px;
+  padding: 0 20px;
+  font-size: 13px;
+}
 </style>
