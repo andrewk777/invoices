@@ -128,7 +128,7 @@ const headers = [
 ]
 
 watch(formSearch, (newValue) => {
-  if (newValue === null) {
+  if (newValue.search === null) {
     formSearch.search = '';
   }
   searchInvoices();
