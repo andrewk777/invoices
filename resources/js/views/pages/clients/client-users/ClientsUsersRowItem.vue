@@ -70,31 +70,46 @@ const updateClientUser = (clientUser) => {
     </td>
 
     <td>
-      <v-menu>
 
+<!--      <v-menu>-->
+
+<!--        <template v-slot:activator="{ props }">-->
+<!--          <v-btn-toggle-->
+<!--            variant="text"-->
+<!--            density="compact"-->
+<!--            class="pa-0 h-auto rounded-1"-->
+<!--          >-->
+<!--            <v-btn-->
+<!--              color="primary"-->
+<!--              v-bind="props"-->
+<!--              density="compact"-->
+<!--              class="rounded-0"-->
+<!--              variant="tonal"-->
+<!--            >-->
+<!--              <VIcon-->
+<!--                icon="tabler-dots-vertical"-->
+<!--              />-->
+<!--            </v-btn>-->
+<!--          </v-btn-toggle>-->
+<!--        </template>-->
+
+<!--        <v-list class="border-label-info">-->
+<!--          <v-list-item>-->
+
+<!--            -->
+
+<!--          </v-list-item>-->
+<!--        </v-list>-->
+
+<!--      </v-menu>-->
+
+      <v-menu>
         <template v-slot:activator="{ props }">
           <v-btn-toggle
             variant="text"
             density="compact"
             class="pa-0 h-auto rounded-1"
           >
-            <v-btn
-              color="primary"
-              v-bind="props"
-              density="compact"
-              class="rounded-0"
-              variant="tonal"
-            >
-              <VIcon
-                icon="tabler-dots-vertical"
-              />
-            </v-btn>
-          </v-btn-toggle>
-        </template>
-
-        <v-list class="border-label-info">
-          <v-list-item>
-
             <ClientsUsersFormEdit
               :editDialogueVisible="editDialogueVisible"
               :client="client"
@@ -106,9 +121,8 @@ const updateClientUser = (clientUser) => {
               @edit-client-user="updateClientUser"
             />
 
-          </v-list-item>
-        </v-list>
-
+          </v-btn-toggle>
+        </template>
       </v-menu>
 
 

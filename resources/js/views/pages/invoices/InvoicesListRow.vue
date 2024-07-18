@@ -59,33 +59,37 @@ const downloadInvoiceReceipt = () => {
 
     <td>
       <VChip
+        class="justify-center"
+        style="width: 100%;"
         v-if="invoice.status === 'Paid'"
         color="success"
-        :label="false"
       >
         {{ invoice.status }}
       </VChip>
 
       <VChip
+        class="justify-center"
+        style="width: 100%;"
         v-else-if="invoice.status === 'Partially Paid'"
         color="warning"
-        :label="false"
       >
         {{ invoice.status }}
       </VChip>
 
       <VChip
+        class="justify-center"
+        style="width: 100%;"
         v-else-if="invoice.status === 'Approved'"
         color="success"
-        :label="false"
       >
         {{ invoice.status }}
       </VChip>
 
       <VChip
+        class="justify-center"
+        style="width: 100%;"
         v-else
         color="error"
-        :label="false"
       >
         {{ invoice.status }}
       </VChip>

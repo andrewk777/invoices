@@ -83,21 +83,14 @@ const editUser = async () => {
     v-model="isDialogVisible"
     max-width="600"
   >
-    <!-- Dialog Activator -->
     <template #activator="{ props }">
-
-      <v-list-item-title v-bind="props">
-        <a href="javascript:void(0);" class="m-2">
-          Edit
-        </a>
-      </v-list-item-title>
-
-<!--      <IconBtn>-->
-<!--        <VIcon-->
-<!--          v-bind="props"-->
-<!--          icon="tabler-edit"-->
-<!--        />-->
-<!--      </IconBtn>-->
+      <v-btn-toggle
+        variant="text"
+        density="compact"
+        class="pa-0 h-auto rounded-1"
+      >
+        <v-btn color="warning" class="ma-0 rounded-0" v-bind="props">Edit</v-btn>
+      </v-btn-toggle>
     </template>
 
     <!-- Dialog close btn -->
