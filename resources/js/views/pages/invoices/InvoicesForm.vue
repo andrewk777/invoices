@@ -7,7 +7,7 @@ import AppAutocomplete from "@core/components/app-form-elements/AppAutocomplete.
 import AppSelect from "@core/components/app-form-elements/AppSelect.vue";
 import {useRoute} from 'vue-router';
 import AppTextarea from "@core/components/app-form-elements/AppTextarea.vue";
-import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
+import PdfIcon from "@/components/icons/PdfIcon.vue";
 
 import apiClientAuto from '@/utils/apiCLientAuto.js';
 import handleErrors from "@/utils/handleErrors.js";
@@ -495,70 +495,35 @@ onBeforeMount(async () => {
           <!-- !SECTION -->
 
           <VRow>
-<!--            <VCol cols="3" md="3" class="text-no-wrap">-->
-<!--              <h6 class="text-h6 mb-4">-->
-<!--                Invoice From:-->
-<!--              </h6>-->
-
-<!--              <AppAutocomplete-->
-<!--                v-if="invoiceFrom"-->
-<!--                @change="selectInvoiceFrom"-->
-<!--                v-model="invoiceData.invoice.my_company_id"-->
-<!--                :items="myCompanies"-->
-<!--                item-title="name"-->
-<!--                item-value="id"-->
-<!--                placeholder="Select Company"-->
-<!--                class="mb-4"-->
-<!--                style="inline-size: 11.875rem;"-->
-<!--              />-->
-<!--            </VCol>-->
-
-            <VCol cols="12" md="4" class="text-no-wrap">
-              <h6 class="text-h6 mb-4">
-                Invoice To:
-              </h6>
-
+            <VCol md="3">
               <AppAutocomplete
                 @change="selectInvoiceTo"
                 v-model="invoiceData.invoice.client_id"
                 :items="clients"
+                label="Client"
                 item-title="company_name"
                 item-value="id"
                 placeholder="Select Client"
                 class="mb-4"
-                style="inline-size: 11.875rem;"
               />
-
-              <div v-if="invoiceData.invoice.client_id" class="d-block">
-                <p><strong>Company:</strong> {{ invoiceTo.company_name }}</p>
-                <p><strong>Email:</strong> {{ invoiceTo.company_email }}</p>
-                <p><strong>Mobile:</strong> {{ invoiceTo.company_phone }}</p>
-                <p><strong>Address:</strong> {{ invoiceTo.company_address }}</p>
-              </div>
             </VCol>
 
-            <VCol cols="12" md="4" class="text-no-wrap">
-              <h6 class="text-h6 mb-4">
-                Status:
-              </h6>
+            <VCol md="2" >
               <AppAutocomplete
                 v-model="invoiceData.invoice.status"
                 @change="updateBalanceFromStatus"
+                label="Status"
                 :items="statuses"
                 item-title="text"
                 item-value="value"
                 placeholder="Select Status"
                 class="mb-4"
-                style="inline-size: 11.875rem;"
               />
             </VCol>
 
-            <VCol cols="12" md="4" class="text-no-wrap">
-              <h6 class="text-h6 mb-4">
-                Currency:
-              </h6>
-
-              <VSelect
+            <VCol md="2">
+              <AppSelect
+                label="Currency"
                 v-model="invoiceData.invoice.currency"
                 :items="[
                   'USD',
@@ -566,40 +531,88 @@ onBeforeMount(async () => {
                 ]"
                 placeholder="Select Client"
                 class="mb-4"
-                style="inline-size: 11.875rem;"
               />
             </VCol>
 
-            <VCol cols="12" md="6" class="text-no-wrap d-flex">
+            <VCol md="3">
                 <VCheckbox
-                  v-model="invoiceData.invoice.na"
-                  label="N/A"
-                  class="mb-4"
+                    v-model="invoiceData.invoice.can_pay_with_cc"
+                    label="Can Pay with Credit Card"
+                  class="mt-6"
                 />
+            </VCol>
 
-              <VCheckbox
-                v-model="invoiceData.invoice.can_pay_with_cc"
-                label="Can Pay with Credit Card"
-                class="mb-4"
-              />
-          </VCol>
-
+            <VCol md="2">
+                <VCheckbox
+                v-model="invoiceData.invoice.na"
+                label="N/A"
+                class="mt-6"
+                />
+            </VCol>
+          </VRow>
+          
+          <VRow v-if="invoiceData.invoice.client_id">
+            <VCol md="12">
+                <div class="d-block">
+                <p><strong>Company:</strong> {{ invoiceTo.company_name }}</p>
+                <p><strong>Email:</strong> {{ invoiceTo.company_email }}</p>
+                <p><strong>Mobile:</strong> {{ invoiceTo.company_phone }}</p>
+                <p><strong>Address:</strong> {{ invoiceTo.company_address }}</p>
+              </div>
+            </VCol>
           </VRow>
 
           <VDivider class="my-6 border-dashed" thickness="4" />
 
           <!-- Add Charges -->
           <div class="add-products-form">
-            <h6 class="text-h6 mb-4">
-              Charges:
-            </h6>
+            <div class="d-flex justify-space-between mb-4">
+                <h3 class="pt-2">
+                    Charges:
+                </h3>
+
+                <VBtn
+                    class="mt-2"
+                    size="small"
+                    prepend-icon="tabler-plus"
+                    @click="addCharge"
+                    >
+                    Add Charge
+                </VBtn>
+            </div>
 
             <VRow v-for="(item, index) in invoiceData.invoice_items" :key="index">
 
-              <VCol
-                cols="12"
-                md="6"
-              >
+              <VCol md="6" >                
+                <AppTextarea
+                    v-model="item.description"
+                    rows="2"
+                    label="Description"
+                    placeholder="Item description"
+                    persistent-placeholder
+                    />
+              </VCol>
+              <VCol md="2" >
+                <AppTextField
+                  @input="calculateSubTotal"
+                  v-model="item.qty"
+                  type="number"
+                  label="Quantity"
+                  placeholder="Quantity"
+                  class="mb-6"
+                />
+              </VCol>
+              <VCol md="2" >
+                <AppTextField
+                  @input="calculateSubTotal"
+                  v-model="item.rate"
+                  type="number"
+                  label="Rate"
+                  placeholder="Rate"
+                  class="mb-6"
+                />
+              </VCol>
+              <VCol class="d-flex" md="2" >
                 <AppSelect
                   @change="calculateSubTotal"
                   v-model="item.tax"
@@ -607,51 +620,11 @@ onBeforeMount(async () => {
                    'HST',
                    'None',
                   ]"
+                  label="Tax"
                   placeholder="Select Tax"
                   class="mb-6"
                 />
-
-                <AppTextarea
-                  v-model="item.description"
-                  rows="2"
-                  placeholder="Item description"
-                  persistent-placeholder
-                />
-              </VCol>
-
-              <VCol
-                cols="12"
-                md="2"
-                sm="4"
-              >
-                <AppTextField
-                  @input="calculateSubTotal"
-                  v-model="item.qty"
-                  type="number"
-                  placeholder="Quantity"
-                  class="mb-6"
-                />
-              </VCol>
-
-              <VCol
-                cols="12"
-                md="2"
-                sm="4"
-              >
-                <AppTextField
-                  @input="calculateSubTotal"
-                  v-model="item.rate"
-                  type="number"
-                  placeholder="Rate"
-                  class="mb-6"
-                />
-              </VCol>
-
-              <VCol
-                cols="12"
-                md="2"
-              >
-                <a href="">
+                <a href="" class="mt-6 ml-4">
                   <IconBtn
                     size="36"
                     @click.prevent="removeCharge(index)"
@@ -665,15 +638,6 @@ onBeforeMount(async () => {
               </VCol>
 
             </VRow>
-
-            <VBtn
-              class="mt-2"
-              size="small"
-              prepend-icon="tabler-plus"
-              @click="addCharge"
-            >
-              Add Item
-            </VBtn>
           </div>
 
           <VDivider class="my-6 border-dashed" thickness="4" />
@@ -827,85 +791,80 @@ onBeforeMount(async () => {
       <!--Right Buttons-->
       <VCol cols="12" md="2">
         <VBtn
-          v-if="!loading"
+          :loading="loading"
           block
           color="success"
           variant="tonal"
           class="mb-2"
           @click="submitInvoice"
         >
-          Save Invoice
+          Save
         </VBtn>
 
         <VBtn
-          v-if="!loading"
-          block
-          color="info"
-          variant="tonal"
-          class="mb-2"
-          @click="submitInvoice($event, 'close')"
-        >
-          Save and Close
-        </VBtn>
-
-        <VBtn
-          v-else
+          :loading="loading"
           block
           color="success"
           variant="tonal"
           class="mb-2"
-          disabled
+          @click="submitInvoice($event, 'close')"
         >
-          <i class="fa fa-circle-notch fa-spin fa-2x"></i>
+          Save & Close
         </VBtn>
 
         <VBtn
-          block
-          color="error"
-          variant="tonal"
-          class="mb-2"
-          @click.prevent="$router.go(-1)"
-        >
-          Close
-        </VBtn>
-
-        <router-link
-          :to="{ name: 'InvoicesView'}"
-        >
-          <VBtn
-            block
-            color="primary"
-            variant="tonal"
-            @click=""
-          >
-            All Invoices
-          </VBtn>
-        </router-link>
-
-        <VBtn
+            :loading="loading"
           v-if="hash"
           @click.prevent="downloadInvoiceReceipt(hash)"
           class="mt-2"
           block
-          color="warning"
+          color="info"
           variant="tonal"
           @click=""
         >
-           <DocumentLicenseIcon :width="'18px'" class="mr-1"/> Print Invoice
+           <PdfIcon :width="'18px'" class="mr-1"/> View Invoice
         </VBtn>
 
         <VBtn
           v-if="hash"
-          class="mt-2"
+          :loading="loading"
+          class="mt-2 mb-2"
           block
-          color="danger"
+          color="warning"
           variant="tonal"
         >
           <VIcon
             left
+            class="mr-1"
             icon="tabler-credit-card"
           />
           Charge Credit Card
+        </VBtn>
+
+        <router-link
+        :to="{ name: 'InvoicesView'}"
+        >
+        <VBtn
+            :loading="loading"
+            block
+            color="primary"
+            variant="tonal"
+            class="mb-2"
+            @click=""
+        >
+            List All
+        </VBtn>
+        </router-link>
+
+        <VBtn
+        :loading="loading"
+        block
+        color="error"
+        variant="tonal"
+        class="mb-2"
+        @click.prevent="$router.go(-1)"
+        >
+        Close
         </VBtn>
 
 

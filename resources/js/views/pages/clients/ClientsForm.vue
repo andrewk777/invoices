@@ -219,7 +219,7 @@ defineExpose({
 <template>
   <VRow class="mb-2">
     <VCol cols="4">
-      <h3 class="card-header">Clients</h3>
+      <h1 class="card-header">Client: {{ form.company_name }}</h1>
     </VCol>
 
     <VCol cols="8" class="text-right flex">
@@ -243,8 +243,18 @@ defineExpose({
         :loading="loading"
         class="mr-2 btn-info waves-effect waves-light"
       >
-        {{ 'save and close' }}
+        save & close
       </VBtn>
+
+      <router-link
+        class="btn btn-info waves-effect waves-light mr-2"
+        exact
+        :to="{name: 'ClientsView'}"
+      >
+        <VBtn variant="flat" :size="'small'" :loading="loading">  List All </VBtn>
+      </router-link>
+
+
 
       <VBtn
         :size="'small'"
@@ -255,16 +265,6 @@ defineExpose({
       >
         {{ 'close' }}
       </VBtn>
-
-      <router-link
-        class="btn btn-info waves-effect waves-light"
-        exact
-        :to="{name: 'ClientsView'}"
-      >
-        <VBtn variant="flat" :size="'small'">
-          Clients List
-        </VBtn>
-      </router-link>
     </VCol>
 
     <VCol cols="12">
@@ -292,114 +292,130 @@ defineExpose({
     <VCol col="12">
 
       <VForm>
+        <v-card class="px-4 py-4 mb-4 v-card--outlined border-success">
+            <h3 class="mb-4">Company Info</h3>
+            <VRow>                
+                <!-- 👉 Company Name -->
+                <VCol cols="12" md="4">
+                    <AppTextField
+                    v-model="form.company_name"
+                    label="Company Name"
+                    :error-messages="errors.company_name"
+                    />
+                </VCol>
+                <!-- 👉 Company Address -->
+                <VCol cols="12" md="8">
+                    <AppTextField
+                    v-model="form.company_address"
+                    label="Company Address"
+                    :error-messages="errors.company_address"
+                    />
+                </VCol>  
+
+                <!-- 👉 Company Email -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.company_email"
+                    label="Company Email"
+                    :error-messages="errors.company_email"
+                    />
+                </VCol>
+
+                <!-- 👉 Company Phone No. -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.company_phone"
+                    label="Company Phone No."
+                    :error-messages="errors.company_phone"
+                    />
+                </VCol>
+            </VRow>
+        </v-card>
+        <v-card class="px-4 py-4 mb-4">
+            <h3 class="mb-4">Main Contact</h3>
+            <VRow>
+                <!-- 👉 Main Contact First Name -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.main_contact_first_name"
+                    label="Main Contact First Name"
+                    :error-messages="errors.main_contact_first_name"
+                    />
+                </VCol>
+
+                <!-- 👉 Main Contact Last Name -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.main_contact_last_name"
+                    label="Main Contact Last Name"
+                    :error-messages="errors.main_contact_last_name"
+                    />
+                </VCol>
+
+                <!-- 👉 Main Contact Email -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.main_contact_email"
+                    label="Main Contact Email"
+                    :error-messages="errors.main_contact_email"
+                    />
+                </VCol>
+
+                <!-- 👉 Main Contact Phone -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.main_contact_phone"
+                    label="Main Contact Phone"
+                    :error-messages="errors.main_contact_phone"
+                    />
+                </VCol>
+            </VRow>
+        </v-card>
+        <v-card class="px-4 py-4 mb-4">
+            <h3 class="mb-4">Accounts Payable</h3>
+            <VRow>
+                <!-- 👉 AP First Name -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.ap_first_name"
+                    label="AP First Name"
+                    :error-messages="errors.ap_first_name"
+                    />
+                </VCol>
+
+                <!-- 👉 AP Last Name -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.ap_last_name"
+                    label="AP Last Name"
+                    :error-messages="errors.ap_last_name"
+                    />
+                </VCol>
+
+                <!-- 👉 AP Email -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.ap_email"
+                    label="AP Email"
+                    :error-messages="errors.ap_email"
+                    />
+                </VCol>
+
+                <!-- 👉 AP Phone -->
+                <VCol cols="12" md="3">
+                    <AppTextField
+                    v-model="form.ap_phone"
+                    label="AP Phone"
+                    :error-messages="errors.ap_phone"
+                    />
+                </VCol>
+            </VRow>
+        </v-card>
+
+
         <VRow class="p-2">
-          <!-- 👉 Company Name -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.company_name"
-              label="Company Name"
-              :error-messages="errors.company_name"
-            />
-          </VCol>
+          
 
-          <!-- 👉 Company Address -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.company_address"
-              label="Company Address"
-              :error-messages="errors.company_address"
-            />
-          </VCol>
-
-          <!-- 👉 Company Email -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.company_email"
-              label="Company Email"
-              :error-messages="errors.company_email"
-            />
-          </VCol>
-
-          <!-- 👉 Company Phone No. -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.company_phone"
-              label="Company Phone No."
-              :error-messages="errors.company_phone"
-            />
-          </VCol>
-
-          <!-- 👉 First Name -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.main_contact_first_name"
-              label="First Name"
-              :error-messages="errors.main_contact_first_name"
-            />
-          </VCol>
-
-          <!-- 👉 Last Name -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.main_contact_last_name"
-              label="Last Name"
-              :error-messages="errors.main_contact_last_name"
-            />
-          </VCol>
-
-          <!-- 👉 Email -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.main_contact_email"
-              label="Email"
-              :error-messages="errors.main_contact_email"
-            />
-          </VCol>
-
-          <!-- 👉 Phone -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.main_contact_phone"
-              label="Phone"
-              :error-messages="errors.main_contact_phone"
-            />
-          </VCol>
-
-          <!-- 👉 AP First Name -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.ap_first_name"
-              label="AP First Name"
-              :error-messages="errors.ap_first_name"
-            />
-          </VCol>
-
-          <!-- 👉 AP Last Name -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.ap_last_name"
-              label="AP Last Name"
-              :error-messages="errors.ap_last_name"
-            />
-          </VCol>
-
-          <!-- 👉 AP Email -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.ap_email"
-              label="AP Email"
-              :error-messages="errors.ap_email"
-            />
-          </VCol>
-
-          <!-- 👉 AP Phone -->
-          <VCol cols="12" md="3">
-            <AppTextField
-              v-model="form.ap_phone"
-              label="AP Phone"
-              :error-messages="errors.ap_phone"
-            />
-          </VCol>
 
           <!-- 👉 Notes -->
           <VCol cols="12">

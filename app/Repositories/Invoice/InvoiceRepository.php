@@ -245,7 +245,7 @@ class InvoiceRepository
         ];
     }
 
-    public function generateInvoiceReceipt($hash): Response|string
+    public function generateInvoiceFile($hash): Response|string
     {
         $invoice = Invoice::with(
             'items',

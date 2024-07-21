@@ -116,13 +116,14 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <VRow class="mb-2">
-    <VCol cols="6">
-      <h3 class="card-header">Clients</h3>
-    </VCol>
 
-    <VCol cols="6" class="text-right mt-4">
-      <router-link
+  <VRow>
+      <VCol col="6" class="justify-content-first my-auto">
+        <h1 class="card-header">Clients</h1>
+      </VCol>
+
+      <VCol col="6" class="text-right mt-4">
+        <router-link
         class="btn btn-info waves-effect waves-light mr-2 btn-sm"
         exact
         :to="{name: 'ClientsCreate'}"
@@ -130,13 +131,12 @@ onBeforeMount(() => {
         <VBtn
           variant="flat"
           color="primary"
-          :size="'small'"
         >
           Create Client
         </VBtn>
       </router-link>
-    </VCol>
-  </VRow>
+      </VCol>
+    </VRow>
 
   <VRow>
     <VCol
@@ -144,6 +144,9 @@ onBeforeMount(() => {
       md="4"
       class="mb-4 d-flex"
     >
+    <VBtn @click="!search ? getClients() : searchClients()" variant="flat" color="primary" class="mr-2 p-0" >
+            <VIcon color="white" size="25" icon="tabler-rotate-clockwise" title="reload" />
+        </VBtn>
       <AppTextField
         v-model="search"
         @keyup.enter="searchClients"
@@ -154,14 +157,6 @@ onBeforeMount(() => {
         dense
         outlined
         clearable
-      />
-      <VIcon
-        @click="!search ? getClients() : searchClients()"
-        class="ml-2"
-        color="primary"
-        size="30"
-        icon="tabler-rotate-clockwise"
-        title="reload"
       />
     </VCol>
   </VRow>

@@ -124,7 +124,7 @@ class InvoiceController extends Controller
     public function receipt($hash): Response|JsonResponse
     {
         try {
-            return $this->invoice->generateInvoiceReceipt($hash);
+            return $this->invoice->generateInvoiceFile($hash);
 
         }catch (\Exception $e){
             return BaseRepository::tryCatchException($e);

@@ -20,5 +20,26 @@ class InvoiceSeeder extends Seeder
             $invoice->items()->saveMany(InvoicePayment::factory(2)->create());
             $invoice->save();
         });
+
+        //select last invoices created
+        $invoice = Invoice::orderBy('id', 'desc')->first();
+        //delete all its items and payments
+        $invoice->items()->delete();
+        $invoice->payments()->delete();
+        $invoice->items()->create(
+            [
+                'description' => 'Item 1',
+                'qty' => 3,
+                'rate' => 100,
+                'tax' => 1,
+            ]);
+        $invoice->items()->create(
+            [
+                'description' => 'Hosting and maintenance',
+                'qty' => 5,
+                'rate' => 25,
+                'tax' => 0,
+            ]);
+        $invoice->update(['invoice_num' => '0001','status' => 'draft']);
     }
 }

@@ -145,7 +145,7 @@ const downloadInvoiceReceipt = () => {
               :to="{ name: 'InvoicesEdit', params: { hash: invoice.hash } }"
               class="btn btn-primary btn-sm mr-2"
             >
-              <v-btn class="ma-0 rounded-0">View</v-btn>
+              <v-btn class="ma-0 rounded-0 pl-3">View</v-btn>
             </router-link>
 
             <v-btn
@@ -165,7 +165,7 @@ const downloadInvoiceReceipt = () => {
         <v-list class="border-label-info">
           <v-list-item >
             <a href="" @click.prevent="downloadInvoiceReceipt">
-              <v-list-item-title>Download Receipt</v-list-item-title>
+              <v-list-item-title>Invoice pdf</v-list-item-title>
             </a>
           </v-list-item>
         </v-list>

@@ -150,7 +150,7 @@ onBeforeMount(() => {
 
     <VRow>
       <VCol col="6" class="justify-content-first my-auto">
-        <h3 class="card-header">Invoices</h3>
+        <h1 class="card-header">Invoices</h1>
       </VCol>
 
       <VCol col="6" class="text-right mt-4">
@@ -160,7 +160,6 @@ onBeforeMount(() => {
           :to="{name: 'InvoicesCreate'}">
           <VBtn
             variant="flat"
-            :size="'small'"
             color="primary"
           >
             Create Invoice
@@ -172,9 +171,12 @@ onBeforeMount(() => {
     <VRow>
       <VCol
         cols="12"
-        md="3"
+        md="4"
         class="mb-4 d-flex"
       >
+        <VBtn @click="!formSearch.search ? getInvoices() : searchInvoices()" variant="flat" color="primary" class="mr-2 p-0" >
+            <VIcon color="white" size="25" icon="tabler-rotate-clockwise" title="reload" />
+        </VBtn>
         <AppTextField
           v-model="formSearch.search"
           @keyup.enter="searchInvoices"
@@ -186,14 +188,6 @@ onBeforeMount(() => {
           outlined
           clearable
         />
-        <VIcon
-          @click="!formSearch.search ? getInvoices() : searchInvoices()"
-          class="ml-2"
-          color="primary"
-          size="30"
-          icon="tabler-rotate-clockwise"
-          title="reload"
-        />
       </VCol>
 
       <VCol
@@ -204,7 +198,6 @@ onBeforeMount(() => {
           @change="searchInvoices"
           class="mb-4"
           v-model="formSearch.date"
-          label="Date Range"
           placeholder="Select date range"
           :config="{ mode: 'range' }"
         />
@@ -220,6 +213,7 @@ onBeforeMount(() => {
           label="Unpaid"
           true-value="Only Unpaid"
           false-value="All"
+          class="d-inline-block mr-4"
         />
 
         <VSwitch
@@ -228,6 +222,7 @@ onBeforeMount(() => {
           label="NA"
           true-value="Show"
           false-value="Hide"
+          class="d-inline-block"
         />
       </VCol>
     </VRow>
