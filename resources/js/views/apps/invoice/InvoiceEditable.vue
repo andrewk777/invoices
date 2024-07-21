@@ -63,39 +63,6 @@ const removeCharge = id => {
   emit('remove', id)
 }
 
-const getCompanies = () => {
-  axios.get('/api/companies', {
-    headers: {
-      'Accept' : 'application/json',
-    },
-  }).then((response) => {
-    if(response.data.success === true){
-      myCompanies.value = response.data.companies;
-    }
-
-  }).catch((error) => {
-    // console.log(error);
-  });
-}
-
-const getClients = () => {
-  axios.get('/api/clients', {
-    headers: {
-      'Accept' : 'application/json',
-    },
-  }).then((response) => {
-    if(response.data.success === true){
-      myCompanies.value = response.data.companies;
-    }
-
-  }).catch((error) => {
-    // console.log(error);
-  });
-}
-
-onBeforeMount(() => {
-  getCompanies()
-});
 </script>
 
 <template>

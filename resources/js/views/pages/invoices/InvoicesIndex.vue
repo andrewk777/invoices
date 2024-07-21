@@ -20,7 +20,13 @@ const dataLoaded = ref(false);
 const searchActive = ref(false);
 const searchTotal = ref(0);
 // const search = ref('');
-const savedSearch = computed(() => localStorage.getItem('invoice-search'));
+const searchKeys = ref([
+  'search',
+  'date',
+  'unpaid',
+  'na',
+]);
+
 const search_values = ref([]);
 
 const formSearch = reactive({
@@ -57,13 +63,25 @@ const searchInvoices = async () => {
   }
 
   if (formSearch.search.trim() === '' && formSearch.date === '' && formSearch.unpaid === false && formSearch.na === false) {
-    localStorage.removeItem('invoice-search');
+    Object.keys(formSearch).forEach((key) => {
+      localStorage.removeItem('invoice-search-' + key);
+    });
     await getInvoices();
     return;
   }
 
   // Store search result to be loaded on page refresh
-  localStorage.setItem('invoice-search', formSearch.search);
+  //localStorage.setItem('invoice-search', formSearch.search);
+
+  Object.keys(formSearch).forEach((key) => {
+    if (
+      (typeof formSearch[key] === 'string' && formSearch[key].trim() !== '') ||
+      (typeof formSearch[key] === 'boolean' && formSearch[key] === true)
+    ) {
+      localStorage.setItem('invoice-search-' + key, formSearch[key]);
+    }
+  });
+
   dataLoaded.value = false;
 
     try{
@@ -129,18 +147,28 @@ const headers = [
 
 watch(formSearch, (newValue) => {
   if (newValue.search === null) {
+    localStorage.removeItem('invoice-search-search');
     formSearch.search = '';
   }
   searchInvoices();
 });
 
 onBeforeMount(() => {
-  if(savedSearch.value) {
-    formSearch.search = savedSearch.value;
+  let searchFound = 0;
+  searchKeys.value.forEach((key) => {
+    const value = localStorage.getItem('invoice-search-' + key);
+    if (value) {
+      formSearch[key] = value;
+      searchFound++;
+    }
+  });
+
+  if (searchFound > 0) {
     searchInvoices();
-  }else{
+  } else {
     getInvoices();
   }
+
 });
 </script>
 
