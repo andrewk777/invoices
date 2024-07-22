@@ -139,25 +139,17 @@ const downloadInvoiceReceipt = () => {
           <v-btn-toggle
             variant="text"
             density="compact"
-            class="pa-0 h-auto rounded-1"
+            class="pa-0 pl-0 pr-0 h-auto rounded-1"
           >
             <router-link
               :to="{ name: 'InvoicesEdit', params: { hash: invoice.hash } }"
-              class="btn btn-primary btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2 pl-2"
             >
               <v-btn class="ma-0 rounded-0 pl-3">View</v-btn>
             </router-link>
 
-            <v-btn
-              color="primary"
-              v-bind="props"
-              density="compact"
-              class="rounded-0"
-              variant="tonal"
-            >
-              <VIcon
-                icon="tabler-dots-vertical"
-              />
+            <v-btn v-bind="props" >
+              <VIcon icon="tabler-dots-vertical"/>
             </v-btn>
           </v-btn-toggle>
         </template>

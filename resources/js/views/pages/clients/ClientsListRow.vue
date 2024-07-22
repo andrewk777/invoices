@@ -29,7 +29,7 @@ const emittedClient = (event) => {
 
     <td>{{ client.company_email }}</td>
 
-    <td>
+    <td class="text-center">
       <VIcon
         v-if="client.credit_cards.length > 0"
         icon="tabler-credit-card"
@@ -40,20 +40,16 @@ const emittedClient = (event) => {
 
       <v-menu>
         <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            variant="text"
-            density="compact"
-            class="pa-0 h-auto rounded-1"
-          >
             <router-link
               class="btn btn-warning waves-effect waves-light"
               exact
               :to="{name: 'ClientsEdit', params: { hash: client.hash }}"
             >
-              <v-btn class="ma-0 rounded-0">View</v-btn>
+            <VBtn class="mt-2 mb-2" variant="tonal" >
+            View
+            </VBtn>
             </router-link>
 
-          </v-btn-toggle>
         </template>
       </v-menu>
 

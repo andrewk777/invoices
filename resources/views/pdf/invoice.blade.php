@@ -36,6 +36,10 @@
     .w-50 {
         width: 50%;
     }
+    body
+    {
+        font-size: 12px;
+    }
 </style>
 
 <table>

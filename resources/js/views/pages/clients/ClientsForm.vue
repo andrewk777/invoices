@@ -267,9 +267,8 @@ defineExpose({
       </VBtn>
     </VCol>
 
-    <VCol cols="12">
+    <VCol v-if="Object.keys(errors).length > 0" cols="12">
       <VAlert
-        v-if="Object.keys(errors).length > 0"
         class="text-center mb-2"
         type="error"
       >

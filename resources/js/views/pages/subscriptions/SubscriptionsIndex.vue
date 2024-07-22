@@ -155,7 +155,7 @@ onBeforeMount(() => {
       md="4"
       class="d-flex"
     >
-    <VBtn @click="!search ? getSubscriptions() : searchSubscriptions()" variant="flat" color="primary" class="mr-2 p-0" >
+    <VBtn @click="!search ? getSubscriptions() : searchSubscriptions()" variant="flat" color="primary" class="p-0" >
             <VIcon color="white" size="25" icon="tabler-rotate-clockwise" title="reload" />
         </VBtn>
       <AppTextField

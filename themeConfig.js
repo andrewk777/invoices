@@ -26,7 +26,7 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
       ],
     },
     theme: 'light',
-    skin: Skins.Bordered,
+    skin: Skins.Default,
     iconRenderer: VIcon,
   },
   navbar: {

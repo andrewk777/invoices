@@ -103,8 +103,8 @@ const themeSkin = computed(() => {
     },
     {
       bgImage: borderSkin,
-      value: Skins.Bordered,
-      label: 'Bordered',
+      value: Skins.Default,
+      label: 'Default',
     },
   ]
 })

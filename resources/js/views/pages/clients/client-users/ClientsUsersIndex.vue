@@ -108,50 +108,43 @@ const headers = [
 <template>
   <div>
     <VCardText>
-      <h3>Users</h3>
-      <VRow>
+        <VRow>
+            <VCol col="6" class="justify-content-first my-auto">
+                <h3 class="card-header pt-3">Users</h3>
+            </VCol>
+
+            <VCol col="6" class="text-right">
+                <ClientsUsersForm
+                    :client="client"
+                    :token="token"
+                    :updatedClient="updatedClient"
+                    @close-modal="closeModal"
+                    @add-client-user="addClientUser"
+                >
+                    <template #activator="{ props }">
+                    <VBtn
+                        v-bind="props"
+                        size="small"
+                    >
+                        Add User
+                    </VBtn>
+                    </template>
+                </ClientsUsersForm>
+            </VCol>
+        </VRow>
+
+      <VRow v-if="submitted && responseMessage">
         <VCol
           cols="12"
           md="12"
         >
           <VAlert
-            v-if="submitted && responseMessage"
             type="success"
             dismissible
             class="text-center"
           >
             {{ responseMessage }}
           </VAlert>
-        </VCol>
-
-        <VCol
-          cols="6"
-          md="6"
-        >
-          <!-- Search input field -->
-        </VCol>
-
-        <VCol
-          cols="6"
-          md="6"
-          class="text-right"
-        >
-          <ClientsUsersForm
-            :client="client"
-            :token="token"
-            :updatedClient="updatedClient"
-            @close-modal="closeModal"
-            @add-client-user="addClientUser"
-          >
-            <template #activator="{ props }">
-              <VBtn
-                v-bind="props"
-                size="small"
-              >
-                Add User
-              </VBtn>
-            </template>
-          </ClientsUsersForm>
         </VCol>
       </VRow>
     </VCardText>

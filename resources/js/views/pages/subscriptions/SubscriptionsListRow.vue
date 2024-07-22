@@ -115,7 +115,7 @@ const deleteSubscription = async () => {
           >
             <router-link
               :to="{ name: 'SubscriptionsEdit', params: { hash: subscription.hash } }"
-              class="btn btn-primary btn-sm mr-2"
+              class="btn btn-primary btn-sm mr-2  pl-2"
             >
               <v-btn class="ma-0 rounded-0 btn-view">View</v-btn>
             </router-link>

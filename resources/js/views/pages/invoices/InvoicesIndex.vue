@@ -202,7 +202,7 @@ onBeforeMount(() => {
         md="4"
         class="mb-4 d-flex"
       >
-        <VBtn @click="!formSearch.search ? getInvoices() : searchInvoices()" variant="flat" color="primary" class="mr-2 p-0" >
+        <VBtn @click="!formSearch.search ? getInvoices() : searchInvoices()" variant="flat" color="primary" class=" p-0" >
             <VIcon color="white" size="25" icon="tabler-rotate-clockwise" title="reload" />
         </VBtn>
         <AppTextField
@@ -218,17 +218,35 @@ onBeforeMount(() => {
         />
       </VCol>
 
-      <VCol
-        cols="12"
-        md="3"
-      >
+      <VCol md="3" class="d-flex">
         <AppDateTimePicker
           @change="searchInvoices"
           class="mb-4"
           v-model="formSearch.date"
           placeholder="Select date range"
           :config="{ mode: 'range' }"
+          style="min-width: 220px;"
         />
+        <v-menu>
+            <template v-slot:activator="{ props }">
+               
+            <VBtn vvariant="flat" color="primary" class="mr-2 p-0" v-bind="props" >
+                <VIcon color="white" size="25" icon="tabler-dots-vertical"/>
+            </VBtn>
+            </template>
+
+            <v-list class="border-label-info">
+                <v-list-item > Today </v-list-item>
+                <v-list-item > Yesterday </v-list-item>
+                <v-list-item > This Week </v-list-item>
+                <v-list-item > Last </v-list-item>
+                <v-list-item > This Month </v-list-item>
+                <v-list-item > Last Month </v-list-item>
+                <v-list-item > This Year </v-list-item>
+                <v-list-item > Last Year </v-list-item>
+            </v-list>
+
+        </v-menu>
       </VCol>
 
       <VCol
@@ -239,6 +257,7 @@ onBeforeMount(() => {
           @change="searchInvoices"
           v-model="formSearch.unpaid"
           label="Unpaid"
+          size="large"
           true-value="Only Unpaid"
           false-value="All"
           class="d-inline-block mr-4"
