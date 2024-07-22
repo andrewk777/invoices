@@ -255,7 +255,7 @@ class InvoiceRepository
         )->where('hash', $hash)->first();
 
         if (!$invoice) {
-            return "Invoice not found";
+            abort(404, 'Invoice not found');
         }
 
         // Convert logo to base64
@@ -272,7 +272,17 @@ class InvoiceRepository
             'logo' => $logoBase64,
         ];
 
-        return PDF::loadView('pdf.invoice', compact('invoice', 'myCompany'))
-            ->download('invoice_receipt_'.time().'.pdf');
+        $pdf = PDF::loadView('pdf.invoice', compact('invoice', 'myCompany'));
+
+        // Set custom page size and margins
+        $customPaper = [0, 0, 595.28, 841.89]; // A4 size in points
+        $pdf->setPaper($customPaper, 'portrait');
+
+        $pdf->setOption('margin-left', 10);
+        $pdf->setOption('margin-right', 10);
+        $pdf->setOption('margin-top', 20);
+        $pdf->setOption('margin-bottom', 20);
+
+        return $pdf->stream('invoice_receipt_'.time().'.pdf');
     }
 }
