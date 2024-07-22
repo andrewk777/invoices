@@ -1,6 +1,8 @@
 <script setup>
 import navItems from '@/navigation/vertical'
 import { themeConfig } from '@themeConfig'
+import { ref, watch, onBeforeMount, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
@@ -12,6 +14,8 @@ import NavBarI18n from '@core/components/I18n.vue'
 // import { VerticalNavLayout } from '@layouts'
 import AppLoadingIndicator from "@/components/AppLoadingIndicator.vue";
 import CustomVerticalNavLayout from "@layouts/components/CustomVerticalNavLayout.vue";
+import RouteService from "@/utils/route-service.js";
+import VerticalNavLayout from "@layouts/components/VerticalNavLayout.vue";
 
 // SECTION: Loading Indicator
 const isFallbackStateActive = ref(false)
@@ -28,11 +32,46 @@ watch([
 }, { immediate: true })
 // !SECTION
 
+// Custom loading indicator
+const router = useRouter()
+const showProgressIndicator = ref(true)
 
+// Show loader before each router component load
+router.beforeEach((to, from, next) => {
+  showProgressIndicator.value = true
+  next()
+})
+
+// Hide loader after each router component load
+router.afterEach(() => {
+  setTimeout(() => {
+    showProgressIndicator.value = false
+  }, 1000)
+})
+
+onBeforeMount(() => {
+// show loader before each page load
+  setTimeout(() => {
+    showProgressIndicator.value = false
+  }, 1000);
+
+  RouteService.authenticateUser(
+    '/api/authenticate',
+    null,
+    '/login',
+  )
+})
 </script>
 
 <template>
-  <CustomVerticalNavLayout :nav-items="navItems">
+
+  <VProgressLinear
+    v-if="showProgressIndicator"
+    indeterminate
+    color="primary"
+  />
+
+  <VerticalNavLayout :nav-items="navItems">
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
@@ -60,7 +99,7 @@ watch([
       </div>
     </template>
 
-    <AppLoadingIndicator ref="refLoadingIndicator" />
+<!--    <AppLoadingIndicator ref="refLoadingIndicator" />-->
 
     <!-- 👉 Pages -->
     <RouterView v-slot="{ Component }">
@@ -80,5 +119,5 @@ watch([
 
     <!-- 👉 Customizer -->
     <!-- <TheCustomizer /> -->
-  </CustomVerticalNavLayout>
+  </VerticalNavLayout>
 </template>

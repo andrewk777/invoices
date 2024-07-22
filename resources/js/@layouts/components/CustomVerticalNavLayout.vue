@@ -89,14 +89,6 @@ export default defineComponent({
     }
   },
 })
-
-onBeforeMount(() => {
-    RouteService.authenticateUser(
-        '/api/authenticate',
-        next,
-        '/login',
-    )
-})
 </script>
 
 <style lang="scss">

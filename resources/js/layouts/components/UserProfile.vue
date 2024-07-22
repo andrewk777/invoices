@@ -1,19 +1,14 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue';
 import avatar1 from '@images/avatars/avatar-1.png';
-import axios from "axios";
+import {apiClient} from "@/utils/apiClient.js";
 
-const user = computed(() => baseService.getUserFromLocalStorage());
 const loading = ref(false);
 
 const logout = async () => {
   loading.value = true;
   try {
-    const response = await axios.get('/api/logout',{
-      headers: {
-        'Authorization': 'Bearer ' + user.value.token
-      },
-    });
+    const response = await apiClient.get('/api/logout');
     if(response.data.success){
       localStorage.removeItem('invoice-client-token');
     }
@@ -22,11 +17,7 @@ const logout = async () => {
     window.location.href = '/login';
 
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Logout failed:', error.response?.data.message);
-    } else {
-      console.error('Logout failed:', error);
-    }
+    console.error(error);
   }
   loading.value = false;
 };

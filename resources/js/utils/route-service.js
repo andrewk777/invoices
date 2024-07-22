@@ -22,7 +22,11 @@ const RouteService = {
 
         }).then((response) => {
             if(response.data.success === true && response.status === 200){
-                next();
+                if(next !== null){
+                    next();
+                }else{
+                    return null;
+                }
             }else{
                 window.location.href = logout;
             }
