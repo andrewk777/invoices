@@ -2,6 +2,7 @@
 import { ref, defineProps, reactive } from 'vue'
 import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
 import axios from "axios";
+import apiClientAuto from "@/utils/apiCLientAuto.js";
 
 const props = defineProps({
   invoice: {
@@ -17,25 +18,19 @@ const actionItems = [
 ];
 
 const downloadInvoiceReceipt = () => {
-
-  axios.get(`/api/invoices/receipt/${invoice.value.hash}/download`, {
-
+  apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}/download`, {
     responseType: 'blob',
-    headers: {
-      'Accept': 'application/json',
-      "Authorization": "Bearer " + token.value,
-    }
-
-  }).then(response => {
-
+  })
+    .then(response => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'invoice_receipt.pdf');
       document.body.appendChild(link);
       link.click();
-
-    }).catch(error => {
+      document.body.removeChild(link);
+    })
+    .catch(error => {
       console.error('Error downloading invoice receipt:', error);
     });
 };

@@ -330,27 +330,22 @@ const updateBalanceAndStatusOnSave = () => {
   }
 }
 
-const downloadInvoiceReceipt = (hash) => {
-
-  axios.get(`/api/invoices/receipt/${hash}/download`, {
+const downloadInvoiceReceipt = () => {
+  apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}/download`, {
     responseType: 'blob',
-    headers: {
-      'Accept': 'application/json',
-      "Authorization": "Bearer " + token.value,
-    }
-
-  }).then(response => {
-
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'invoice_receipt.pdf');
-    document.body.appendChild(link);
-    link.click();
-
-  }).catch(error => {
-    console.error('Error downloading invoice receipt:', error);
-  });
+  })
+    .then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'invoice_receipt.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    })
+    .catch(error => {
+      console.error('Error downloading invoice receipt:', error);
+    });
 };
 
 watch(() => invoiceData.invoice_items, () => {
