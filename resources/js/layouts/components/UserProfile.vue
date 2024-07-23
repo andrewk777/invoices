@@ -4,6 +4,7 @@ import avatar1 from '@images/avatars/avatar-1.png';
 import {apiClient} from "@/utils/apiClient.js";
 
 const loading = ref(false);
+const user = baseService.getUserFromLocalStorage();
 
 const logout = async () => {
   loading.value = true;

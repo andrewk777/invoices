@@ -65,59 +65,84 @@ onBeforeMount(() => {
 
 <template>
 
-  <VProgressLinear
-    v-if="showProgressIndicator"
-    indeterminate
-    color="primary"
-  />
+  <div class="app-container">
+    <VProgressLinear
+      v-if="showProgressIndicator"
+      indeterminate
+      color="primary"
+      class="progress-linear"
+    />
 
-  <VerticalNavLayout :nav-items="navItems">
-    <!-- 👉 navbar -->
-    <template #navbar="{ toggleVerticalOverlayNavActive }">
-      <div class="d-flex h-100 align-center">
-        <IconBtn
-          id="vertical-nav-toggle-btn"
-          class="ms-n3 d-lg-none"
-          @click="toggleVerticalOverlayNavActive(true)"
-        >
-          <VIcon
-            size="26"
-            icon="tabler-menu-2"
-          />
-        </IconBtn>
+    <div class="app-content">
+      <VerticalNavLayout :nav-items="navItems">
+        <!-- 👉 navbar -->
+        <template #navbar="{ toggleVerticalOverlayNavActive }">
+          <div class="d-flex h-100 align-center">
+            <IconBtn
+              id="vertical-nav-toggle-btn"
+              class="ms-n3 d-lg-none"
+              @click="toggleVerticalOverlayNavActive(true)"
+            >
+              <VIcon
+                size="26"
+                icon="tabler-menu-2"
+              />
+            </IconBtn>
 
-        <VSpacer />
+            <VSpacer />
 
-        <NavBarI18n
-          v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
-          :languages="themeConfig.app.i18n.langConfig"
-        />
+            <NavBarI18n
+              v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
+              :languages="themeConfig.app.i18n.langConfig"
+            />
 
-        <NavbarThemeSwitcher />
+            <NavbarThemeSwitcher />
 
-        <UserProfile />
-      </div>
-    </template>
+            <UserProfile />
+          </div>
+        </template>
 
-<!--    <AppLoadingIndicator ref="refLoadingIndicator" />-->
+        <!--    <AppLoadingIndicator ref="refLoadingIndicator" />-->
 
-    <!-- 👉 Pages -->
-    <RouterView v-slot="{ Component }">
-      <Suspense
-        :timeout="0"
-        @fallback="isFallbackStateActive = true"
-        @resolve="isFallbackStateActive = false"
-      >
-        <Component :is="Component" />
-      </Suspense>
-    </RouterView>
+        <!-- 👉 Pages -->
+        <RouterView v-slot="{ Component }">
+          <Suspense
+            :timeout="0"
+            @fallback="isFallbackStateActive = true"
+            @resolve="isFallbackStateActive = false"
+          >
+            <Component :is="Component" />
+          </Suspense>
+        </RouterView>
 
-    <!-- 👉 Footer -->
-    <template #footer>
-      <Footer />
-    </template>
+        <!-- 👉 Footer -->
+        <template #footer>
+          <Footer />
+        </template>
 
-    <!-- 👉 Customizer -->
-    <!-- <TheCustomizer /> -->
-  </VerticalNavLayout>
+        <!-- 👉 Customizer -->
+        <!-- <TheCustomizer /> -->
+      </VerticalNavLayout>
+    </div>
+  </div>
+
 </template>
+
+<style scoped>
+.app-container {
+  position: relative;
+}
+
+.progress-linear {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+}
+
+.app-content {
+  position: relative;
+  z-index: 1;
+}
+</style>
