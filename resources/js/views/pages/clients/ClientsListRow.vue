@@ -45,9 +45,7 @@ const emittedClient = (event) => {
               exact
               :to="{name: 'ClientsEdit', params: { hash: client.hash }}"
             >
-            <VBtn class="mt-2 mb-2" variant="tonal" >
-            View
-            </VBtn>
+                <VBtn class="mt-2 mb-2 w-100" variant="tonal" > View </VBtn>
             </router-link>
 
         </template>

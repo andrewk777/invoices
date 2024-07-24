@@ -330,7 +330,7 @@ const updateBalanceAndStatusOnSave = () => {
   }
 }
 
-const downloadInvoiceReceipt = () => {
+const downloadInvoice = () => {
   apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}/download`, {
     responseType: 'blob',
   })
@@ -810,7 +810,7 @@ onBeforeMount(async () => {
         <VBtn
             :loading="loading"
           v-if="hash"
-          @click.prevent="downloadInvoiceReceipt(hash)"
+          @click.prevent="downloadInvoice(hash)"
           class="mt-2"
           block
           color="info"

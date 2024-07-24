@@ -17,7 +17,7 @@ const actionItems = [
   { title: 'Download Receipt' },
 ];
 
-const downloadInvoiceReceipt = () => {
+const downloadInvoice = () => {
   apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}/download`, {
     responseType: 'blob',
   })
@@ -132,18 +132,15 @@ const downloadInvoiceReceipt = () => {
 
         <template v-slot:activator="{ props }">
           <v-btn-toggle
-            variant="text"
             density="compact"
             class="pa-0 pl-0 pr-0 h-auto rounded-1"
           >
-            <router-link
-              :to="{ name: 'InvoicesEdit', params: { hash: invoice.hash } }"
-              class="btn btn-primary btn-sm mr-2 pl-2"
-            >
-              <v-btn class="ma-0 rounded-0 pl-3">View</v-btn>
+            <router-link :rounded="0" :to="{ name: 'InvoicesEdit', params: { hash: invoice.hash } }" >
+              <!-- <v-btn class="ma-0 rounded-0 pl-3">View</v-btn> -->
+              <VBtn class="px-8" variant="tonal" :rounded="0"> View </VBtn>
             </router-link>
 
-            <v-btn v-bind="props" >
+            <v-btn variant="tonal" class="btn-tableDropDownAction text-primary" v-bind="props" >
               <VIcon icon="tabler-dots-vertical"/>
             </v-btn>
           </v-btn-toggle>
@@ -151,7 +148,7 @@ const downloadInvoiceReceipt = () => {
 
         <v-list class="border-label-info">
           <v-list-item >
-            <a href="" @click.prevent="downloadInvoiceReceipt">
+            <a href="" @click.prevent="downloadInvoice">
               <v-list-item-title>Invoice pdf</v-list-item-title>
             </a>
           </v-list-item>
@@ -163,13 +160,3 @@ const downloadInvoiceReceipt = () => {
 
   </tr>
 </template>
-
-<style scoped lang="scss">
-.v-btn--size-default {
-  --v-btn-size: 0.9375rem;
-  --v-btn-height: 38px;
-  min-width: 20px;
-  padding: 0 20px;
-  font-size: 13px;
-}
-</style>

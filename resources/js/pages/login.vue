@@ -141,19 +141,8 @@ onBeforeMount(() => {
                 >
                 {{ errors.unauthorised[0] }}
               </VAlert>
-
-              <!-- loading -->
-              <VCol cols="12" class="text-center">
-                <VProgressCircular
-                  v-if="loading"
-                  indeterminate
-                  color="primary"
-                  size="24"
-                />
-              </VCol>
-
               <!-- email -->
-              <VCol cols="12">
+              <VCol cols="12" class="position-relative">
                 <AppTextField
                   v-model="form.email"
                   autofocus
@@ -162,14 +151,14 @@ onBeforeMount(() => {
                 />
                 <p
                   v-if="errors.email"
-                  class="mt-2 text-center text-error"
+                  class="text-center text-error w-100 position-absolute"
                 >
                   {{ errors.email[0] }}
                 </p>
               </VCol>
 
               <!-- password -->
-              <VCol cols="12">
+              <VCol cols="12" class="position-relative">
                 <AppTextField
                   v-model="form.password"
                   label="Password"
@@ -179,14 +168,15 @@ onBeforeMount(() => {
                 />
                 <p
                   v-if="errors.password"
-                  class="mt-2 text-center text-error"
+                  class="text-center text-error w-100 position-absolute"
                 >
                   {{ errors.password[0] }}
                 </p>
 
                 <VBtn
-                  class="mt-4"
+                  class="mt-8"
                   block
+                  :loading="loading"
                   type="submit"
                 >
                   Login

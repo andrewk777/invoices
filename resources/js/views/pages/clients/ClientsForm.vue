@@ -291,7 +291,7 @@ defineExpose({
     <VCol col="12">
 
       <VForm>
-        <v-card class="px-4 py-4 mb-4 v-card--outlined border-success">
+        <v-card class="pa-4 mb-4 v-card--outlined border-success">
             <h3 class="mb-4">Company Info</h3>
             <VRow>                
                 <!-- 👉 Company Name -->
@@ -330,7 +330,7 @@ defineExpose({
                 </VCol>
             </VRow>
         </v-card>
-        <v-card class="px-4 py-4 mb-4">
+        <v-card class="pa-4 mb-4">
             <h3 class="mb-4">Main Contact</h3>
             <VRow>
                 <!-- 👉 Main Contact First Name -->
@@ -370,7 +370,7 @@ defineExpose({
                 </VCol>
             </VRow>
         </v-card>
-        <v-card class="px-4 py-4 mb-4">
+        <v-card class="pa-4 mb-4">
             <h3 class="mb-4">Accounts Payable</h3>
             <VRow>
                 <!-- 👉 AP First Name -->
@@ -411,78 +411,76 @@ defineExpose({
             </VRow>
         </v-card>
 
+        <v-card class="pa-4 mb-4">
+            <VRow class="p-2">
+                <!-- 👉 Notes -->
+                <VCol cols="12">
+                    <VTextarea
+                    v-model="form.notes"
+                    label="Notes"
+                    rows="3"
+                    :error-messages="errors.notes"
+                    />
+                </VCol>
 
-        <VRow class="p-2">
-          
+                <!-- 👉 Credit Cards -->
+                <VCol cols="12" md="4" class="d-block" v-if="hash">
+                    <VDialog
+                    v-model="ccDialogueVisible"
+                    max-width="600"
+                    >
+                    <!-- Dialog Activator -->
+                    <template #activator="{ props }">
+                        <VBtn v-bind="props"  size="small" class="mb-2">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="icon icon-tabler icon-tabler-credit-card-filled mr-1"
+                            width="20" height="20"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="#2c3e50"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M22 10v6a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-6h20zm-14.99 4h-.01a1 1 0 1 0 .01 2a1 1 0 0 0 0 -2zm5.99 0h-2a1 1 0 0 0 0 2h2a1 1 0 0 0 0 -2zm5 -10a4 4 0 0 1 4 4h-20a4 4 0 0 1 4 -4h12z" stroke-width="0" fill="currentColor" />
+                        </svg>
+                        Add Credit Card
+                        </VBtn>
+                    </template>
 
+                    <!-- Dialog close btn -->
+                    <DialogCloseBtn @click="ccDialogueVisible = !ccDialogueVisible" />
 
-          <!-- 👉 Notes -->
-          <VCol cols="12">
-            <VTextarea
-              v-model="form.notes"
-              label="Notes"
-              rows="3"
-              :error-messages="errors.notes"
-            />
-          </VCol>
+                    <!-- Dialog Content -->
+                    <VCard title="Add New Card">
+                        <VCardText>
+                        <CreditCardForm
+                            :client="client"
+                            :updatedClient="updatedClient"
+                            :token="token"
+                            @close-cc-dialogue="closeModal"
+                            @assign-default-cc="assignDefaultCreditCard"
+                        />
+                        </VCardText>
 
-          <!-- 👉 Credit Cards -->
-          <VCol cols="12" md="4" class="d-block" v-if="hash">
-            <VDialog
-              v-model="ccDialogueVisible"
-              max-width="600"
-            >
-              <!-- Dialog Activator -->
-              <template #activator="{ props }">
-                <VBtn v-bind="props">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon icon-tabler icon-tabler-credit-card-filled"
-                    width="30" height="30"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="#2c3e50"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M22 10v6a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-6h20zm-14.99 4h-.01a1 1 0 1 0 .01 2a1 1 0 0 0 0 -2zm5.99 0h-2a1 1 0 0 0 0 2h2a1 1 0 0 0 0 -2zm5 -10a4 4 0 0 1 4 4h-20a4 4 0 0 1 4 -4h12z" stroke-width="0" fill="currentColor" />
-                  </svg>
-                  Add Credit Card
-                </VBtn>
-              </template>
+                    </VCard>
+                    </VDialog>
 
-              <!-- Dialog close btn -->
-              <DialogCloseBtn @click="ccDialogueVisible = !ccDialogueVisible" />
-
-              <!-- Dialog Content -->
-              <VCard title="Add New Card">
-                <VCardText>
-                  <CreditCardForm
-                    :client="client"
-                    :updatedClient="updatedClient"
-                    :token="token"
-                    @close-cc-dialogue="closeModal"
-                    @assign-default-cc="assignDefaultCreditCard"
-                  />
-                </VCardText>
-
-              </VCard>
-            </VDialog>
-
-            <VSelect
-              v-if="creditCards?.length > 0"
-              v-model="form.default_credit_card_id"
-              :items="creditCards"
-              item-title="cc_last_4_digits"
-              item-value="id"
-              label="Select Credit Card"
-              class="mt-2"
-            />
-          </VCol>
-
-        </VRow>
+                    <VSelect
+                    v-if="creditCards?.length > 0"
+                    v-model="form.default_credit_card_id"
+                    :items="creditCards"
+                    item-title="cc_last_4_digits"
+                    item-value="id"
+                    label="Select Credit Card"
+                    class="mt-2"
+                    />
+                </VCol>
+            </VRow>
+        </v-card>
+        
       </VForm>
 
     </VCol>
