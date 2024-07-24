@@ -330,7 +330,25 @@ const updateBalanceAndStatusOnSave = () => {
   }
 }
 
+const openInvoiceReceiptInBrowser = () => {
+  submitInvoice(event);
+
+  apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}`, {
+    responseType: 'blob',
+  })
+    .then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      window.open(url, '_blank');
+    })
+    .catch(error => {
+      console.error('Error opening invoice receipt:', error);
+    });
+};
+
 const downloadInvoiceReceipt = () => {
+
+  submitInvoice(event);
+
   apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}/download`, {
     responseType: 'blob',
   })
@@ -549,7 +567,7 @@ onBeforeMount(async () => {
           <VRow v-if="invoiceData.invoice.client_id">
             <VCol md="12">
               <div class="d-block">
-                <CreditCardIcon/>
+                <CreditCardIcon v-if="invoiceTo?.credit_cards?.length > 0"/>
                 <p><strong>Company:</strong> {{ invoiceTo.company_name }}</p>
                 <p><strong>Email:</strong> {{ invoiceTo.company_email }}</p>
                 <p><strong>Mobile:</strong> {{ invoiceTo.company_phone }}</p>
@@ -813,8 +831,8 @@ onBeforeMount(async () => {
 
         <VBtn
             :loading="loading"
-          v-if="hash && invoiceTo.default_credit_card"
-          @click.prevent="downloadInvoiceReceipt(hash)"
+          v-if="hash && invoiceTo?.credit_cards?.length > 0"
+          @click.prevent="downloadInvoiceReceipt()"
           class="mt-2"
           block
           color="info"
