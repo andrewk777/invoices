@@ -118,9 +118,15 @@ const submitInvoice = async (event, action = null) => {
 
 const populateInvoice = (invoice) => {
   Object.keys(invoice).forEach(function (key) {
+    console.log("Populate key", key);
+    console.log("Populate value", invoice[key]);
+
     if (invoice[key] !== null && invoice[key] !== '') {
-      invoiceData.invoice[key] = invoice[key];
+      if((key === 'na' || key === 'can_pay_with_cc')) {
+        invoiceData.invoice[key] = invoice[key] === 1;
+      }
     }
+
   });
 }
 
