@@ -245,7 +245,7 @@ class InvoiceRepository
         ];
     }
 
-    public function generateInvoiceFile($hash): Response|string
+    public function generateInvoiceFile($hash)
     {
         $invoice = Invoice::with(
             'items',
@@ -283,6 +283,7 @@ class InvoiceRepository
         $pdf->setOption('margin-top', 1);
         $pdf->setOption('margin-bottom', 1);
 
-        return $pdf->stream('invoice_receipt_'.time().'.pdf', ['Attachment' => false]);
+        return $pdf->stream('invoice_receipt_'.time().'.pdf');
     }
+
 }

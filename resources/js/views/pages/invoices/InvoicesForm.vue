@@ -124,6 +124,8 @@ const populateInvoice = (invoice) => {
     if (invoice[key] !== null && invoice[key] !== '') {
       if((key === 'na' || key === 'can_pay_with_cc')) {
         invoiceData.invoice[key] = invoice[key] === 1;
+      }else{
+        invoiceData.invoice[key] = invoice[key];
       }
     }
 
@@ -359,17 +361,18 @@ const downloadInvoiceReceipt = () => {
     responseType: 'blob',
   })
     .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'invoice_receipt.pdf');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const newWindow = window.open(url, '_blank');
+      if (newWindow) {
+        newWindow.focus();
+      } else {
+        alert('Please allow popups for this website');
+      }
     })
     .catch(error => {
-      console.error('Error downloading invoice receipt:', error);
+      console.error('Error viewing invoice receipt:', error);
     });
+
 };
 
 watch(() => invoiceData.invoice_items, () => {
