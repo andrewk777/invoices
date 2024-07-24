@@ -548,7 +548,8 @@ onBeforeMount(async () => {
           
           <VRow v-if="invoiceData.invoice.client_id">
             <VCol md="12">
-                <div class="d-block">
+              <div class="d-block">
+                <CreditCardIcon/>
                 <p><strong>Company:</strong> {{ invoiceTo.company_name }}</p>
                 <p><strong>Email:</strong> {{ invoiceTo.company_email }}</p>
                 <p><strong>Mobile:</strong> {{ invoiceTo.company_phone }}</p>
@@ -578,7 +579,7 @@ onBeforeMount(async () => {
 
             <VRow v-for="(item, index) in invoiceData.invoice_items" :key="index">
 
-              <VCol md="6" >                
+              <VCol md="6" >
                 <AppTextarea
                     v-model="item.description"
                     rows="2"
@@ -638,13 +639,50 @@ onBeforeMount(async () => {
           <VDivider class="my-6 border-dashed" thickness="4" />
 
           <div class="add-products-form">
-            <h6 class="text-h6 mb-4">
-              Payments:
-            </h6>
+            <div class="d-flex justify-space-between mb-4">
+              <h3 class="md-2">
+                Payments:
+              </h3>
+              <VBtn
+                class="mt-2"
+                size="small"
+                prepend-icon="tabler-plus"
+                @click="addPayment"
+              >
+                Add Payment
+              </VBtn>
+            </div>
 
             <VRow v-for="(payment, index) in invoiceData.invoice_payments" :key="index">
 
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="5">
+                <AppTextarea
+                  v-model="payment.note"
+                  rows="2"
+                  placeholder="Note"
+                  persistent-placeholder
+                />
+              </VCol>
+
+              <VCol cols="12" md="2">
+                <AppDateTimePicker
+                  v-model="payment.date"
+                  placeholder="Date"
+                  class="mb-6"
+                />
+              </VCol>
+
+              <VCol cols="12" md="2">
+                <AppTextField
+                  @input="calculateBalance"
+                  v-model="payment.amount"
+                  type="number"
+                  placeholder="Amount"
+                  class="mb-6"
+                />
+              </VCol>
+
+              <VCol cols="12" md="2">
                 <AppSelect
                   v-model="payment.type"
                   :items="[
@@ -656,34 +694,9 @@ onBeforeMount(async () => {
                   placeholder="Payment Type"
                   class="mb-4"
                 />
-
-                <AppTextarea
-                  v-model="payment.note"
-                  rows="2"
-                  placeholder="Note"
-                  persistent-placeholder
-                />
               </VCol>
 
-              <VCol cols="12" md="2" sm="2">
-                <AppDateTimePicker
-                  v-model="payment.date"
-                  placeholder="Date"
-                  class="mb-6"
-                />
-              </VCol>
-
-              <VCol cols="12" md="2" sm="2">
-                <AppTextField
-                  @input="calculateBalance"
-                  v-model="payment.amount"
-                  type="number"
-                  placeholder="Amount"
-                  class="mb-6"
-                />
-              </VCol>
-
-              <VCol cols="12" md="2">
+              <VCol cols="12" md="1">
                 <a href="">
                   <IconBtn
                     size="36"
@@ -698,15 +711,6 @@ onBeforeMount(async () => {
               </VCol>
 
             </VRow>
-
-            <VBtn
-              class="mt-2"
-              size="small"
-              prepend-icon="tabler-plus"
-              @click="addPayment"
-            >
-              Add Payment
-            </VBtn>
 
           </div>
 
@@ -809,7 +813,7 @@ onBeforeMount(async () => {
 
         <VBtn
             :loading="loading"
-          v-if="hash"
+          v-if="hash && invoiceTo.default_credit_card"
           @click.prevent="downloadInvoiceReceipt(hash)"
           class="mt-2"
           block

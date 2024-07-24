@@ -5,8 +5,6 @@ namespace Database\Seeders;
 use App\Models\Client;
 use App\Models\ClientUser;
 use App\Models\CreditCard;
-use App\Models\MyCompany;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ClientSeeder extends Seeder

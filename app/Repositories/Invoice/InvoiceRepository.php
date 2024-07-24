@@ -283,6 +283,6 @@ class InvoiceRepository
         $pdf->setOption('margin-top', 1);
         $pdf->setOption('margin-bottom', 1);
 
-        return $pdf->stream('invoice_receipt_'.time().'.pdf');
+        return $pdf->stream('invoice_receipt_'.time().'.pdf', ['Attachment' => false]);
     }
 }

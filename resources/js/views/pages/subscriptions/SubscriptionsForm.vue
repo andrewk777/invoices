@@ -567,27 +567,27 @@ onBeforeMount(async () => {
 
           <!-- Add Charges -->
           <div class="add-products-form">
-            <h6 class="text-h6 mb-4">
-              Charges:
-            </h6>
+            <div class="d-flex justify-space-between mb-4">
+              <h3 class="pt-6">
+                Charges:
+              </h3>
+
+              <VBtn
+                class="mt-2"
+                size="small"
+                prepend-icon="tabler-plus"
+                @click="addCharge"
+              >
+                Add Item
+              </VBtn>
+            </div>
 
             <VRow v-for="(item, index) in form.charges" :key="index">
 
               <VCol
                 cols="12"
-                md="6"
+                md="5"
               >
-                <AppSelect
-                  @change="calculateSubTotal"
-                  v-model="item.tax"
-                  :items="[
-                   'HST',
-                   'None',
-                  ]"
-                  placeholder="Select Tax"
-                  class="mb-6"
-                />
-
                 <AppTextarea
                   v-model="item.description"
                   rows="2"
@@ -628,6 +628,22 @@ onBeforeMount(async () => {
                 cols="12"
                 md="2"
               >
+                <AppSelect
+                  @change="calculateSubTotal"
+                  v-model="item.tax"
+                  :items="[
+                   'HST',
+                   'None',
+                  ]"
+                  placeholder="Select Tax"
+                  class="mb-6"
+                />
+              </VCol>
+
+              <VCol
+                cols="12"
+                md="1"
+              >
                 <a href="">
                   <IconBtn
                     size="36"
@@ -642,15 +658,6 @@ onBeforeMount(async () => {
               </VCol>
 
             </VRow>
-
-            <VBtn
-              class="mt-2"
-              size="small"
-              prepend-icon="tabler-plus"
-              @click="addCharge"
-            >
-              Add Item
-            </VBtn>
           </div>
 
           <VDivider class="my-6 border-dashed" thickness="4" />
