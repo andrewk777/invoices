@@ -1,9 +1,9 @@
 <script setup>
 const bufferValue = ref(20)
 const progressValue = ref(10)
-const isFallbackState = ref(true)
+const isFallbackState = ref(false)
 const interval = ref()
-const showProgress = ref(true)
+const showProgress = ref(false)
 
 watch([
   progressValue,
