@@ -1,12 +1,10 @@
 <script setup>
 import {computed, reactive, onBeforeMount, ref, watch} from 'vue'
 import InvoicesItem from "@/views/pages/invoices/InvoicesListRow.vue";
-import LaravelVuePagination from 'laravel-vue-pagination';
 import baseService from '@/utils/base-service.js'
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 
 import apiClientAuto from '@/utils/apiCLientAuto.js';
-import handleErrors from "@/utils/handleErrors.js";
 import config from "@/utils/config.js";
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
 
@@ -35,6 +33,60 @@ const formSearch = reactive({
   unpaid: false,
   na: false,
 });
+
+const filterDate = (string) => {
+
+  console.log('Filter Date:', string);
+
+  if(string === 'today'){
+    formSearch.date = new Date()+' to '+ new Date();
+    console.log('Filter Today:', formSearch.date);
+
+  }else if(string === 'yesterday') {
+    const date = new Date();
+    date.setDate(date.getDate() - 1);
+    formSearch.date = date+' to '+date;
+    console.log('Filter Yesterday:', formSearch.date);
+
+  }else if(string === 'this week') {
+    const date = new Date();
+    const firstDay = new Date(date.setDate(date.getDate() - date.getDay()));
+    const lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 6));
+    formSearch.date = firstDay+' to '+lastDay;
+    console.log('Filter This Week:', formSearch.date);
+
+  }else if(string === 'last week') {
+    const date = new Date();
+    const firstDay = new Date(date.setDate(date.getDate() - date.getDay() - 7));
+    const lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 6));
+    formSearch.date = firstDay+' to '+lastDay;
+
+  }else if(string === 'this month') {
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    formSearch.date = firstDay+' to '+lastDay;
+
+  }else if(string === 'last month') {
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth(), 0);
+    formSearch.date = firstDay+' to '+lastDay;
+
+  }else if(string === 'this year') {
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), 0, 1);
+    const lastDay = new Date(date.getFullYear(), 11, 31);
+    formSearch.date = firstDay+' to '+lastDay;
+
+  }else if(string === 'last year') {
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear() - 1, 0, 1);
+    const lastDay = new Date(date.getFullYear() - 1, 11, 31);
+    formSearch.date = firstDay+' to '+lastDay;
+
+  }
+}
 
 const getInvoices = async (page = 1) => {
   searchActive.value = false;
@@ -225,6 +277,7 @@ onBeforeMount(() => {
           v-model="formSearch.date"
           placeholder="Select date range"
           :config="{ mode: 'range' }"
+          clearable
           style="min-width: 220px;"
         />
         <v-menu>
@@ -236,14 +289,14 @@ onBeforeMount(() => {
             </template>
 
             <v-list class="border-label-info">
-                <v-list-item > Today </v-list-item>
-                <v-list-item > Yesterday </v-list-item>
-                <v-list-item > This Week </v-list-item>
-                <v-list-item > Last </v-list-item>
-                <v-list-item > This Month </v-list-item>
-                <v-list-item > Last Month </v-list-item>
-                <v-list-item > This Year </v-list-item>
-                <v-list-item > Last Year </v-list-item>
+                <v-list-item @click="filterDate('today')"> Today </v-list-item>
+                <v-list-item @click="filterDate('yesterday')"> Yesterday </v-list-item>
+                <v-list-item @click="filterDate('this week')"> This Week </v-list-item>
+                <v-list-item @click="filterDate('last week')"> Last Week </v-list-item>
+                <v-list-item @click="filterDate('this month')"> This Month </v-list-item>
+                <v-list-item @click="filterDate('last month')"> Last Month </v-list-item>
+                <v-list-item @click="filterDate('this year')"> This Year </v-list-item>
+                <v-list-item @click="filterDate('last year')"> Last Year </v-list-item>
             </v-list>
 
         </v-menu>
