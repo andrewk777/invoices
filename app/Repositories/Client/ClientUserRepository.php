@@ -21,7 +21,7 @@ class ClientUserRepository
 
     public function addClientUser($request, $clientHash): array
     {
-        $input = $request->all();
+        $input = $request;
         $client = $this->client()->where('hash', $clientHash)->first();
 
         $user = $this->clientUser()->create([
@@ -53,7 +53,7 @@ class ClientUserRepository
             ];
         }
 
-        $input = $request->all();
+        $input = $request;
 
         $user->name = $input['name'];
         $user->email = $input['email'];

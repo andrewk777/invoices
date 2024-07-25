@@ -25,7 +25,7 @@ class ClientRepository
 
     public function storeClient($request): array
     {
-        $inputs = $request->all();
+        $inputs = $request;
         $client = $this->client()->create($inputs);
 
         return [
@@ -37,7 +37,7 @@ class ClientRepository
     public function updateClient($request, $hash): array
     {
         $client = $this->client()->where('hash', $hash)->first();
-        $inputs = $request->all();
+        $inputs = $request;
         $client->update($inputs);
 
         return [
@@ -72,7 +72,7 @@ class ClientRepository
 
     public function searchClients($request): array
     {
-        $search = $request->all()['query'];
+        $search = $request;
         Session::forget(['search_inputs', 'search_values']);
 
         $clients = $this->client()->with('company')->select(

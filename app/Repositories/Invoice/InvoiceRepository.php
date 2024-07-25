@@ -35,7 +35,7 @@ class InvoiceRepository
 
     public function storeInvoice($request): array
     {
-        $inputs = $request->all();
+        $inputs = $request;
 
         DB::beginTransaction();
         try {
@@ -83,7 +83,7 @@ class InvoiceRepository
 
     public function updateInvoice($request, $hash): array
     {
-        $inputs = $request->all();
+        $inputs = $request;
         $inputs['invoice'] = $request->invoice;
 
         $invoice = $this->invoice()->where('hash', $hash)->first();
@@ -171,7 +171,7 @@ class InvoiceRepository
 
     public function searchInvoices($request): array
     {
-        $inputs = $request->all();
+        $inputs = $request;
         Session::forget(['search_inputs', 'search_values']);
 
         $invoices = $this->invoice()->with('company', 'client')->select(

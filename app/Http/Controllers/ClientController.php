@@ -42,7 +42,7 @@ class ClientController extends Controller
 
     public function search(Request $request){
         try {
-            $data = $this->client->searchClients($request);
+            $data = $this->client->searchClients($request->all()['query']);
             return response()->json($data);
 
         }catch (\Exception $e) {
@@ -71,7 +71,7 @@ class ClientController extends Controller
     public function store(StoreClientRequest $request): JsonResponse
     {
         try {
-            $data = $this->client->storeClient($request);
+            $data = $this->client->storeClient($request->all());
             return response()->json($data, $data['status_code'] ?? 200);
         }catch (\Exception $e){
             return BaseRepository::tryCatchException($e);
@@ -112,7 +112,7 @@ class ClientController extends Controller
     public function update(UpdateClientRequest $request, $hash): JsonResponse
     {
         try {
-            $data = $this->client->updateClient($request, $hash);
+            $data = $this->client->updateClient($request->all(), $hash);
             return response()->json($data, $data['status_code'] ?? 200);
         }catch (\Exception $e){
             return BaseRepository::tryCatchException($e);

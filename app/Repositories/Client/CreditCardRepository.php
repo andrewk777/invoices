@@ -15,7 +15,7 @@ class CreditCardRepository
 
     public function storeClientCreditCard($request): array
     {
-        $inputs = $request->all();
+        $inputs = $request;
         $creditCard = $this->creditCard()->with('client')->create($inputs);
 
         $creditCard->client()->update(['default_credit_card_id' => $creditCard->id]);

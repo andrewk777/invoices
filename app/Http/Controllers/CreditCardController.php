@@ -49,7 +49,7 @@ class CreditCardController extends Controller
     public function store(StoreCreditCardRequest $request): JsonResponse
     {
         try {
-            $creditCard = $this->creditCard->storeClientCreditCard($request);
+            $creditCard = $this->creditCard->storeClientCreditCard($request->all());
             return response()->json($creditCard);
         }catch (\Exception $e){
             return BaseRepository::tryCatchException($e);

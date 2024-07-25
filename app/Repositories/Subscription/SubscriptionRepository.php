@@ -24,7 +24,7 @@ class SubscriptionRepository
 
     public function storeSubscription($request): array
     {
-        $inputs = $request->all();
+        $inputs = $request;
         if($inputs['subscription']['charge_cc'] === true && empty($inputs['subscription']['credit_card_id'])){
             return [
                 'success' => false,
@@ -67,7 +67,7 @@ class SubscriptionRepository
 
     public function updateSubscription($request, $hash): array
     {
-        $inputs = $request->all();
+        $inputs = $request;
         $inputs['subscription'] = $request->subscription;
 
         if($inputs['subscription']['charge_cc'] === true && empty($inputs['subscription']['credit_card_id'])){
@@ -151,7 +151,7 @@ class SubscriptionRepository
 
     public function searchSubscriptions($request): array
     {
-        $search = $request->all()['query'];
+        $search = $request;
         Session::forget(['search_inputs', 'search_values']);
 
         $subscriptions = $this->subscription()->with('company', 'client')->select(

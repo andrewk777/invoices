@@ -38,7 +38,7 @@ class ClientUserController extends Controller
     public function store(StoreClientUserRequest $request, $client_hash): JsonResponse
     {
         try {
-            $response = $this->clientUser->addClientUser($request, $client_hash);
+            $response = $this->clientUser->addClientUser($request->all(), $client_hash);
             return response()->json($response);
 
         } catch (\Exception $e) {
@@ -62,7 +62,7 @@ class ClientUserController extends Controller
     public function update(UpdateClientUserRequest $request, $client_hash, $client_user_hash): JsonResponse
     {
         try {
-            $response = $this->clientUser->updateClientUser($request, $client_hash, $client_user_hash);
+            $response = $this->clientUser->updateClientUser($request->all(), $client_hash, $client_user_hash);
             return response()->json($response);
 
         } catch (\Exception $e) {

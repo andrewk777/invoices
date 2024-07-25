@@ -48,7 +48,7 @@ class SubscriptionController extends Controller
     public function store(StoreSubscriptionRequest $request): JsonResponse
     {
         try {
-            $data = $this->subscription->storeSubscription($request);
+            $data = $this->subscription->storeSubscription($request->all());
             return response()->json($data, $data['success'] ? 200 : 500);
 
         }catch (\Exception $e){
@@ -85,7 +85,7 @@ class SubscriptionController extends Controller
     public function update(UpdateSubscriptionRequest $request, string $hash): JsonResponse
     {
         try {
-            $data = $this->subscription->updateSubscription($request, $hash);
+            $data = $this->subscription->updateSubscription($request->all(), $hash);
             return response()->json($data, $data['success'] ? 200 : 500);
 
         }catch (\Exception $e){
@@ -112,7 +112,7 @@ class SubscriptionController extends Controller
     public function search(Request $request): JsonResponse
     {
         try {
-            $data = $this->subscription->searchSubscriptions($request);
+            $data = $this->subscription->searchSubscriptions($request->all()['query']);
             return response()->json($data, $data['success'] ? 200 : 500);
 
         }catch (\Exception $e){

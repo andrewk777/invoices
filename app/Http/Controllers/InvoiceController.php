@@ -48,7 +48,7 @@ class InvoiceController extends Controller
     public function store(StoreInvoiceRequest $request): JsonResponse
     {
         try {
-            $data = $this->invoice->storeInvoice($request);
+            $data = $this->invoice->storeInvoice($request->all());
             return response()->json($data, $data['success'] ? 200 : 500);
 
         }catch (\Exception $e){
@@ -86,7 +86,7 @@ class InvoiceController extends Controller
     public function update(Request $request, string $hash): JsonResponse
     {
         try {
-            $data = $this->invoice->updateInvoice($request, $hash);
+            $data = $this->invoice->updateInvoice($request->all(), $hash);
             return response()->json($data, $data['success'] ? 200 : 500);
 
         }catch (\Exception $e){
@@ -113,7 +113,7 @@ class InvoiceController extends Controller
     public function search(Request $request): JsonResponse
     {
         try {
-            $data = $this->invoice->searchInvoices($request);
+            $data = $this->invoice->searchInvoices($request->all());
             return response()->json($data, $data['success'] ? 200 : 500);
 
         }catch (\Exception $e){
