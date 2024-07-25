@@ -1,5 +1,10 @@
 <style>
-    @page { margin: 0;}
+    @page { 
+        margin-top: 30px;
+        margin-bottom: 10px;
+        margin-left: 35px;
+        margin-right: 35px;
+    }
 
     @font-face {
         font-family: 'Noto Sans Medium';

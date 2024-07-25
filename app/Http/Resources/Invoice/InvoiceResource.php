@@ -24,7 +24,7 @@ class InvoiceResource extends JsonResource
             'currency' => $this->currency,
             'invoice_date' => $this->invoice_date !== null ? Carbon::parse($this->invoice_date)->format('M j, Y') : '',
             'invoice_due' => $this->invoice_due !== null ? Carbon::parse($this->invoice_due)->format('M j, Y') : '',
-            'na' => $this->na,
+            'na' => $this->na == ,
             'can_pay_with_cc' => $this->can_pay_with_cc,
             'subtotal' => $this->subtotal,
             'taxes' => $this->taxes,
@@ -37,8 +37,8 @@ class InvoiceResource extends JsonResource
             'client_id' => $this->client_id,
             'client' => $this->client ?? '',
 
-            'items' => $this->items ? InvoiceItemResource::collection($this->items) : [],
-            'payments' => $this->payments ? InvoicePaymentResource::collection($this->payments) : [],
+            // 'items' => $this->items ? InvoiceItemResource::collection($this->items) : [],
+            // 'payments' => $this->payments ? InvoicePaymentResource::collection($this->payments) : [],
         ];
     }
 

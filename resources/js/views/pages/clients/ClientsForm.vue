@@ -479,6 +479,7 @@ defineExpose({
               item-value="id"
               label="Select Credit Card"
               class="mt-2"
+              clearable
             />
           </VCol>
 

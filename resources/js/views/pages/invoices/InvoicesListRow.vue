@@ -17,24 +17,6 @@ const actionItems = [
   { title: 'Download Receipt' },
 ];
 
-const downloadInvoiceReceipt = () => {
-  apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}/download`, {
-    responseType: 'blob',
-  })
-    .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'invoice_receipt.pdf');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    })
-    .catch(error => {
-      console.error('Error downloading invoice receipt:', error);
-    });
-};
-
 </script>
 
 <template>
@@ -151,8 +133,8 @@ const downloadInvoiceReceipt = () => {
 
         <v-list class="border-label-info">
           <v-list-item >
-            <a href="" @click.prevent="downloadInvoiceReceipt">
-              <v-list-item-title>Invoice pdf</v-list-item-title>
+            <a :href="`/view-invoice/${invoice.hash}`" target="_blank">
+              <v-list-item-title>Invoice PDF</v-list-item-title>
             </a>
           </v-list-item>
         </v-list>

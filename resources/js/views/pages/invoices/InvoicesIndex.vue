@@ -56,6 +56,20 @@ const getInvoices = async (page = 1) => {
 
 }
 
+const clearAllFiltersAndSearch = async () => {
+  searchActive.value = false;
+  formSearch.search = '';
+  formSearch.date = '';
+  formSearch.unpaid = false;
+  formSearch.na = false;
+
+  Object.keys(formSearch).forEach((key) => {
+    localStorage.removeItem('invoice-search-' + key);
+  });
+
+  getInvoices();
+}
+
 const searchInvoices = async () => {
 
   if(config.APP_ENV === 'local'){
@@ -201,7 +215,7 @@ onBeforeMount(() => {
         cols="12"
         md="4"
         class="mb-4 d-flex"
-      >
+      >      
         <VBtn @click="!formSearch.search ? getInvoices() : searchInvoices()" variant="flat" color="primary" class=" p-0" >
             <VIcon color="white" size="25" icon="tabler-rotate-clockwise" title="reload" />
         </VBtn>
@@ -236,22 +250,22 @@ onBeforeMount(() => {
             </template>
 
             <v-list class="border-label-info">
-                <v-list-item > Today </v-list-item>
-                <v-list-item > Yesterday </v-list-item>
-                <v-list-item > This Week </v-list-item>
-                <v-list-item > Last </v-list-item>
-                <v-list-item > This Month </v-list-item>
-                <v-list-item > Last Month </v-list-item>
-                <v-list-item > This Year </v-list-item>
-                <v-list-item > Last Year </v-list-item>
+                <v-list-item class="dd-item" > Today </v-list-item>
+                <v-list-item class="dd-item" > Yesterday </v-list-item>
+                <v-list-item class="dd-item" > This Week </v-list-item>
+                <v-list-item class="dd-item" > Last </v-list-item>
+                <v-list-item class="dd-item" > This Month </v-list-item>
+                <v-list-item class="dd-item" > Last Month </v-list-item>
+                <v-list-item class="dd-item" > This Year </v-list-item>
+                <v-list-item class="dd-item" > Last Year </v-list-item>
             </v-list>
 
         </v-menu>
       </VCol>
 
       <VCol
+        md="5"
         cols="12"
-        md="3"
       >
         <VSwitch
           @change="searchInvoices"
@@ -271,6 +285,10 @@ onBeforeMount(() => {
           false-value="Hide"
           class="d-inline-block"
         />
+        
+        <VBtn @click="clearAllFiltersAndSearch" variant="flat" color="primary" class=" p-0 ml-4" >
+            <VIcon color="white" size="25" icon="tabler-eraser" title="reload" />
+        </VBtn>
       </VCol>
     </VRow>
 
@@ -313,5 +331,13 @@ onBeforeMount(() => {
 </template>
 
 <style scoped lang="scss">
-
+.dd-item
+{
+    cursor: pointer;
+    padding: 10px;
+    &:hover
+    {
+        background-color: #f1f1f1;
+    }
+}
 </style>

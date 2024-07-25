@@ -83,19 +83,9 @@ const submitInvoice = async (event, action = null) => {
   try {
     let response;
     if (hash.value) {
-      response = await apiClientAuto.post('/invoices/update/' + hash.value, invoiceData, {
-        headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer " + token.value,
-        }
-      });
+      response = await apiClientAuto.post('/invoices/update/' + hash.value, invoiceData);
     } else {
-      response = await apiClientAuto.post('/invoices/store', invoiceData, {
-        headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer " + token.value,
-        }
-      });
+      response = await apiClientAuto.post('/invoices/store', invoiceData);
     }
 
     if (response.data.success){
@@ -118,14 +108,14 @@ const submitInvoice = async (event, action = null) => {
 
 const populateInvoice = (invoice) => {
   Object.keys(invoice).forEach(function (key) {
-    console.log("Populate key", key);
-    console.log("Populate value", invoice[key]);
 
     if (invoice[key] !== null && invoice[key] !== '') {
       if((key === 'na' || key === 'can_pay_with_cc')) {
-        invoiceData.invoice[key] = invoice[key] === 1;
+    console.log("Populate key", key);
+    console.log("Populate value", invoice[key]);
+        // invoiceData.invoice[key] = invoice[key] === 1;
       }else{
-        invoiceData.invoice[key] = invoice[key];
+        // invoiceData.invoice[key] = invoice[key];
       }
     }
 
@@ -186,12 +176,13 @@ const populateInvoicePayment = (invoice_payments) => {
 
 const getInvoice = async (hash) => {
   try {
-    const params = {
-      hash: hash
-    }
-    const response = await apiClientAuto.get('/invoices/show/' + hash, {params});
+    const response = await apiClientAuto.get('/invoices/show/' + hash);
 
-    if (response.data.success) {
+    if (response.data.success) 
+    {
+        // invoiceData.invoice = 
+        // invoiceData.invoiceItem = 
+
       invoice.value = response.data.invoice;
 
       populateInvoice(invoice.value);
@@ -252,6 +243,8 @@ const invoiceFrom = ref({});
 const invoiceTo = ref({});
 const clients = ref([]);
 const invoice = ref({});
+
+const forms = ref({});
 
 const getCompanies = async () => {
   try {
@@ -814,83 +807,87 @@ onBeforeMount(async () => {
       </VCol>
 
       <!--Right Buttons-->
-      <VCol cols="12" md="2">
-        <VBtn
-          :loading="loading"
-          block
-          color="success"
-          variant="tonal"
-          class="mb-2"
-          @click="submitInvoice"
-        >
-          Save
-        </VBtn>
+      <VCol class="pt-0" md="2">
+        <div class="sticky-top">
+            <VBtn
+                :loading="loading"
+                block
+                color="success"
+                variant="tonal"
+                class="mb-2"
+                @click="submitInvoice"
+                >
+                Save
+                </VBtn>
 
-        <VBtn
-          :loading="loading"
-          block
-          color="success"
-          variant="tonal"
-          class="mb-2"
-          @click="submitInvoice($event, 'close')"
-        >
-          Save & Close
-        </VBtn>
+                <VBtn
+                :loading="loading"
+                block
+                color="success"
+                variant="tonal"
+                class="mb-2"
+                @click="submitInvoice($event, 'close')"
+                >
+                Save & Close
+                </VBtn>
 
-        <VBtn
-            :loading="loading"
-          v-if="hash && invoiceTo?.credit_cards?.length > 0"
-          @click.prevent="downloadInvoiceReceipt()"
-          class="mt-2"
-          block
-          color="info"
-          variant="tonal"
-          @click=""
-        >
-           <PdfIcon :width="'18px'" class="mr-1"/> View Invoice
-        </VBtn>
+                <VBtn
+                    :loading="loading"
+                v-if="hash && invoiceTo?.credit_cards?.length > 0"
+                @click.prevent="downloadInvoiceReceipt()"
+                class="mt-2"
+                block
+                color="info"
+                variant="tonal"
+                @click=""
+                >
+                <PdfIcon :width="'18px'" class="mr-1"/> View Invoice
+                </VBtn>
 
-        <VBtn
-          v-if="hash"
-          :loading="loading"
-          class="mt-2 mb-2"
-          block
-          color="warning"
-          variant="tonal"
-        >
-          <VIcon
-            left
-            class="mr-1"
-            icon="tabler-credit-card"
-          />
-          Charge Credit Card
-        </VBtn>
+                <VBtn
+                v-if="hash"
+                :loading="loading"
+                class="mt-2 mb-2"
+                block
+                color="warning"
+                variant="tonal"
+                >
+                <VIcon
+                    left
+                    class="mr-1"
+                    icon="tabler-credit-card"
+                />
+                Charge Credit Card
+                </VBtn>
 
-        <router-link
-        :to="{ name: 'InvoicesView'}"
-        >
-        <VBtn
-            :loading="loading"
-            block
-            color="primary"
-            variant="tonal"
-            class="mb-2"
-            @click=""
-        >
-            List All
-        </VBtn>
-        </router-link>
+                <router-link
+                :to="{ name: 'InvoicesView'}"
+                >
+                <VBtn
+                    :loading="loading"
+                    block
+                    color="primary"
+                    variant="tonal"
+                    class="mb-2"
+                    @click=""
+                >
+                    List All
+                </VBtn>
+                </router-link>
 
-        <VBtn
-        :loading="loading"
-        block
-        color="error"
-        variant="tonal"
-        class="mb-2"
-        @click.prevent="$router.go(-1)"
-        >
-        Close
-        </VBtn>
+                <VBtn
+                :loading="loading"
+                block
+                color="error"
+                variant="tonal"
+                class="mb-2"
+                @click.prevent="$router.go(-1)"
+                >
+                Close
+                </VBtn>
+                
+        </div>
+        
 
 
 
@@ -916,4 +913,13 @@ onBeforeMount(async () => {
   right: 0;
   height: 100%;
 }
+
+.sticky-top {
+    padding-top: 15px;
+  position: -webkit-sticky; /* For Safari */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
 </style>
