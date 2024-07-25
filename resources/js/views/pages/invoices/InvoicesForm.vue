@@ -11,13 +11,12 @@ import PdfIcon from "@/components/icons/PdfIcon.vue";
 
 import apiClientAuto from '@/utils/apiCLientAuto.js';
 import handleErrors from "@/utils/handleErrors.js";
-import axios from "axios";
 
 const route = useRoute();
 const hash = ref(route.params.hash);
 watch(() => hash.value, async () => {
   if (hash.value) {
-    await getSubscription(hash.value);
+    await getInvoice(hash.value);
   }
 });
 
@@ -32,7 +31,7 @@ const invoice_due = computed(() => {
   return selectedDate.toISOString().split('T')[0];
 });
 
-const form = reactive({
+const forms = reactive({
   invoice: {
     my_company_id: '',
     client_id: '',
@@ -83,15 +82,15 @@ const submitInvoice = async (event, action = null) => {
   try {
     let response;
     if (hash.value) {
-      response = await apiClientAuto.post('/invoices/update/' + hash.value, form);
+      response = await apiClientAuto.post('/invoices/update/' + hash.value, forms);
     } else {
-      response = await apiClientAuto.post('/invoices/store', form);
+      response = await apiClientAuto.post('/invoices/store', forms);
     }
 
     if (response.data.success){
       submitted.value = true;
       hash.value = response.data.invoice.hash;
-      form.invoice.invoice_num = response.data.invoice.invoice_num;
+      forms.invoice.invoice_num = response.data.invoice.invoice_num;
 
       if(action === 'close') {
         window.location.href = '/invoices';
@@ -111,9 +110,9 @@ const populateInvoice = (invoice) => {
 
     if (invoice[key] !== null && invoice[key] !== '') {
       if((key === 'na' || key === 'can_pay_with_cc')) {
-        form.invoice[key] = invoice[key] === 1;
+        forms.invoice[key] = invoice[key] === 1;
       }else{
-        form.invoice[key] = invoice[key];
+        forms.invoice[key] = invoice[key];
       }
     }
 
@@ -124,8 +123,8 @@ const populateInvoiceItem = (invoice_items) => {
   invoice_items.forEach(function (item, index) {
 
     // Initialize the item at index if it does not exist
-    if (!form.invoice_items[index]) {
-      form.invoice_items[index] = {
+    if (!forms.invoice_items[index]) {
+      forms.invoice_items[index] = {
         description: '',
         rate: 0,
         qty: 0,
@@ -137,12 +136,12 @@ const populateInvoiceItem = (invoice_items) => {
       if (item[key] !== null && item[key] !== '') {
         if(key === 'tax'){
           if(item[key] === 1){
-            form.invoice_items[index][key] = 'HST';
+            forms.invoice_items[index][key] = 'HST';
           }else{
-            form.invoice_items[index][key] = 'None';
+            forms.invoice_items[index][key] = 'None';
           }
         }else{
-          form.invoice_items[index][key] = item[key];
+          forms.invoice_items[index][key] = item[key];
         }
       }
     });
@@ -154,8 +153,8 @@ const populateInvoicePayment = (invoice_payments) => {
   invoice_payments.forEach(function (payment, index) {
 
     // Initialize the item at index if it does not exist
-    if (!form.invoice_payments[index]) {
-      form.invoice_payments[index] = {
+    if (!forms.invoice_payments[index]) {
+      forms.invoice_payments[index] = {
         type: '',
         amount: 0,
         date: '',
@@ -165,7 +164,7 @@ const populateInvoicePayment = (invoice_payments) => {
 
     Object.keys(payment).forEach(function (key) {
       if (payment[key] !== null && payment[key] !== '') {
-        form.invoice_payments[index][key] = payment[key];
+        forms.invoice_payments[index][key] = payment[key];
       }
     });
 
@@ -177,13 +176,13 @@ const getInvoice = async (hash) => {
     const response = await apiClientAuto.get('/invoices/show/' + hash);
 
     if (response.data.success){
-        form.invoice = response.data?.invoice;
-        form.invoice_payments = response.data?.invoice?.payments;
-        form.invoice_items = response.data?.invoice?.items;
+        forms.invoice = response.data?.invoice;
+        forms.invoice_payments = response.data?.invoice?.payments;
+        forms.invoice_items = response.data?.invoice?.items;
 
       // invoice.value = response.data.invoice;
       //populateInvoice(invoice.value);
-      selectInvoiceTo(form.invoice.client_id);
+      selectInvoiceTo(forms.invoice.client_id);
 
       // if(invoice.value.items.length > 0){
       //   populateInvoiceItem(invoice.value.items);
@@ -206,20 +205,20 @@ const addPayment = value => {
   calculateBalance();
   const paymentToday = new Date().toISOString().split('T')[0];
 
-  form?.invoice_payments.push({
+  forms?.invoice_payments.push({
     type: 'Cheque',
-    amount: form.invoice.balance,
+    amount: forms.invoice.balance,
     date: paymentToday,
     note: '',
   });
 }
 
 const removePayment = index => {
-  form?.invoice_payments.splice(index, 1)
+  forms?.invoice_payments.splice(index, 1)
 }
 
 const addCharge = value => {
-  form?.invoice_items.push({
+  forms?.invoice_items.push({
     description: '',
     rate: '',
     qty: '',
@@ -228,13 +227,13 @@ const addCharge = value => {
 }
 
 const removeCharge = index => {
-  form?.invoice_items.splice(index, 1)
+  forms?.invoice_items.splice(index, 1)
 }
 
 const updateInvoiceDue = (event) => {
   const selectedDate = new Date(event.target.value);
   selectedDate.setDate(selectedDate.getDate() + 10);
-  form.invoice.invoice_due = selectedDate.toISOString().split('T')[0];
+  forms.invoice.invoice_due = selectedDate.toISOString().split('T')[0];
 }
 
 const myCompanies = ref([]);
@@ -250,7 +249,7 @@ const getCompanies = async () => {
     if (response.data.success === true) {
         myCompanies.value = response.data.companies;
         invoiceFrom.value = response.data.companies[1];
-        form.invoice.my_company_id = response.data.companies[1].id
+        forms.invoice.my_company_id = response.data.companies[1].id
     }
 
   } catch (error) {
@@ -280,7 +279,7 @@ const getClients = async () => {
 const calculateSubTotal = () => {
   let subTotal = 0;
   let tax = 0;
-  form.invoice_items.forEach((item) => {
+  forms.invoice_items.forEach((item) => {
     if (item.qty && item.rate) {
       subTotal += (item.qty * item.rate);
       if (item.tax === 'HST') {
@@ -289,42 +288,42 @@ const calculateSubTotal = () => {
     }
   });
 
-  form.invoice.subtotal = subTotal;
-  form.invoice.taxes = tax;
-  form.invoice.total = subTotal + tax;
+  forms.invoice.subtotal = subTotal;
+  forms.invoice.taxes = tax;
+  forms.invoice.total = subTotal + tax;
   calculateBalance();
 }
 
 const calculateBalance = () => {
   let totalPaid = 0;
-  if(form.invoice_payments.length > 0){
-    form.invoice_payments.forEach((payment) => {
+  if(forms.invoice_payments.length > 0){
+    forms.invoice_payments.forEach((payment) => {
       if (payment.amount) {
         totalPaid += parseFloat(payment.amount);
       }
     });
   }
 
-  form.invoice.total_paid = totalPaid;
-  form.invoice.balance = form.invoice.total - totalPaid;
+  forms.invoice.total_paid = totalPaid;
+  forms.invoice.balance = forms.invoice.total - totalPaid;
 }
 
 const updateBalanceFromStatus = (event) => {
   if (event.target.value === 'draft') {
-    form.invoice.balance = form.invoice.total;
+    forms.invoice.balance = forms.invoice.total;
 
   }else if(event.target.value === 'paid'){
-    form.invoice.balance = 0;
+    forms.invoice.balance = 0;
   }
 }
 
 const updateBalanceAndStatusOnSave = () => {
-  if (form.invoice.balance === 0) {
-    form.invoice.status = 'paid';
-  } else if(form.invoice.balance === form.invoice.total) {
-    form.invoice.status = 'draft';
+  if (forms.invoice.balance === 0) {
+    forms.invoice.status = 'paid';
+  } else if(forms.invoice.balance === forms.invoice.total) {
+    forms.invoice.status = 'draft';
   }else{
-    form.invoice.status = 'partially_paid';
+    forms.invoice.status = 'partially_paid';
   }
 }
 
@@ -364,7 +363,7 @@ const downloadInvoiceReceipt = () => {
     });
 };
 
-watch(() => form.invoice_items, () => {
+watch(() => forms.invoice_items, () => {
   calculateSubTotal();
 }, { deep: true });
 
@@ -444,7 +443,7 @@ onBeforeMount(async () => {
                 <AppAutocomplete
                   v-if="invoiceFrom"
                   @change="selectInvoiceFrom"
-                  v-model="form.invoice.my_company_id"
+                  v-model="forms.invoice.my_company_id"
                   :items="myCompanies"
                   item-title="name"
                   item-value="id"
@@ -462,7 +461,7 @@ onBeforeMount(async () => {
                 >Invoice:</span>
                   <span>
                   <AppTextField
-                    :value="hash ? form.invoice.invoice_num : ''"
+                    :value="hash ? forms.invoice.invoice_num : ''"
                     disabled
                     prefix="#"
                     style="inline-size: 9.5rem;"
@@ -480,7 +479,7 @@ onBeforeMount(async () => {
                 <span style="inline-size: 9.5rem;">
                   <AppDateTimePicker
                     @change="updateInvoiceDue"
-                    v-model="form.invoice.invoice_date"
+                    v-model="forms.invoice.invoice_date"
                     placeholder="YYYY-MM-DD"
                     :config="{ position: 'auto right' }"
                   />
@@ -495,7 +494,7 @@ onBeforeMount(async () => {
                 >Invoice Due:</span>
                 <span style="min-inline-size: 9.5rem;">
                   <AppDateTimePicker
-                    v-model="form.invoice.invoice_due"
+                    v-model="forms.invoice.invoice_due"
                     placeholder="YYYY-MM-DD"
                     :config="{ position: 'auto right' }"
                   />
@@ -509,7 +508,7 @@ onBeforeMount(async () => {
             <VCol md="3">
               <AppAutocomplete
                 @change="selectInvoiceTo"
-                v-model="form.invoice.client_id"
+                v-model="forms.invoice.client_id"
                 :items="clients"
                 label="Client"
                 item-title="company_name"
@@ -521,7 +520,7 @@ onBeforeMount(async () => {
 
             <VCol md="2" >
               <AppAutocomplete
-                v-model="form.invoice.status"
+                v-model="forms.invoice.status"
                 @change="updateBalanceFromStatus"
                 label="Status"
                 :items="statuses"
@@ -535,7 +534,7 @@ onBeforeMount(async () => {
             <VCol md="2">
               <AppSelect
                 label="Currency"
-                v-model="form.invoice.currency"
+                v-model="forms.invoice.currency"
                 :items="[
                   'USD',
                   'CAD',
@@ -547,7 +546,7 @@ onBeforeMount(async () => {
 
             <VCol md="3">
                 <VCheckbox
-                    v-model="form.invoice.can_pay_with_cc"
+                    v-model="forms.invoice.can_pay_with_cc"
                     label="Can Pay with Credit Card"
                   class="mt-6"
                 />
@@ -555,14 +554,14 @@ onBeforeMount(async () => {
 
             <VCol md="2">
                 <VCheckbox
-                v-model="form.invoice.na"
+                v-model="forms.invoice.na"
                 label="N/A"
                 class="mt-6"
                 />
             </VCol>
           </VRow>
           
-          <VRow v-if="form.invoice.client_id">
+          <VRow v-if="forms.invoice.client_id">
             <VCol md="12">
               <div class="d-block">
                 <CreditCardIcon v-if="invoiceTo?.credit_cards?.length > 0"/>
@@ -593,7 +592,7 @@ onBeforeMount(async () => {
                 </VBtn>
             </div>
 
-            <VRow v-for="(item, index) in form.invoice_items" :key="index">
+            <VRow v-for="(item, index) in forms.invoice_items" :key="index">
 
               <VCol md="6" >
                 <AppTextarea
@@ -669,7 +668,7 @@ onBeforeMount(async () => {
               </VBtn>
             </div>
 
-            <VRow v-for="(payment, index) in form.invoice_payments" :key="index">
+            <VRow v-for="(payment, index) in forms.invoice_payments" :key="index">
 
               <VCol cols="12" md="5">
                 <AppTextarea
@@ -744,7 +743,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(form.invoice.subtotal).toFixed(2) }}
+                      {{ parseFloat(forms.invoice.subtotal).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -755,7 +754,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(form.invoice.taxes).toFixed(2) }}
+                      {{ parseFloat(forms.invoice.taxes).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -773,7 +772,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(form.invoice.total).toFixed(2) }}
+                      {{ parseFloat(forms.invoice.total).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -790,7 +789,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ form.invoice.balance }}
+                      {{ forms.invoice.balance }}
                     </h6>
                   </td>
                 </tr>

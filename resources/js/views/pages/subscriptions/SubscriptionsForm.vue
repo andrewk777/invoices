@@ -29,7 +29,7 @@ const subscriptionTags = ref([]);
 
 const clientCreditCards = ref([]);
 
-const form = reactive({
+const forms = reactive({
   subscription: {
     name: '',
     my_company_id: '',
@@ -60,7 +60,7 @@ const createTag = () => {
   if (subscriptionTagsInput.value.trim() !== '') {
     subscriptionTags.value.push(subscriptionTagsInput.value.trim());
     subscriptionTagsInput.value = '';
-    form.subscription.tags = subscriptionTags.value.join(',');
+    forms.subscription.tags = subscriptionTags.value.join(',');
   }
 };
 
@@ -90,7 +90,7 @@ const currencies = ref([
 
 const submitSubscription = async (event, action = null) => {
 
-  if(form.subscription.charge_cc === true && !form.subscription.credit_card_id){
+  if(forms.subscription.charge_cc === true && !forms.subscription.credit_card_id){
     errors.value.credit_card = ['Please select a credit card'];
     return;
   }
@@ -106,10 +106,10 @@ const submitSubscription = async (event, action = null) => {
   try {
     let response;
     if (hash.value) {
-      response = await apiClientAuto.post('/subscriptions/update/' + hash.value, form);
+      response = await apiClientAuto.post('/subscriptions/update/' + hash.value, forms);
 
     } else {
-      response = await apiClientAuto.post('/subscriptions/store', form);
+      response = await apiClientAuto.post('/subscriptions/store', forms);
 
     }
 
@@ -134,7 +134,7 @@ const submitSubscription = async (event, action = null) => {
 const populateSubscription = (subscription) => {
   Object.keys(subscription).forEach(function (key) {
     if (subscription[key] !== null && subscription[key] !== '') {
-      form.subscription[key] = subscription[key];
+      forms.subscription[key] = subscription[key];
     }
   });
 }
@@ -148,8 +148,8 @@ const populateStringTags = (tags) => {
 const populateCharges = (charges) => {
   charges.forEach(function (item, index) {
     // Initialize the item at index if it does not exist
-    if (!form.charges[index]) {
-      form.charges[index] = {
+    if (!forms.charges[index]) {
+      forms.charges[index] = {
         description: '',
         rate: 0,
         qty: 0,
@@ -161,12 +161,12 @@ const populateCharges = (charges) => {
       if (item[key] !== null && item[key] !== '') {
         if(key === 'tax'){
           if(item[key] === 1){
-            form.charges[index][key] = 'HST';
+            forms.charges[index][key] = 'HST';
           }else{
-            form.charges[index][key] = 'None';
+            forms.charges[index][key] = 'None';
           }
         }else{
-          form.charges[index][key] = item[key];
+          forms.charges[index][key] = item[key];
         }
       }
     });
@@ -182,16 +182,19 @@ const getSubscription = async (hash) => {
     const response = await apiClientAuto.get('/subscriptions/show/' + hash, {params});
 
     if (response.data.success) {
-      subscription.value = response.data.subscription;
+        subscription.value = response.data.subscription;
 
-      populateSubscription(subscription.value);
-      populateStringTags(subscription.value.tags);
-      selectClient(subscription.value.client_id);
-      selectMyCompany(subscription.value.my_company_id);
+        forms.subscription = response.data.subscription;
+        forms.charges = response.data.subscription.charges;
 
-      if(subscription.value.charges.length > 0){
-        populateCharges(subscription.value.charges);
-      }
+        //populateSubscription(subscription.value);
+        populateStringTags(subscription.value.tags);
+        selectClient(subscription.value.client_id);
+        selectMyCompany(subscription.value.my_company_id);
+
+        // if(subscription.value.charges.length > 0){
+        //   populateCharges(subscription.value.charges);
+        // }
 
     }
   } catch (error) {
@@ -202,7 +205,7 @@ const getSubscription = async (hash) => {
 }
 
 const addCharge = value => {
-  form.charges.push({
+  forms.charges.push({
     description: '',
     rate: '',
     qty: '',
@@ -211,7 +214,7 @@ const addCharge = value => {
 }
 
 const removeCharge = index => {
-  form.charges.splice(index, 1)
+  forms.charges.splice(index, 1)
 }
 
 const getCompanies = async () => {
@@ -221,7 +224,7 @@ const getCompanies = async () => {
     if (response.data.success === true) {
       myCompanies.value = response.data.companies;
       fromMyCompany.value = response.data.companies[1];
-      form.subscription.my_company_id = response.data.companies[1].id
+      forms.subscription.my_company_id = response.data.companies[1].id
     }
   } catch (error) {
 
@@ -235,7 +238,7 @@ const selectMyCompany = (event) => {
 const selectClient = (event) => {
   toClient.value = clients.value.find(client => client.id === event);
   clientCreditCards.value = toClient.value.credit_cards;
-  form.subscription.credit_card_id = toClient.value.default_credit_card_id;
+  forms.subscription.credit_card_id = toClient.value.default_credit_card_id;
 }
 
 const getClients = async () => {
@@ -252,7 +255,7 @@ const getClients = async () => {
 const calculateSubTotal = () => {
   let subTotal = 0;
   let tax = 0;
-  form.charges.forEach((item) => {
+  forms.charges.forEach((item) => {
     if (item.qty && item.rate) {
       subTotal += (item.qty * item.rate);
       if (item.tax === 'HST') {
@@ -261,12 +264,12 @@ const calculateSubTotal = () => {
     }
   });
 
-  form.subscription.subtotal = subTotal;
-  form.subscription.taxes = tax;
-  form.subscription.total = subTotal + tax;
+  forms.subscription.subtotal = subTotal;
+  forms.subscription.taxes = tax;
+  forms.subscription.total = subTotal + tax;
 }
 
-watch(() => form.charges, () => {
+watch(() => forms.charges, () => {
   calculateSubTotal();
 }, { deep: true });
 
@@ -354,7 +357,7 @@ onBeforeMount(async () => {
                 <AppAutocomplete
                   v-if="fromMyCompany"
                   @change="selectMyCompany"
-                  v-model="form.subscription.my_company_id"
+                  v-model="forms.subscription.my_company_id"
                   :items="myCompanies"
                   item-title="name"
                   item-value="id"
@@ -372,7 +375,7 @@ onBeforeMount(async () => {
 
                 <span style="inline-size: 9.5rem;">
                   <AppDateTimePicker
-                    v-model="form.subscription.next_charge_date"
+                    v-model="forms.subscription.next_charge_date"
                     placeholder="YYYY-MM-DD"
                     :config="{ position: 'auto right' }"
                   />
@@ -387,7 +390,7 @@ onBeforeMount(async () => {
 
                 <span style="inline-size: 9.5rem;">
                   <AppTextField
-                    v-model="form.subscription.due_in_days"
+                    v-model="forms.subscription.due_in_days"
                     type="number"
                     placeholder="Due in days"
                   />
@@ -401,7 +404,7 @@ onBeforeMount(async () => {
                 >Expiration:</span>
                 <span style="min-inline-size: 9.5rem;">
                   <AppDateTimePicker
-                    v-model="form.subscription.expiration_date"
+                    v-model="forms.subscription.expiration_date"
                     placeholder="YYYY-MM-DD"
                     :config="{ position: 'auto right' }"
                   />
@@ -416,7 +419,7 @@ onBeforeMount(async () => {
               <h6 class="text-h6 mb-4">Name:</h6>
 
               <AppTextField
-                v-model="form.subscription.name"
+                v-model="forms.subscription.name"
                 placeholder="Subscription Name"
                 class="mb-4"
               />
@@ -450,7 +453,7 @@ onBeforeMount(async () => {
 
               <AppAutocomplete
                 @change="selectClient"
-                v-model="form.subscription.client_id"
+                v-model="forms.subscription.client_id"
                 :items="clients"
                 item-title="company_name"
                 item-value="id"
@@ -459,7 +462,7 @@ onBeforeMount(async () => {
                 style="inline-size: 11.875rem;"
               />
 
-              <div v-if="form.subscription.client_id" class="d-block">
+              <div v-if="forms.subscription.client_id" class="d-block">
                 <p><strong>Company:</strong> {{ toClient.company_name }}</p>
                 <p><strong>Email:</strong> {{ toClient.company_email }}</p>
                 <p><strong>Mobile:</strong> {{ toClient.company_phone }}</p>
@@ -484,7 +487,7 @@ onBeforeMount(async () => {
               </h6>
 
               <AppAutocomplete
-                v-model="form.subscription.credit_card_id"
+                v-model="forms.subscription.credit_card_id"
                 :items="clientCreditCards || []"
                 item-title="cc_last_4_digits"
                 item-value="id"
@@ -499,7 +502,7 @@ onBeforeMount(async () => {
                 Frequency Month:
               </h6>
               <AppAutocomplete
-                v-model="form.subscription.frequency_month"
+                v-model="forms.subscription.frequency_month"
                 :items="frequencies"
                 item-title="text"
                 item-value="value"
@@ -513,7 +516,7 @@ onBeforeMount(async () => {
               <h6 class="text-h6 mb-4">Frequency Day:</h6>
 
               <AppTextField
-                v-model="form.subscription.frequency_day"
+                v-model="forms.subscription.frequency_day"
                 placeholder="Frequency Day"
                 class="mb-4"
                 type="number"
@@ -526,7 +529,7 @@ onBeforeMount(async () => {
               </h6>
 
               <VSelect
-                v-model="form.subscription.currency"
+                v-model="forms.subscription.currency"
                 :items="[
                   'USD',
                   'CAD',
@@ -539,7 +542,7 @@ onBeforeMount(async () => {
 
             <VCol cols="12" md="3" class="text-no-wrap d-flex">
               <VCheckbox
-                v-model="form.subscription.charge_cc"
+                v-model="forms.subscription.charge_cc"
                 label="Charge Credit Card"
                 class="mb-4"
               />
@@ -547,7 +550,7 @@ onBeforeMount(async () => {
 
             <VCol cols="12" md="3" class="text-no-wrap d-flex">
               <VCheckbox
-                v-model="form.subscription.can_pay_with_cc"
+                v-model="forms.subscription.can_pay_with_cc"
                 label="Customers can pay with CC"
                 class="mb-4"
               />
@@ -555,7 +558,7 @@ onBeforeMount(async () => {
 
             <VCol cols="12" md="3" class="text-no-wrap d-flex">
               <VCheckbox
-                v-model="form.subscription.email_invoice"
+                v-model="forms.subscription.email_invoice"
                 label="Email Invoice"
                 class="mb-4"
               />
@@ -582,7 +585,7 @@ onBeforeMount(async () => {
               </VBtn>
             </div>
 
-            <VRow v-for="(item, index) in form.charges" :key="index">
+            <VRow v-for="(item, index) in forms.charges" :key="index">
 
               <VCol
                 cols="12"
@@ -674,7 +677,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(form.subscription.subtotal).toFixed(2) }}
+                      {{ parseFloat(forms.subscription.subtotal).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -685,7 +688,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(form.subscription.taxes).toFixed(2) }}
+                      {{ parseFloat(forms.subscription.taxes).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -703,7 +706,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(form.subscription.total).toFixed(2) }}
+                      {{ parseFloat(forms.subscription.total).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -817,6 +820,7 @@ onBeforeMount(async () => {
   margin-right: 4px;
   margin-bottom: 4px;
   border-radius: 3px;
+  color: #5d5b5b;
 }
 
 .remove-tag {

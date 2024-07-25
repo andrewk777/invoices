@@ -21,7 +21,7 @@ class SubscriptionChargeResource extends JsonResource
             'description' => $this->description,
             'qty' => $this->qty,
             'rate' => $this->rate,
-            'tax' => $this->tax,
+            'tax' => $this->tax === 1 ? 'HST' : 'None',
         ];
     }
 }

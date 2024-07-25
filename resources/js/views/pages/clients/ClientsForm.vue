@@ -42,34 +42,36 @@ const creditCards = ref([]);
 
 const ccDialogueVisible = ref(false);
 
-const form = reactive({
-  default_credit_card_id: '',
-  company_name: '',
-  company_email: '',
-  company_phone: '',
-  company_address: '',
-  main_contact_first_name: '',
-  main_contact_last_name: '',
-  main_contact_phone: '',
-  main_contact_email: '',
-  ap_first_name: '',
-  ap_last_name: '',
-  ap_phone: '',
-  ap_email: '',
-  notes: '',
+let forms = reactive({
+  client: {
+    default_credit_card_id: '',
+    company_name: '',
+    company_email: '',
+    company_phone: '',
+    company_address: '',
+    main_contact_first_name: '',
+    main_contact_last_name: '',
+    main_contact_phone: '',
+    main_contact_email: '',
+    ap_first_name: '',
+    ap_last_name: '',
+    ap_phone: '',
+    ap_email: '',
+    notes: '',
+  }
 });
 
 const populateForm = (clientData) => {
-  for (const key in form) {
+  for (const key in forms.client) {
     if (clientData.hasOwnProperty(key)) {
-      form[key] = clientData[key] || '';
+      forms.client[key] = clientData[key] || '';
     }
   }
 };
 
 const resetForm = () => {
-  for (const key in form) {
-    form[key] = '';
+  for (const key in forms.client) {
+    forms.client[key] = '';
   }
 };
 
@@ -84,14 +86,14 @@ const submitClient = async (action = null) => {
 
   const formData = new FormData();
   // iterate and add form data
-  Object.keys(form).forEach(function (key) {
-    if (form[key] !== null && form[key] !== '') {
-      formData.append(key, form[key]);
+  Object.keys(forms.client).forEach(function (key) {
+    if (forms.client[key] !== null && forms.client[key] !== '') {
+      formData.append(key, forms.client[key]);
     }
   });
 
   try {
-    const response = await apiClientAuto.post('/clients/store', form);
+    const response = await apiClientAuto.post('/clients/store', forms.client);
 
     if (response.data.success) {
 
@@ -133,11 +135,11 @@ const updateClient = async (hash, action = null) => {
   loading.value = true;
 
   const formData = new FormData();
-  // iterate and add form data
-  Object.keys(form).forEach(function (key) {
+  // iterate and add forms.client data
+  Object.keys(forms.client).forEach(function (key) {
 
-    if (form[key] !== null && form[key] !== '') {
-      formData.append(key, form[key]);
+    if (forms.client[key] !== null && forms.client[key] !== '') {
+      formData.append(key, forms.client[key]);
     }
   });
 
@@ -172,8 +174,10 @@ const getClient = async (hash) => {
     const response = await apiClientAuto.get('/clients/show/' + hash);
 
     if (response.data.success) {
-      client.value = response.data.client;
-      populateForm(client.value);
+      //client.value = response.data.client;
+      // populateForm(client.value);
+
+      forms.client = response.data.client;
       creditCards.value = client.value.credit_cards;
     }
 
@@ -218,7 +222,7 @@ defineExpose({
 <template>
   <VRow class="mb-2">
     <VCol cols="4">
-      <h1 class="card-header">Client: {{ form.company_name }}</h1>
+      <h1 class="card-header">Client: {{ forms.client.company_name }}</h1>
     </VCol>
 
     <VCol cols="8" class="text-right flex">
@@ -296,7 +300,7 @@ defineExpose({
                 <!-- 👉 Company Name -->
                 <VCol cols="12" md="4">
                     <AppTextField
-                    v-model="form.company_name"
+                    v-model="forms.client.company_name"
                     label="Company Name"
                     :error-messages="errors.company_name"
                     />
@@ -304,7 +308,7 @@ defineExpose({
                 <!-- 👉 Company Address -->
                 <VCol cols="12" md="8">
                     <AppTextField
-                    v-model="form.company_address"
+                    v-model="forms.client.company_address"
                     label="Company Address"
                     :error-messages="errors.company_address"
                     />
@@ -313,7 +317,7 @@ defineExpose({
                 <!-- 👉 Company Email -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.company_email"
+                    v-model="forms.client.company_email"
                     label="Company Email"
                     :error-messages="errors.company_email"
                     />
@@ -322,7 +326,7 @@ defineExpose({
                 <!-- 👉 Company Phone No. -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.company_phone"
+                    v-model="forms.client.company_phone"
                     label="Company Phone No."
                     :error-messages="errors.company_phone"
                     />
@@ -335,7 +339,7 @@ defineExpose({
                 <!-- 👉 Main Contact First Name -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.main_contact_first_name"
+                    v-model="forms.client.main_contact_first_name"
                     label="Main Contact First Name"
                     :error-messages="errors.main_contact_first_name"
                     />
@@ -344,7 +348,7 @@ defineExpose({
                 <!-- 👉 Main Contact Last Name -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.main_contact_last_name"
+                    v-model="forms.client.main_contact_last_name"
                     label="Main Contact Last Name"
                     :error-messages="errors.main_contact_last_name"
                     />
@@ -353,7 +357,7 @@ defineExpose({
                 <!-- 👉 Main Contact Email -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.main_contact_email"
+                    v-model="forms.client.main_contact_email"
                     label="Main Contact Email"
                     :error-messages="errors.main_contact_email"
                     />
@@ -362,7 +366,7 @@ defineExpose({
                 <!-- 👉 Main Contact Phone -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.main_contact_phone"
+                    v-model="forms.client.main_contact_phone"
                     label="Main Contact Phone"
                     :error-messages="errors.main_contact_phone"
                     />
@@ -375,7 +379,7 @@ defineExpose({
                 <!-- 👉 AP First Name -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.ap_first_name"
+                    v-model="forms.client.ap_first_name"
                     label="AP First Name"
                     :error-messages="errors.ap_first_name"
                     />
@@ -384,7 +388,7 @@ defineExpose({
                 <!-- 👉 AP Last Name -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.ap_last_name"
+                    v-model="forms.client.ap_last_name"
                     label="AP Last Name"
                     :error-messages="errors.ap_last_name"
                     />
@@ -393,7 +397,7 @@ defineExpose({
                 <!-- 👉 AP Email -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.ap_email"
+                    v-model="forms.client.ap_email"
                     label="AP Email"
                     :error-messages="errors.ap_email"
                     />
@@ -402,7 +406,7 @@ defineExpose({
                 <!-- 👉 AP Phone -->
                 <VCol cols="12" md="3">
                     <AppTextField
-                    v-model="form.ap_phone"
+                    v-model="forms.client.ap_phone"
                     label="AP Phone"
                     :error-messages="errors.ap_phone"
                     />
@@ -418,7 +422,7 @@ defineExpose({
           <!-- 👉 Notes -->
           <VCol cols="12">
             <VTextarea
-              v-model="form.notes"
+              v-model="forms.client.notes"
               label="Notes"
               rows="3"
               :error-messages="errors.notes"
@@ -472,7 +476,7 @@ defineExpose({
 
             <VSelect
               v-if="creditCards?.length > 0"
-              v-model="form.default_credit_card_id"
+              v-model="forms.client.default_credit_card_id"
               :items="creditCards"
               item-title="cc_last_4_digits"
               item-value="id"

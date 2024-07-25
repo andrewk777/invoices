@@ -31,8 +31,9 @@ const emittedClient = (event) => {
 
     <td class="text-center">
       <VIcon
-        v-if="client.credit_cards.length > 0"
+        v-if="client.default_credit_card"
         icon="tabler-credit-card"
+        color="success"
       />
     </td>
 
