@@ -121,9 +121,9 @@ class InvoiceController extends Controller
         }
     }
 
-    public function receipt($hash): Response|JsonResponse
+    public function receipt($hash)
     {
-        try {
+        try{
             return $this->invoice->generateInvoiceFile($hash);
 
         }catch (\Exception $e){

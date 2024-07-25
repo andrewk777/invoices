@@ -286,4 +286,5 @@ class InvoiceRepository
         return $pdf->stream('invoice_receipt_'.time().'.pdf');
     }
 
+
 }

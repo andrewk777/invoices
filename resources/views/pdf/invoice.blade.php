@@ -1,4 +1,6 @@
 <style>
+    @page { margin: 0;}
+
     @font-face {
         font-family: 'Noto Sans Medium';
         src: url({{ storage_path("fonts/NotoSans-Medium.ttf") }}) format("truetype");
@@ -12,6 +14,7 @@
 
     body {
         font-family: Arial, sans-serif;
+        margin: 0;
     }
     table {
         width: 100%;

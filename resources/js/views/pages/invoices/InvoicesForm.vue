@@ -361,18 +361,17 @@ const downloadInvoiceReceipt = () => {
     responseType: 'blob',
   })
     .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const newWindow = window.open(url, '_blank');
-      if (newWindow) {
-        newWindow.focus();
-      } else {
-        alert('Please allow popups for this website');
-      }
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'invoice_receipt.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     })
     .catch(error => {
-      console.error('Error viewing invoice receipt:', error);
+      console.error('Error downloading invoice receipt:', error);
     });
-
 };
 
 watch(() => invoiceData.invoice_items, () => {
