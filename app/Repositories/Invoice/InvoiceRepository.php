@@ -172,9 +172,6 @@ class InvoiceRepository
     public function searchInvoices($request): array
     {
         $inputs = $request->all();
-
-        dd($inputs['date']);
-
         Session::forget(['search_inputs', 'search_values']);
 
         $invoices = $this->invoice()->with('company', 'client')->select(
@@ -207,45 +204,6 @@ class InvoiceRepository
                 });
 
                 $query->when(!empty($inputs['date']), static function($q) use($inputs){
-
-//                    if($inputs['date'] === 'today'){
-//                        $dateFrom = Carbon::now()->format('Y-m-d:00:00:00');
-//                        $dateTo = Carbon::now()->format('Y-m-d:23:59:59');
-//
-//                    }elseif($inputs['date'] === 'yesterday'){
-//                        $dateFrom = Carbon::now()->subDay()->format('Y-m-d:00:00:00');
-//                        $dateTo = Carbon::now()->subDay()->format('Y-m-d:23:59:59');
-//
-//                    }elseif ($inputs['date'] === 'this Week'){
-//                        $dateFrom = Carbon::now()->startOfWeek()->format('Y-m-d:00:00:00');
-//                        $dateTo = Carbon::now()->endOfWeek()->format('Y-m-d:23:59:59');
-//
-//                    }elseif ($inputs['date'] === 'Last Week'){
-//                        $dateFrom = Carbon::now()->subWeek()->startOfWeek()->format('Y-m-d:00:00:00');
-//                        $dateTo = Carbon::now()->subWeek()->endOfWeek()->format('Y-m-d:23:59:59');
-//
-//                    }elseif ($inputs['date'] === 'This Month'){
-//                        $dateFrom = Carbon::now()->startOfMonth()->format('Y-m-d:00:00:00');
-//                        $dateTo = Carbon::now()->endOfMonth()->format('Y-m-d:23:59:59');
-//
-//                    }elseif ($inputs['date'] === 'Last Month') {
-//                        $dateFrom = Carbon::now()->subMonth()->startOfMonth()->format('Y-m-d:00:00:00');
-//                        $dateTo = Carbon::now()->subMonth()->endOfMonth()->format('Y-m-d:23:59:59');
-//
-//                    }elseif ($inputs['date'] === 'This Year') {
-//                        $dateFrom = Carbon::now()->startOfYear()->format('Y-m-d:00:00:00');
-//                        $dateTo = Carbon::now()->endOfYear()->format('Y-m-d:23:59:59');
-//
-//                    }elseif ($inputs['date'] === 'Last Year') {
-//                        $dateFrom = Carbon::now()->subYear()->startOfYear()->format('Y-m-d:00:00:00');
-//                        $dateTo = Carbon::now()->subYear()->endOfYear()->format('Y-m-d:23:59:59');
-//
-//                    }else{
-//                        $dates = explode(' ', $inputs['date']);
-//                        $dateFrom = Carbon::parse($dates[0])->format('Y-m-d:00:00:00');
-//                        $dateTo = isset($dates[2]) ? Carbon::parse($dates[2])->format('Y-m-d:23:59:59') : Carbon::parse($dates[0])->format('Y-m-d:23:59:59');
-//                    }
-
                     $dates = explode(' ', $inputs['date']);
                     $dateFrom = Carbon::parse($dates[0])->format('Y-m-d:00:00:00');
                     $dateTo = isset($dates[2]) ? Carbon::parse($dates[2])->format('Y-m-d:23:59:59') : Carbon::parse($dates[0])->format('Y-m-d:23:59:59');

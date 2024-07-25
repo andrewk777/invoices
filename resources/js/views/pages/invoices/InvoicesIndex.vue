@@ -35,58 +35,56 @@ const formSearch = reactive({
 });
 
 const filterDate = (string) => {
-
   console.log('Filter Date:', string);
 
-  if(string === 'today'){
-    formSearch.date = new Date()+' to '+ new Date();
+  if (string === 'today') {
+    const today = new Date().toISOString().split('T')[0];
+    formSearch.date = `${today} to ${today}`;
     console.log('Filter Today:', formSearch.date);
 
-  }else if(string === 'yesterday') {
-    const date = new Date();
-    date.setDate(date.getDate() - 1);
-    formSearch.date = date+' to '+date;
+  } else if (string === 'yesterday') {
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    formSearch.date = `${yesterday} to ${yesterday}`;
     console.log('Filter Yesterday:', formSearch.date);
 
-  }else if(string === 'this week') {
+  } else if (string === 'this week') {
     const date = new Date();
-    const firstDay = new Date(date.setDate(date.getDate() - date.getDay()));
-    const lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 6));
-    formSearch.date = firstDay+' to '+lastDay;
+    const firstDay = new Date(date.setDate(date.getDate() - date.getDay())).toISOString().split('T')[0];
+    const lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 6)).toISOString().split('T')[0];
+    formSearch.date = `${firstDay} to ${lastDay}`;
     console.log('Filter This Week:', formSearch.date);
 
-  }else if(string === 'last week') {
+  } else if (string === 'last week') {
     const date = new Date();
-    const firstDay = new Date(date.setDate(date.getDate() - date.getDay() - 7));
-    const lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 6));
-    formSearch.date = firstDay+' to '+lastDay;
+    const firstDay = new Date(date.setDate(date.getDate() - date.getDay() - 7)).toISOString().split('T')[0];
+    const lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 6)).toISOString().split('T')[0];
+    formSearch.date = `${firstDay} to ${lastDay}`;
 
-  }else if(string === 'this month') {
+  } else if (string === 'this month') {
     const date = new Date();
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-    formSearch.date = firstDay+' to '+lastDay;
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString().split('T')[0];
+    formSearch.date = `${firstDay} to ${lastDay}`;
 
-  }else if(string === 'last month') {
+  } else if (string === 'last month') {
     const date = new Date();
-    const firstDay = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-    const lastDay = new Date(date.getFullYear(), date.getMonth(), 0);
-    formSearch.date = firstDay+' to '+lastDay;
+    const firstDay = new Date(date.getFullYear(), date.getMonth() - 1, 1).toISOString().split('T')[0];
+    const lastDay = new Date(date.getFullYear(), date.getMonth(), 0).toISOString().split('T')[0];
+    formSearch.date = `${firstDay} to ${lastDay}`;
 
-  }else if(string === 'this year') {
+  } else if (string === 'this year') {
     const date = new Date();
-    const firstDay = new Date(date.getFullYear(), 0, 1);
-    const lastDay = new Date(date.getFullYear(), 11, 31);
-    formSearch.date = firstDay+' to '+lastDay;
+    const firstDay = new Date(date.getFullYear(), 0, 1).toISOString().split('T')[0];
+    const lastDay = new Date(date.getFullYear(), 11, 31).toISOString().split('T')[0];
+    formSearch.date = `${firstDay} to ${lastDay}`;
 
-  }else if(string === 'last year') {
+  } else if (string === 'last year') {
     const date = new Date();
-    const firstDay = new Date(date.getFullYear() - 1, 0, 1);
-    const lastDay = new Date(date.getFullYear() - 1, 11, 31);
-    formSearch.date = firstDay+' to '+lastDay;
-
+    const firstDay = new Date(date.getFullYear() - 1, 0, 1).toISOString().split('T')[0];
+    const lastDay = new Date(date.getFullYear() - 1, 11, 31).toISOString().split('T')[0];
+    formSearch.date = `${firstDay} to ${lastDay}`;
   }
-}
+};
 
 const getInvoices = async (page = 1) => {
   searchActive.value = false;
@@ -94,9 +92,9 @@ const getInvoices = async (page = 1) => {
 
   try{
     const response = await apiClientAuto.get('/invoices?page=' + page);
-    if(response.data.success === true){
-      invoices.value = response.data.invoices;
-      total.value = response.data.total;
+    if(response.data?.success === true){
+      invoices.value = response.data?.invoices;
+      total.value = response.data?.total;
     }
     dataLoaded.value = true;
 
@@ -106,6 +104,20 @@ const getInvoices = async (page = 1) => {
     }
   }
 
+}
+
+const clearAllFiltersAndSearch = async () => {
+  searchActive.value = false;
+  formSearch.search = '';
+  formSearch.date = '';
+  formSearch.unpaid = false;
+  formSearch.na = false;
+
+  Object.keys(formSearch).forEach((key) => {
+    localStorage.removeItem('invoice-search-' + key);
+  });
+
+  getInvoices();
 }
 
 const searchInvoices = async () => {
@@ -289,28 +301,27 @@ onBeforeMount(() => {
             </template>
 
             <v-list class="border-label-info">
-                <v-list-item @click="filterDate('today')"> Today </v-list-item>
-                <v-list-item @click="filterDate('yesterday')"> Yesterday </v-list-item>
-                <v-list-item @click="filterDate('this week')"> This Week </v-list-item>
-                <v-list-item @click="filterDate('last week')"> Last Week </v-list-item>
-                <v-list-item @click="filterDate('this month')"> This Month </v-list-item>
-                <v-list-item @click="filterDate('last month')"> Last Month </v-list-item>
-                <v-list-item @click="filterDate('this year')"> This Year </v-list-item>
-                <v-list-item @click="filterDate('last year')"> Last Year </v-list-item>
+                <v-list-item class="dd-item" @click="filterDate('today')"> Today </v-list-item>
+                <v-list-item class="dd-item" @click="filterDate('yesterday')"> Yesterday </v-list-item>
+                <v-list-item class="dd-item" @click="filterDate('this week')"> This Week </v-list-item>
+                <v-list-item class="dd-item" @click="filterDate('last week')"> Last Week </v-list-item>
+                <v-list-item class="dd-item" @click="filterDate('this month')"> This Month </v-list-item>
+                <v-list-item class="dd-item" @click="filterDate('last month')"> Last Month </v-list-item>
+                <v-list-item class="dd-item" @click="filterDate('this year')"> This Year </v-list-item>
+                <v-list-item class="dd-item" @click="filterDate('last year')"> Last Year </v-list-item>
             </v-list>
 
         </v-menu>
       </VCol>
 
       <VCol
+        md="5"
         cols="12"
-        md="3"
       >
         <VSwitch
           @change="searchInvoices"
           v-model="formSearch.unpaid"
           label="Unpaid"
-          size="large"
           true-value="Only Unpaid"
           false-value="All"
           class="d-inline-block mr-4"
@@ -324,6 +335,14 @@ onBeforeMount(() => {
           false-value="Hide"
           class="d-inline-block"
         />
+
+        <VBtn
+          @click="clearAllFiltersAndSearch"
+          variant="flat" color="primary"
+          class="p-0 ml-4 mb-5"
+        >
+            <VIcon color="white" size="25" icon="tabler-eraser" title="reload" />
+        </VBtn>
       </VCol>
     </VRow>
 
@@ -366,5 +385,13 @@ onBeforeMount(() => {
 </template>
 
 <style scoped lang="scss">
-
+.dd-item
+{
+    cursor: pointer;
+    padding: 10px;
+    &:hover
+    {
+        background-color: #f1f1f1;
+    }
+}
 </style>

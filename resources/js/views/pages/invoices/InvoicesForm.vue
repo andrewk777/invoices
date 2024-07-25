@@ -32,7 +32,7 @@ const invoice_due = computed(() => {
   return selectedDate.toISOString().split('T')[0];
 });
 
-const invoiceData = reactive({
+const form = reactive({
   invoice: {
     my_company_id: '',
     client_id: '',
@@ -83,25 +83,15 @@ const submitInvoice = async (event, action = null) => {
   try {
     let response;
     if (hash.value) {
-      response = await apiClientAuto.post('/invoices/update/' + hash.value, invoiceData, {
-        headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer " + token.value,
-        }
-      });
+      response = await apiClientAuto.post('/invoices/update/' + hash.value, form);
     } else {
-      response = await apiClientAuto.post('/invoices/store', invoiceData, {
-        headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer " + token.value,
-        }
-      });
+      response = await apiClientAuto.post('/invoices/store', form);
     }
 
     if (response.data.success){
       submitted.value = true;
       hash.value = response.data.invoice.hash;
-      invoiceData.invoice.invoice_num = response.data.invoice.invoice_num;
+      form.invoice.invoice_num = response.data.invoice.invoice_num;
 
       if(action === 'close') {
         window.location.href = '/invoices';
@@ -118,14 +108,12 @@ const submitInvoice = async (event, action = null) => {
 
 const populateInvoice = (invoice) => {
   Object.keys(invoice).forEach(function (key) {
-    console.log("Populate key", key);
-    console.log("Populate value", invoice[key]);
 
     if (invoice[key] !== null && invoice[key] !== '') {
       if((key === 'na' || key === 'can_pay_with_cc')) {
-        invoiceData.invoice[key] = invoice[key] === 1;
+        form.invoice[key] = invoice[key] === 1;
       }else{
-        invoiceData.invoice[key] = invoice[key];
+        form.invoice[key] = invoice[key];
       }
     }
 
@@ -136,8 +124,8 @@ const populateInvoiceItem = (invoice_items) => {
   invoice_items.forEach(function (item, index) {
 
     // Initialize the item at index if it does not exist
-    if (!invoiceData.invoice_items[index]) {
-      invoiceData.invoice_items[index] = {
+    if (!form.invoice_items[index]) {
+      form.invoice_items[index] = {
         description: '',
         rate: 0,
         qty: 0,
@@ -149,12 +137,12 @@ const populateInvoiceItem = (invoice_items) => {
       if (item[key] !== null && item[key] !== '') {
         if(key === 'tax'){
           if(item[key] === 1){
-            invoiceData.invoice_items[index][key] = 'HST';
+            form.invoice_items[index][key] = 'HST';
           }else{
-            invoiceData.invoice_items[index][key] = 'None';
+            form.invoice_items[index][key] = 'None';
           }
         }else{
-          invoiceData.invoice_items[index][key] = item[key];
+          form.invoice_items[index][key] = item[key];
         }
       }
     });
@@ -166,8 +154,8 @@ const populateInvoicePayment = (invoice_payments) => {
   invoice_payments.forEach(function (payment, index) {
 
     // Initialize the item at index if it does not exist
-    if (!invoiceData.invoice_payments[index]) {
-      invoiceData.invoice_payments[index] = {
+    if (!form.invoice_payments[index]) {
+      form.invoice_payments[index] = {
         type: '',
         amount: 0,
         date: '',
@@ -177,7 +165,7 @@ const populateInvoicePayment = (invoice_payments) => {
 
     Object.keys(payment).forEach(function (key) {
       if (payment[key] !== null && payment[key] !== '') {
-        invoiceData.invoice_payments[index][key] = payment[key];
+        form.invoice_payments[index][key] = payment[key];
       }
     });
 
@@ -186,22 +174,24 @@ const populateInvoicePayment = (invoice_payments) => {
 
 const getInvoice = async (hash) => {
   try {
-    const params = {
-      hash: hash
-    }
-    const response = await apiClientAuto.get('/invoices/show/' + hash, {params});
+    const response = await apiClientAuto.get('/invoices/show/' + hash);
 
-    if (response.data.success) {
-      invoice.value = response.data.invoice;
+    if (response.data.success){
+        form.invoice = response.data?.invoice;
+        form.invoice_payments = response.data?.invoice?.payments;
+        form.invoice_items = response.data?.invoice?.items;
 
-      populateInvoice(invoice.value);
-      selectInvoiceTo(invoice.value.client_id);
-      if(invoice.value.items.length > 0){
-        populateInvoiceItem(invoice.value.items);
-      }
-      if(invoice.value.payments.length > 0){
-        populateInvoicePayment(invoice.value.payments);
-      }
+      // invoice.value = response.data.invoice;
+      //populateInvoice(invoice.value);
+      selectInvoiceTo(form.invoice.client_id);
+
+      // if(invoice.value.items.length > 0){
+      //   populateInvoiceItem(invoice.value.items);
+      // }
+      // if(invoice.value.payments.length > 0){
+      //   populateInvoicePayment(invoice.value.payments);
+      // }
+
     }
   } catch (error) {
 
@@ -216,20 +206,20 @@ const addPayment = value => {
   calculateBalance();
   const paymentToday = new Date().toISOString().split('T')[0];
 
-  invoiceData?.invoice_payments.push({
+  form?.invoice_payments.push({
     type: 'Cheque',
-    amount: invoiceData.invoice.balance,
+    amount: form.invoice.balance,
     date: paymentToday,
     note: '',
   });
 }
 
 const removePayment = index => {
-  invoiceData?.invoice_payments.splice(index, 1)
+  form?.invoice_payments.splice(index, 1)
 }
 
 const addCharge = value => {
-  invoiceData?.invoice_items.push({
+  form?.invoice_items.push({
     description: '',
     rate: '',
     qty: '',
@@ -238,13 +228,13 @@ const addCharge = value => {
 }
 
 const removeCharge = index => {
-  invoiceData?.invoice_items.splice(index, 1)
+  form?.invoice_items.splice(index, 1)
 }
 
 const updateInvoiceDue = (event) => {
   const selectedDate = new Date(event.target.value);
   selectedDate.setDate(selectedDate.getDate() + 10);
-  invoiceData.invoice.invoice_due = selectedDate.toISOString().split('T')[0];
+  form.invoice.invoice_due = selectedDate.toISOString().split('T')[0];
 }
 
 const myCompanies = ref([]);
@@ -260,7 +250,7 @@ const getCompanies = async () => {
     if (response.data.success === true) {
         myCompanies.value = response.data.companies;
         invoiceFrom.value = response.data.companies[1];
-        invoiceData.invoice.my_company_id = response.data.companies[1].id
+        form.invoice.my_company_id = response.data.companies[1].id
     }
 
   } catch (error) {
@@ -290,7 +280,7 @@ const getClients = async () => {
 const calculateSubTotal = () => {
   let subTotal = 0;
   let tax = 0;
-  invoiceData.invoice_items.forEach((item) => {
+  form.invoice_items.forEach((item) => {
     if (item.qty && item.rate) {
       subTotal += (item.qty * item.rate);
       if (item.tax === 'HST') {
@@ -299,49 +289,49 @@ const calculateSubTotal = () => {
     }
   });
 
-  invoiceData.invoice.subtotal = subTotal;
-  invoiceData.invoice.taxes = tax;
-  invoiceData.invoice.total = subTotal + tax;
+  form.invoice.subtotal = subTotal;
+  form.invoice.taxes = tax;
+  form.invoice.total = subTotal + tax;
   calculateBalance();
 }
 
 const calculateBalance = () => {
   let totalPaid = 0;
-  if(invoiceData.invoice_payments.length > 0){
-    invoiceData.invoice_payments.forEach((payment) => {
+  if(form.invoice_payments.length > 0){
+    form.invoice_payments.forEach((payment) => {
       if (payment.amount) {
         totalPaid += parseFloat(payment.amount);
       }
     });
   }
 
-  invoiceData.invoice.total_paid = totalPaid;
-  invoiceData.invoice.balance = invoiceData.invoice.total - totalPaid;
+  form.invoice.total_paid = totalPaid;
+  form.invoice.balance = form.invoice.total - totalPaid;
 }
 
 const updateBalanceFromStatus = (event) => {
   if (event.target.value === 'draft') {
-    invoiceData.invoice.balance = invoiceData.invoice.total;
+    form.invoice.balance = form.invoice.total;
 
   }else if(event.target.value === 'paid'){
-    invoiceData.invoice.balance = 0;
+    form.invoice.balance = 0;
   }
 }
 
 const updateBalanceAndStatusOnSave = () => {
-  if (invoiceData.invoice.balance === 0) {
-    invoiceData.invoice.status = 'paid';
-  } else if(invoiceData.invoice.balance === invoiceData.invoice.total) {
-    invoiceData.invoice.status = 'draft';
+  if (form.invoice.balance === 0) {
+    form.invoice.status = 'paid';
+  } else if(form.invoice.balance === form.invoice.total) {
+    form.invoice.status = 'draft';
   }else{
-    invoiceData.invoice.status = 'partially_paid';
+    form.invoice.status = 'partially_paid';
   }
 }
 
 const openInvoiceReceiptInBrowser = () => {
   submitInvoice(event);
 
-  apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}`, {
+  apiClientAuto.get(`/invoices/receipt/${hash.value}`, {
     responseType: 'blob',
   })
     .then(response => {
@@ -357,7 +347,7 @@ const downloadInvoiceReceipt = () => {
 
   submitInvoice(event);
 
-  apiClientAuto.get(`/invoices/receipt/${invoice.value.hash}/download`, {
+  apiClientAuto.get(`/invoices/receipt/${hash.value}/download`, {
     responseType: 'blob',
   })
     .then(response => {
@@ -374,7 +364,7 @@ const downloadInvoiceReceipt = () => {
     });
 };
 
-watch(() => invoiceData.invoice_items, () => {
+watch(() => form.invoice_items, () => {
   calculateSubTotal();
 }, { deep: true });
 
@@ -454,7 +444,7 @@ onBeforeMount(async () => {
                 <AppAutocomplete
                   v-if="invoiceFrom"
                   @change="selectInvoiceFrom"
-                  v-model="invoiceData.invoice.my_company_id"
+                  v-model="form.invoice.my_company_id"
                   :items="myCompanies"
                   item-title="name"
                   item-value="id"
@@ -472,7 +462,7 @@ onBeforeMount(async () => {
                 >Invoice:</span>
                   <span>
                   <AppTextField
-                    :value="hash ? invoiceData.invoice.invoice_num : ''"
+                    :value="hash ? form.invoice.invoice_num : ''"
                     disabled
                     prefix="#"
                     style="inline-size: 9.5rem;"
@@ -490,7 +480,7 @@ onBeforeMount(async () => {
                 <span style="inline-size: 9.5rem;">
                   <AppDateTimePicker
                     @change="updateInvoiceDue"
-                    v-model="invoiceData.invoice.invoice_date"
+                    v-model="form.invoice.invoice_date"
                     placeholder="YYYY-MM-DD"
                     :config="{ position: 'auto right' }"
                   />
@@ -505,7 +495,7 @@ onBeforeMount(async () => {
                 >Invoice Due:</span>
                 <span style="min-inline-size: 9.5rem;">
                   <AppDateTimePicker
-                    v-model="invoiceData.invoice.invoice_due"
+                    v-model="form.invoice.invoice_due"
                     placeholder="YYYY-MM-DD"
                     :config="{ position: 'auto right' }"
                   />
@@ -519,7 +509,7 @@ onBeforeMount(async () => {
             <VCol md="3">
               <AppAutocomplete
                 @change="selectInvoiceTo"
-                v-model="invoiceData.invoice.client_id"
+                v-model="form.invoice.client_id"
                 :items="clients"
                 label="Client"
                 item-title="company_name"
@@ -531,7 +521,7 @@ onBeforeMount(async () => {
 
             <VCol md="2" >
               <AppAutocomplete
-                v-model="invoiceData.invoice.status"
+                v-model="form.invoice.status"
                 @change="updateBalanceFromStatus"
                 label="Status"
                 :items="statuses"
@@ -545,7 +535,7 @@ onBeforeMount(async () => {
             <VCol md="2">
               <AppSelect
                 label="Currency"
-                v-model="invoiceData.invoice.currency"
+                v-model="form.invoice.currency"
                 :items="[
                   'USD',
                   'CAD',
@@ -557,7 +547,7 @@ onBeforeMount(async () => {
 
             <VCol md="3">
                 <VCheckbox
-                    v-model="invoiceData.invoice.can_pay_with_cc"
+                    v-model="form.invoice.can_pay_with_cc"
                     label="Can Pay with Credit Card"
                   class="mt-6"
                 />
@@ -565,14 +555,14 @@ onBeforeMount(async () => {
 
             <VCol md="2">
                 <VCheckbox
-                v-model="invoiceData.invoice.na"
+                v-model="form.invoice.na"
                 label="N/A"
                 class="mt-6"
                 />
             </VCol>
           </VRow>
           
-          <VRow v-if="invoiceData.invoice.client_id">
+          <VRow v-if="form.invoice.client_id">
             <VCol md="12">
               <div class="d-block">
                 <CreditCardIcon v-if="invoiceTo?.credit_cards?.length > 0"/>
@@ -603,7 +593,7 @@ onBeforeMount(async () => {
                 </VBtn>
             </div>
 
-            <VRow v-for="(item, index) in invoiceData.invoice_items" :key="index">
+            <VRow v-for="(item, index) in form.invoice_items" :key="index">
 
               <VCol md="6" >
                 <AppTextarea
@@ -679,7 +669,7 @@ onBeforeMount(async () => {
               </VBtn>
             </div>
 
-            <VRow v-for="(payment, index) in invoiceData.invoice_payments" :key="index">
+            <VRow v-for="(payment, index) in form.invoice_payments" :key="index">
 
               <VCol cols="12" md="5">
                 <AppTextarea
@@ -754,7 +744,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(invoiceData.invoice.subtotal).toFixed(2) }}
+                      {{ parseFloat(form.invoice.subtotal).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -765,7 +755,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(invoiceData.invoice.taxes).toFixed(2) }}
+                      {{ parseFloat(form.invoice.taxes).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -783,7 +773,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ parseFloat(invoiceData.invoice.total).toFixed(2) }}
+                      {{ parseFloat(form.invoice.total).toFixed(2) }}
                     </h6>
                   </td>
                 </tr>
@@ -800,7 +790,7 @@ onBeforeMount(async () => {
                   </td>
                   <td :class="$vuetify.locale.isRtl ? 'text-start' : 'text-end'">
                     <h6 class="text-h6">
-                      {{ invoiceData.invoice.balance }}
+                      {{ form.invoice.balance }}
                     </h6>
                   </td>
                 </tr>
@@ -814,83 +804,88 @@ onBeforeMount(async () => {
       </VCol>
 
       <!--Right Buttons-->
-      <VCol cols="12" md="2">
-        <VBtn
-          :loading="loading"
-          block
-          color="success"
-          variant="tonal"
-          class="mb-2"
-          @click="submitInvoice"
-        >
-          Save
-        </VBtn>
+      <VCol class="pt-0" md="2">
+        <div class="sticky-top">
+            <VBtn
+              :loading="loading"
+              block
+              color="success"
+              variant="tonal"
+              class="mb-2"
+              @click="submitInvoice"
+              >
+              Save
+            </VBtn>
 
-        <VBtn
-          :loading="loading"
-          block
-          color="success"
-          variant="tonal"
-          class="mb-2"
-          @click="submitInvoice($event, 'close')"
-        >
-          Save & Close
-        </VBtn>
+            <VBtn
+              :loading="loading"
+              block
+              color="success"
+              variant="tonal"
+              class="mb-2"
+              @click="submitInvoice($event, 'close')"
+            >
+            Save & Close
+            </VBtn>
 
-        <VBtn
+            <a
+              v-if="hash && invoiceTo?.credit_cards?.length > 0"
+              :href="`/view-invoice/${hash}`" target="_blank">
+                <VBtn
+                  class="mt-2"
+                  block
+                  color="info"
+                  variant="tonal"
+                  @click=""
+                >
+                  <PdfIcon :width="'18px'" class="mr-1"/> View Invoice
+                </VBtn>
+            </a>
+
+            <VBtn
+            v-if="hash"
             :loading="loading"
-          v-if="hash && invoiceTo?.credit_cards?.length > 0"
-          @click.prevent="downloadInvoiceReceipt()"
-          class="mt-2"
-          block
-          color="info"
-          variant="tonal"
-          @click=""
-        >
-           <PdfIcon :width="'18px'" class="mr-1"/> View Invoice
-        </VBtn>
-
-        <VBtn
-          v-if="hash"
-          :loading="loading"
-          class="mt-2 mb-2"
-          block
-          color="warning"
-          variant="tonal"
-        >
-          <VIcon
-            left
-            class="mr-1"
-            icon="tabler-credit-card"
-          />
-          Charge Credit Card
-        </VBtn>
-
-        <router-link
-        :to="{ name: 'InvoicesView'}"
-        >
-        <VBtn
-            :loading="loading"
+            class="mt-2 mb-2"
             block
-            color="primary"
+            color="warning"
             variant="tonal"
-            class="mb-2"
-            @click=""
-        >
-            List All
-        </VBtn>
-        </router-link>
+            >
+            <VIcon
+                left
+                class="mr-1"
+                icon="tabler-credit-card"
+            />
+            Charge Credit Card
+            </VBtn>
 
-        <VBtn
-        :loading="loading"
-        block
-        color="error"
-        variant="tonal"
-        class="mb-2"
-        @click.prevent="$router.go(-1)"
-        >
-        Close
-        </VBtn>
+            <router-link
+            :to="{ name: 'InvoicesView'}"
+            >
+            <VBtn
+                :loading="loading"
+                block
+                color="primary"
+                variant="tonal"
+                class="mb-2"
+                @click=""
+            >
+                List All
+            </VBtn>
+            </router-link>
+
+            <VBtn
+              :loading="loading"
+              block
+              color="error"
+              variant="tonal"
+              class="mb-2"
+              @click.prevent="$router.go(-1)"
+              >
+              Close
+            </VBtn>
+                
+        </div>
+        
 
 
 
@@ -916,4 +911,13 @@ onBeforeMount(async () => {
   right: 0;
   height: 100%;
 }
+
+.sticky-top {
+    padding-top: 15px;
+  position: -webkit-sticky; /* For Safari */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
 </style>

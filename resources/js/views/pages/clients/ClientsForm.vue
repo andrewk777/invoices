@@ -100,7 +100,6 @@ const submitClient = async (action = null) => {
 
       submitted.value = true;
 
-      // resetForm();
       if (action === 'close') {
         window.location.href = '/clients';
       }
@@ -479,6 +478,7 @@ defineExpose({
               item-value="id"
               label="Select Credit Card"
               class="mt-2"
+              clearable
             />
           </VCol>
 

@@ -121,7 +121,7 @@ class InvoiceController extends Controller
         }
     }
 
-    public function receipt($hash)
+    public function stream($hash)
     {
         try{
             return $this->invoice->generateInvoiceFile($hash);
