@@ -95,7 +95,6 @@ class InvoiceRepository
             $invoice->items()->delete();
             foreach ($inputs['invoice_items'] as $item){
                 $this->invoiceItem()->create([
-                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                     'invoice_id' => $invoice->id,
                     'description' => $item['description'],
                     'qty' => $item['qty'],
@@ -107,7 +106,6 @@ class InvoiceRepository
             $invoice->payments()->delete();
             foreach ($inputs['invoice_payments'] as $payment){
                 $this->invoicePayment()->create([
-                    'hash' => BaseRepository::randomCharacters(30, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                     'invoice_id' => $invoice->id,
                     'amount' => $payment['amount'],
                     'date' => $payment['date'],
