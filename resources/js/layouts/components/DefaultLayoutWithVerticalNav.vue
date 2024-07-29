@@ -102,6 +102,14 @@ onBeforeMount(() => {
           </div>
         </template>
 
+        <template #content-loading>
+            <div>
+            <h1 class="text-h1">
+                Loading...
+            </h1>
+            </div>
+        </template>
+
         <!--    <AppLoadingIndicator ref="refLoadingIndicator" />-->
 
         <!-- 👉 Pages -->
@@ -135,7 +143,7 @@ onBeforeMount(() => {
 
 .progress-linear {
   position: absolute;
-  top: 0;
+  top: -4px !important;
   left: 0;
   right: 0;
   z-index: 9999;

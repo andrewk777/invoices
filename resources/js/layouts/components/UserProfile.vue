@@ -9,7 +9,7 @@ const user = baseService.getUserFromLocalStorage();
 const logout = async () => {
   loading.value = true;
   try {
-    const response = await apiClient.get('/api/logout');
+    const response = await apiClient.get('/logout');
     if(response.data.success){
       localStorage.removeItem('invoice-client-token');
     }
@@ -43,7 +43,7 @@ onMounted(() => {
       color="primary"
       variant="tonal"
     >
-      <VImg :src="avatar1" />
+      <VIcon icon="tabler-user-circle" size="30"/>
 
       <!-- SECTION Menu -->
       <VMenu
@@ -57,46 +57,17 @@ onMounted(() => {
           <VListItem>
             <template #prepend>
               <VListItemAction start>
-                <VBadge
-                  dot
-                  location="bottom right"
-                  offset-x="3"
-                  offset-y="3"
-                  color="success"
-                >
-                  <VAvatar
-                    color="primary"
-                    variant="tonal"
-                  >
-                    <VImg :src="avatar1" />
-                  </VAvatar>
-                </VBadge>
+                <VIcon icon="tabler-user-circle" size="30"/>
               </VListItemAction>
             </template>
 
             <VListItemTitle class="font-weight-semibold">
               {{ user.name }}
             </VListItemTitle>
-            <VListItemSubtitle>Master Admin</VListItemSubtitle>
+            <VListItemSubtitle>{{ user.email }}</VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />
-
-<!--          &lt;!&ndash; 👉 Settings &ndash;&gt;-->
-<!--          <VListItem link>-->
-<!--            <template #prepend>-->
-<!--              <VIcon-->
-<!--                class="me-2"-->
-<!--                icon="tabler-settings"-->
-<!--                size="22"-->
-<!--              />-->
-<!--            </template>-->
-
-<!--            <VListItemTitle>Settings</VListItemTitle>-->
-<!--          </VListItem>-->
-
-<!--          &lt;!&ndash; Divider &ndash;&gt;-->
-<!--          <VDivider class="my-2" />-->
 
           <!-- 👉 Logout -->
           <VListItem @click.prevent="logout">

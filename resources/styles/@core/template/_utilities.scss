@@ -47,3 +47,16 @@
 .bg-custom-background {
   background-color: rgb(var(--v-table-header-color));
 }
+
+.tonalOpecity
+{
+    opacity: 0.2;
+}
+.btn-tableDropDownAction
+{
+    --v-btn-size: 0.9375rem;
+    --v-btn-height: 38px;
+    min-width: 20px;
+    padding: 0 20px;
+    font-size: 13px;
+}

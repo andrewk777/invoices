@@ -84,13 +84,7 @@ const editUser = async () => {
     max-width="600"
   >
     <template #activator="{ props }">
-      <v-btn-toggle
-        variant="text"
-        density="compact"
-        class="pa-0 h-auto rounded-1"
-      >
-        <v-btn color="warning" class="ma-0 rounded-0" v-bind="props">Edit</v-btn>
-      </v-btn-toggle>
+        <VBtn class="mt-2 mb-2" variant="tonal"  v-bind="props"> View </VBtn>
     </template>
 
     <!-- Dialog close btn -->

@@ -105,11 +105,7 @@ const updateClientUser = (clientUser) => {
 
       <v-menu>
         <template v-slot:activator="{ props }">
-          <v-btn-toggle
-            variant="text"
-            density="compact"
-            class="pa-0 h-auto rounded-1"
-          >
+         
             <ClientsUsersFormEdit
               :editDialogueVisible="editDialogueVisible"
               :client="client"
@@ -120,8 +116,6 @@ const updateClientUser = (clientUser) => {
               @close-edit-dialogue="editDialogueVisible = false"
               @edit-client-user="updateClientUser"
             />
-
-          </v-btn-toggle>
         </template>
       </v-menu>
 

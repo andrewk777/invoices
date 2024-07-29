@@ -50,7 +50,6 @@ const headers = [
   {
     title: 'Actions',
     sortable: false,
-    key: 'experience',
   },
 ];
 
