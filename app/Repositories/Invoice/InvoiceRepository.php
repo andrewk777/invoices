@@ -224,6 +224,7 @@ class InvoiceRepository
                         $q->whereNotNull('invoices.na');
                     }
                 });
+
             })->latest()->get();
 
         // if a result exists return results, else return empty array

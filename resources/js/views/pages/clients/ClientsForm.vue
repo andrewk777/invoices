@@ -7,6 +7,7 @@ import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 import DialogCloseBtn
   from "../../../../../vuexy-vue-laravel-version/typescript-version/full-version/resources/ts/@core/components/DialogCloseBtn.vue";
 import ClientsUsersIndex from "@/views/pages/clients/client-users/ClientsUsersIndex.vue";
+import config from "@/utils/config.js";
 
 // For routing with params
 const hash = ref('');
@@ -174,11 +175,16 @@ const getClient = async (hash) => {
     const response = await apiClientAuto.get('/clients/show/' + hash);
 
     if (response.data.success) {
-      //client.value = response.data.client;
       // populateForm(client.value);
 
+      client.value = response.data.client;
       forms.client = response.data.client;
-      creditCards.value = client.value.credit_cards;
+      creditCards.value = response.data?.client?.credit_cards;
+
+      if(config.APP_ENV === 'local'){
+        console.log('Credit Cards:', creditCards.value);
+        console.log('Credit Cards 2:', client.value.credit_cards);
+      }
     }
 
   } catch (error) {

@@ -27,7 +27,7 @@ const searchKeys = ref([
 
 const search_values = ref([]);
 
-const formSearch = reactive({
+const form = reactive({
   search: '',
   date: '',
   unpaid: false,
@@ -35,54 +35,57 @@ const formSearch = reactive({
 });
 
 const filterDate = (string) => {
-  console.log('Filter Date:', string);
+
+  if(config.APP_ENV === 'local'){
+    console.log('Filter Date:', string);
+  }
 
   if (string === 'today') {
     const today = new Date().toISOString().split('T')[0];
-    formSearch.date = `${today} to ${today}`;
-    console.log('Filter Today:', formSearch.date);
+    form.date = `${today} to ${today}`;
+    console.log('Filter Today:', form.date);
 
   } else if (string === 'yesterday') {
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    formSearch.date = `${yesterday} to ${yesterday}`;
-    console.log('Filter Yesterday:', formSearch.date);
+    form.date = `${yesterday} to ${yesterday}`;
+    console.log('Filter Yesterday:', form.date);
 
   } else if (string === 'this week') {
     const date = new Date();
     const firstDay = new Date(date.setDate(date.getDate() - date.getDay())).toISOString().split('T')[0];
     const lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 6)).toISOString().split('T')[0];
-    formSearch.date = `${firstDay} to ${lastDay}`;
-    console.log('Filter This Week:', formSearch.date);
+    form.date = `${firstDay} to ${lastDay}`;
+    console.log('Filter This Week:', form.date);
 
   } else if (string === 'last week') {
     const date = new Date();
     const firstDay = new Date(date.setDate(date.getDate() - date.getDay() - 7)).toISOString().split('T')[0];
     const lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 6)).toISOString().split('T')[0];
-    formSearch.date = `${firstDay} to ${lastDay}`;
+    form.date = `${firstDay} to ${lastDay}`;
 
   } else if (string === 'this month') {
     const date = new Date();
     const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
     const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString().split('T')[0];
-    formSearch.date = `${firstDay} to ${lastDay}`;
+    form.date = `${firstDay} to ${lastDay}`;
 
   } else if (string === 'last month') {
     const date = new Date();
     const firstDay = new Date(date.getFullYear(), date.getMonth() - 1, 1).toISOString().split('T')[0];
     const lastDay = new Date(date.getFullYear(), date.getMonth(), 0).toISOString().split('T')[0];
-    formSearch.date = `${firstDay} to ${lastDay}`;
+    form.date = `${firstDay} to ${lastDay}`;
 
   } else if (string === 'this year') {
     const date = new Date();
     const firstDay = new Date(date.getFullYear(), 0, 1).toISOString().split('T')[0];
     const lastDay = new Date(date.getFullYear(), 11, 31).toISOString().split('T')[0];
-    formSearch.date = `${firstDay} to ${lastDay}`;
+    form.date = `${firstDay} to ${lastDay}`;
 
   } else if (string === 'last year') {
     const date = new Date();
     const firstDay = new Date(date.getFullYear() - 1, 0, 1).toISOString().split('T')[0];
     const lastDay = new Date(date.getFullYear() - 1, 11, 31).toISOString().split('T')[0];
-    formSearch.date = `${firstDay} to ${lastDay}`;
+    form.date = `${firstDay} to ${lastDay}`;
   }
 };
 
@@ -108,26 +111,27 @@ const getInvoices = async (page = 1) => {
 
 const clearAllFiltersAndSearch = async () => {
   searchActive.value = false;
-  formSearch.search = '';
-  formSearch.date = '';
-  formSearch.unpaid = false;
-  formSearch.na = false;
+  form.search = '';
+  form.date = '';
+  form.unpaid = false;
+  form.na = false;
 
-  Object.keys(formSearch).forEach((key) => {
+  Object.keys(form).forEach((key) => {
     localStorage.removeItem('invoice-search-' + key);
   });
 
-  await getInvoices();
+  // No need to load invoices because the watcher already does that
+  //await getInvoices();
 }
 
 const searchInvoices = async () => {
 
   if(config.APP_ENV === 'local'){
-    console.log('Search invoices:', formSearch);
+    console.log('Search invoices:', form);
   }
 
-  if (formSearch.search.trim() === '' && formSearch.date === '' && formSearch.unpaid === false && formSearch.na === false) {
-    Object.keys(formSearch).forEach((key) => {
+  if (form.search === '' && form.date === '' && form.unpaid === false && form.na === false) {
+    Object.keys(form).forEach((key) => {
       localStorage.removeItem('invoice-search-' + key);
     });
     await getInvoices();
@@ -135,21 +139,21 @@ const searchInvoices = async () => {
   }
 
   // Store search result to be loaded on page refresh
-  //localStorage.setItem('invoice-search', formSearch.search);
+  //localStorage.setItem('invoice-search', form.search);
 
-  Object.keys(formSearch).forEach((key) => {
+  Object.keys(form).forEach((key) => {
     if (
-      (typeof formSearch[key] === 'string' && formSearch[key].trim() !== '') ||
-      (typeof formSearch[key] === 'boolean' && formSearch[key] === true)
+      (typeof form[key] === 'string' && form[key].trim() !== '') ||
+      (typeof form[key] === 'boolean' && form[key] === true)
     ) {
-      localStorage.setItem('invoice-search-' + key, formSearch[key]);
+      localStorage.setItem('invoice-search-' + key, form[key]);
     }
   });
 
   dataLoaded.value = false;
 
     try{
-      const response = await apiClientAuto.post('/invoices/search', formSearch);
+      const response = await apiClientAuto.post('/invoices/search', form);
       if(response.data.success === true){
         invoices.value = response.data.invoices;
         searchTotal.value = response.data.total;
@@ -209,20 +213,20 @@ const headers = [
   },
 ]
 
-watch(formSearch, (newValue) => {
-  if (newValue.search === null) {
+watch(() => form.search, (newValue) => {
+  if (newValue === null) {
     localStorage.removeItem('invoice-search-search');
-    formSearch.search = '';
+    form.search = '';
+    searchInvoices();
   }
-  searchInvoices();
 });
 
 onBeforeMount(() => {
   let searchFound = 0;
   searchKeys.value.forEach((key) => {
     const value = localStorage.getItem('invoice-search-' + key);
-    if (value) {
-      formSearch[key] = value;
+    if (value && value !== '') {
+      form[key] = value;
       searchFound++;
     }
   });
@@ -266,12 +270,15 @@ onBeforeMount(() => {
         md="4"
         class="mb-4 d-flex"
       >
-        <VBtn @click="!formSearch.search ? getInvoices() : searchInvoices()" variant="flat" color="primary" class=" p-0" >
-            <VIcon color="white" size="25" icon="tabler-rotate-clockwise" title="reload" />
+        <VBtn
+          @click="!form.search ? getInvoices() : searchInvoices()"
+          variant="flat" color="primary" class=" p-0"
+        >
+          <VIcon color="white" size="25" icon="tabler-rotate-clockwise" title="reload" />
         </VBtn>
         <AppTextField
-          v-model="formSearch.search"
-          @keyup.enter="searchInvoices"
+          v-model="form.search"
+          @input="searchInvoices"
           placeholder="Search ..."
           append-inner-icon="tabler-search"
           single-line
@@ -286,7 +293,7 @@ onBeforeMount(() => {
         <AppDateTimePicker
           @change="searchInvoices"
           class="mb-4"
-          v-model="formSearch.date"
+          v-model="form.date"
           placeholder="Select date range"
           :config="{ mode: 'range' }"
           clearable
@@ -320,7 +327,7 @@ onBeforeMount(() => {
       >
         <VSwitch
           @change="searchInvoices"
-          v-model="formSearch.unpaid"
+          v-model="form.unpaid"
           label="Unpaid"
           true-value="Only Unpaid"
           false-value="All"
@@ -329,7 +336,7 @@ onBeforeMount(() => {
 
         <VSwitch
           @change="searchInvoices"
-          v-model="formSearch.na"
+          v-model="form.na"
           label="NA"
           true-value="Show"
           false-value="Hide"
@@ -357,11 +364,11 @@ onBeforeMount(() => {
       </template>
     </VDataTable>
 
-    <div v-if="formSearch.search && searchTotal > 0" class="text-center mt-4">
+    <div v-if="form.search && searchTotal > 0" class="text-center mt-4">
       <p>Showing {{ invoices.length }} of {{ searchTotal }} search results.</p>
     </div>
 
-    <div v-if="!formSearch.search && total > 0" class="text-center mt-4">
+    <div v-if="!form.search && total > 0" class="text-center mt-4">
       <p>Showing {{ invoices.length }} of {{ total }} invoices.</p>
     </div>
 

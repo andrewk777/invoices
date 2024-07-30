@@ -828,20 +828,6 @@ onBeforeMount(async () => {
                 Save & Close
               </VBtn>
 
-              <a
-                v-if="hash && invoiceTo?.credit_cards?.length > 0"
-                :href="`/view-invoice/${hash}`" target="_blank">
-                <VBtn
-                  class="mt-2"
-                  block
-                  color="info"
-                  variant="tonal"
-                  @click=""
-                >
-                  <PdfIcon :width="'18px'" class="mr-1"/> View Invoice
-                </VBtn>
-              </a>
-
               <VBtn
                 v-if="hash"
                 :loading="loading"
@@ -858,6 +844,20 @@ onBeforeMount(async () => {
                 Charge Credit Card
               </VBtn>
             </div>
+
+            <a
+            v-if="hash && invoiceTo?.credit_cards?.length > 0"
+            :href="`/view-invoice/${hash}`" target="_blank">
+            <VBtn
+              class="mt-2"
+              block
+              color="info"
+              variant="tonal"
+              @click=""
+            >
+              <PdfIcon :width="'18px'" class="mr-1"/> View Invoice
+            </VBtn>
+          </a>
 
             <router-link
             :to="{ name: 'InvoicesView'}"

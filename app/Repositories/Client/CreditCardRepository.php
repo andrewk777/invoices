@@ -17,7 +17,6 @@ class CreditCardRepository
     {
         $inputs = $request;
         $creditCard = $this->creditCard()->with('client')->create($inputs);
-
         $creditCard->client()->update(['default_credit_card_id' => $creditCard->id]);
 
         return [
