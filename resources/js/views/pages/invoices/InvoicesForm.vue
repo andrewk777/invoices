@@ -849,7 +849,7 @@ onBeforeMount(async () => {
             v-if="hash && invoiceTo?.credit_cards?.length > 0"
             :href="`/view-invoice/${hash}`" target="_blank">
             <VBtn
-              class="mt-2"
+              class="mt-2 mb-2"
               block
               color="info"
               variant="tonal"
