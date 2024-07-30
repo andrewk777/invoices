@@ -20,7 +20,7 @@ watch(() => hash.value, async () => {
   }
 });
 
-const token = computed(() => baseService.getTokenFromLocalStorage());
+const user = computed(() => baseService.getUserFromLocalStorage());
 const loading = ref(false);
 const submitted = ref(false);
 const errors = ref({});
@@ -805,31 +805,32 @@ onBeforeMount(async () => {
       <!--Right Buttons-->
       <VCol class="pt-0" md="2">
         <div class="sticky-top">
-            <VBtn
-              :loading="loading"
-              block
-              color="success"
-              variant="tonal"
-              class="mb-2"
-              @click="submitInvoice"
+            <div v-if="user.role === 'admin'">
+              <VBtn
+                :loading="loading"
+                block
+                color="success"
+                variant="tonal"
+                class="mb-2"
+                @click="submitInvoice"
               >
-              Save
-            </VBtn>
+                Save
+              </VBtn>
 
-            <VBtn
-              :loading="loading"
-              block
-              color="success"
-              variant="tonal"
-              class="mb-2"
-              @click="submitInvoice($event, 'close')"
-            >
-            Save & Close
-            </VBtn>
+              <VBtn
+                :loading="loading"
+                block
+                color="success"
+                variant="tonal"
+                class="mb-2"
+                @click="submitInvoice($event, 'close')"
+              >
+                Save & Close
+              </VBtn>
 
-            <a
-              v-if="hash && invoiceTo?.credit_cards?.length > 0"
-              :href="`/view-invoice/${hash}`" target="_blank">
+              <a
+                v-if="hash && invoiceTo?.credit_cards?.length > 0"
+                :href="`/view-invoice/${hash}`" target="_blank">
                 <VBtn
                   class="mt-2"
                   block
@@ -839,37 +840,38 @@ onBeforeMount(async () => {
                 >
                   <PdfIcon :width="'18px'" class="mr-1"/> View Invoice
                 </VBtn>
-            </a>
+              </a>
 
-            <VBtn
-            v-if="hash"
-            :loading="loading"
-            class="mt-2 mb-2"
-            block
-            color="warning"
-            variant="tonal"
-            >
-            <VIcon
-                left
-                class="mr-1"
-                icon="tabler-credit-card"
-            />
-            Charge Credit Card
-            </VBtn>
+              <VBtn
+                v-if="hash"
+                :loading="loading"
+                class="mt-2 mb-2"
+                block
+                color="warning"
+                variant="tonal"
+              >
+                <VIcon
+                  left
+                  class="mr-1"
+                  icon="tabler-credit-card"
+                />
+                Charge Credit Card
+              </VBtn>
+            </div>
 
             <router-link
             :to="{ name: 'InvoicesView'}"
             >
-            <VBtn
-                :loading="loading"
-                block
-                color="primary"
-                variant="tonal"
-                class="mb-2"
-                @click=""
-            >
-                List All
-            </VBtn>
+              <VBtn
+                  :loading="loading"
+                  block
+                  color="primary"
+                  variant="tonal"
+                  class="mb-2"
+                  @click=""
+              >
+                  List All
+              </VBtn>
             </router-link>
 
             <VBtn

@@ -18,7 +18,6 @@ class UserSeeder extends Seeder
     {
         $users = [
             'admin@email.com',
-            'client-user@email.com'
         ];
 
         foreach ($users as $email) {

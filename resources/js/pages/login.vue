@@ -48,7 +48,7 @@ const submitLogin = async () => {
         name: response.data.user.first_name + ' ' + response.data.user.last_name,
         email: response.data.user.email,
         token: response.data.token,
-        role: response.data.role,
+        role: response.data.user.role,
         authenticated: true,
       };
       // Store logged-in user in local storage
@@ -56,6 +56,7 @@ const submitLogin = async () => {
 
       if(import.meta.env.VITE_APP_ENV === 'local') {
         console.log(response.data);
+        console.log(user);
       }
 
       window.location.href = '/invoices';

@@ -42,11 +42,14 @@ Route::middleware('auth:sanctum')->group(static function (){
 
     Route::get('/invoices', [InvoiceController::class, 'index']);
     Route::post('/invoices/search', [InvoiceController::class, 'search']);
-    Route::post('/invoices/store', [InvoiceController::class, 'store']);
     Route::get('/invoices/show/{hash}', [InvoiceController::class, 'show']);
     Route::get('/invoices/receipt/{hash}/download', [InvoiceController::class, 'receipt']);
-    Route::post('/invoices/update/{hash}', [InvoiceController::class, 'update']);
-    Route::delete('/invoices/delete/{hash}', [InvoiceController::class, 'destroy']);
+
+    Route::middleware('admin-access')->group(static function (){
+       Route::post('/invoices/store', [InvoiceController::class, 'store']);
+       Route::post('/invoices/update/{hash}', [InvoiceController::class, 'update']);
+       Route::delete('/invoices/delete/{hash}', [InvoiceController::class, 'destroy']);
+    });
 
     // Subscriptions
     Route::get('/subscriptions', [SubscriptionController::class, 'index']);

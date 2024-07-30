@@ -39,13 +39,29 @@ const user = computed(() => {
 
 // Filter the navigation items based on user role
 const filteredNavItems = computed(() => {
+
+  if(import.meta.env.VITE_APP_ENV === 'local') {
+    console.log("NAV Menu", navItems);
+    console.log("USER ROLE", user.value);
+  }
+
   return navItems.filter(item => {
-    if(user.role === 'admin' && (item.access === 'admin-only' || item.access === 'any')) {
+    if(user.value.role === 'admin' && (item.access === 'admin-only' || item.access === 'any')) {
+
+      if(import.meta.env.VITE_APP_ENV === 'local') {
+        console.log("NAV Menu", item);
+      }
       return item;
-    } else if(user.role === 'client-user' && item.access === 'any') {
+
+    } else if(user.value.role === 'client-user' && item.access === 'any') {
+
+      if(import.meta.env.VITE_APP_ENV === 'local') {
+        console.log("NAV Menu", item);
+      }
       return item;
+
     }
-  })
+  });
 });
 
 // Custom loading indicator
