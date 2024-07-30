@@ -20,7 +20,6 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 import validationService from '@/utils/validation-service'
 import AppTextField from "@core/components/app-form-elements/AppTextField.vue";
 
-
 import apiClientAuto from '@/utils/apiCLientAuto.js';
 import handleErrors from "@/utils/handleErrors.js";
 
@@ -45,7 +44,7 @@ const submitLogin = async () => {
     if(response.data.success) {
       // Store relevant user details in local storage
       const user = {
-        name: response.data.user.first_name + ' ' + response.data.user.last_name,
+        name: response.data.user.name,
         email: response.data.user.email,
         token: response.data.token,
         role: response.data.user.role,

@@ -173,8 +173,13 @@ class InvoiceRepository
         $inputs = $request;
         Session::forget(['search_inputs', 'search_values']);
 
-        $invoices = $this->invoice()->with('company', 'client')->select(
+        $getInvoices = $this->invoice()->with('company', 'client');
 
+        if(!empty(Auth::user()->client_id) && Auth::user()->role === 'client-user'){
+            $getInvoices->where('invoices.client_id', Auth::user()->client_id);
+        }
+
+        $invoices = $getInvoices->select(
             'my_companies.id as my_company_id',
             'my_companies.name as my_company_name',
             'clients.id AS client_id',

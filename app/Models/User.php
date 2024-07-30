@@ -65,8 +65,7 @@ class User extends Authenticatable
 
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id', 'id')
-            ->where('role', 'client-user');
+        return $this->belongsTo(Client::class, 'client_id', 'id');
     }
 
     public function user_type(): HasOne

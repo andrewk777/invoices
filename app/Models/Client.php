@@ -69,6 +69,7 @@ class Client extends Model
 
     public function users(): HasMany
     {
-        return $this->hasMany(User::class, 'client_id', 'id');
+        return $this->hasMany(User::class, 'client_id', 'id')
+            ->where('role', 'client-user');
     }
 }
