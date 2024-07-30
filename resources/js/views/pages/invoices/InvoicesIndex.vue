@@ -8,7 +8,7 @@ import apiClientAuto from '@/utils/apiCLientAuto.js';
 import config from "@/utils/config.js";
 import AppDateTimePicker from "@core/components/app-form-elements/AppDateTimePicker.vue";
 
-const token = computed(() => baseService.getTokenFromLocalStorage());
+const user = computed(() => baseService.getUserFromLocalStorage());
 const loading = ref(false);
 
 const invoices = ref([]);
@@ -264,7 +264,7 @@ onBeforeMount(() => {
       </VCol>
     </VRow>
 
-    <VRow>
+    <VRow v-if="user.role === 'admin'">
       <VCol
         cols="12"
         md="4"
