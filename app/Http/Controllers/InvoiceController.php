@@ -133,7 +133,7 @@ class InvoiceController extends Controller
         }
     }
 
-    public function stream($hash)
+    public function stream($hash): Response|JsonResponse
     {
         try{
             return $this->invoice->generateInvoiceFile($hash);

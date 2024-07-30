@@ -13,6 +13,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -254,6 +255,12 @@ class InvoiceRepository
 
         if (!$invoice) {
             abort(404, 'Invoice not found');
+        }
+
+        if(!empty(Auth::user()->role) && Auth::user()->role === 'client-user'){
+            if(!empty(Auth::user()->client_id) && $invoice->client_id !== Auth::user()->client_id){
+                abort(403, 'Unauthorized');
+            }
         }
 
         // Convert logo to base64

@@ -32,6 +32,22 @@ watch([
 }, { immediate: true })
 // !SECTION
 
+// NAV ITEMS
+const user = computed(() => {
+  return baseService.getUserFromLocalStorage();
+});
+
+// Filter the navigation items based on user role
+const filteredNavItems = computed(() => {
+  return navItems.filter(item => {
+    if(user.role === 'admin' && (item.access === 'admin-only' || item.access === 'any')) {
+      return item;
+    } else if(user.role === 'client-user' && item.access === 'any') {
+      return item;
+    }
+  })
+});
+
 // Custom loading indicator
 const router = useRouter()
 const showProgressIndicator = ref(true)
@@ -74,7 +90,9 @@ onBeforeMount(() => {
     />
 
     <div class="app-content">
-      <VerticalNavLayout :nav-items="navItems">
+      <VerticalNavLayout
+        :nav-items="filteredNavItems">
+
         <!-- 👉 navbar -->
         <template #navbar="{ toggleVerticalOverlayNavActive }">
           <div class="d-flex h-100 align-center">

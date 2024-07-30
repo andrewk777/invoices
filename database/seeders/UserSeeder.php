@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
                 [
                     'first_name' => $email === 'admin@email.com' ? 'Admin User' : 'Client User',
                     'password' => Hash::make('password'),
-                    'system_access' => random_int(0, 1),
+                    'system_access' => 1,
                     'hash' => Str::random(50),
                     'role' => $email === 'admin@email.com' ? 'admin' : 'client-user',
                     'last_login' => now(),

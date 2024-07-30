@@ -1,5 +1,6 @@
 <script setup>
 import { ref, defineProps, reactive } from 'vue'
+import moment from 'moment';
 import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
 import axios from "axios";
 import apiClientAuto from "@/utils/apiCLientAuto.js";
@@ -80,13 +81,13 @@ const actionItems = [
 
     <td>
       <p>
-        {{ invoice.invoice_date }}
+        {{ moment(invoice.invoice_date).format('MMM DD, YYYY') }}
       </p>
     </td>
 
     <td>
       <p>
-        {{ invoice.invoice_due }}
+        {{ moment(invoice.invoice_due).format('MMM DD, YYYY') }}
       </p>
     </td>
 
