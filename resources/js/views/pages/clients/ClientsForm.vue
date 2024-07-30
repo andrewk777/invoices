@@ -181,10 +181,10 @@ const getClient = async (hash) => {
       forms.client = response.data.client;
       creditCards.value = response.data?.client?.credit_cards;
 
-      if(config.APP_ENV === 'local'){
-        console.log('Credit Cards:', creditCards.value);
-        console.log('Credit Cards 2:', client.value.credit_cards);
-      }
+      // if(config.APP_ENV === 'local'){
+      //   console.log('Credit Cards:', creditCards.value);
+      //   console.log('Credit Cards 2:', client.value.credit_cards);
+      // }
     }
 
   } catch (error) {

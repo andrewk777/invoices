@@ -32,7 +32,7 @@ class UpdateClientUserRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('client_users', 'email')->ignore($hash, 'hash'),
+                Rule::unique('users', 'email')->ignore($hash, 'hash'),
             ],
             'password' => 'nullable|string|min:8',
             'system_access' => 'nullable',
