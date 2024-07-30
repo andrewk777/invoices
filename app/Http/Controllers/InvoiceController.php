@@ -9,6 +9,7 @@ use App\Repositories\Invoice\InvoiceRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class InvoiceController extends Controller
 {
@@ -25,11 +26,17 @@ class InvoiceController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $data = $this->invoice->invoice()
+            $invoiceData = $this->invoice->invoice()
                 ->with(
                     'company:id,name',
                     'client:id,company_name,company_email,company_address,company_phone',
-                )->orderBy('invoice_num', 'desc')->get();
+                );
+
+            if(!empty(Auth::user()->client_id) && Auth::user()->role === 'client-user'){
+                $invoiceData->where('client_id', Auth::user()->client_id);
+            }
+
+            $data = $invoiceData->orderBy('invoice_num', 'desc')->get();
 
             return response()->json([
                 'success' => true,
@@ -62,17 +69,22 @@ class InvoiceController extends Controller
     public function show($hash): JsonResponse
     {
         try {
-            $data = $this->invoice->invoice()->where('hash', $hash)
-                ->with(
+            $invoiceData = $this->invoice->invoice()->with(
                     'company',
                     'client:company_name,company_email,company_address,company_phone,id',
                     'items',
                     'payments',
-                )->first();
+                )->where('hash', $hash);
+
+                if(!empty(Auth::user()->client_id) && Auth::user()->role === 'client-user'){
+                    $invoiceData->where('client_id', Auth::user()->client_id);
+                }
+
+               $data = $invoiceData->first();
 
             return response()->json([
                 'success' => true,
-                'invoice' => new InvoiceResource($data),
+                'invoice' => $data ? new InvoiceResource($data) : null,
             ]);
 
         }catch (\Exception $e){

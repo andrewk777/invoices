@@ -117,7 +117,7 @@ const clearAllFiltersAndSearch = async () => {
     localStorage.removeItem('invoice-search-' + key);
   });
 
-  getInvoices();
+  await getInvoices();
 }
 
 const searchInvoices = async () => {

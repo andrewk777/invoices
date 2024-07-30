@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\Client\ClientUserResource;
+use App\Http\Resources\User\UserResource;
 use App\Repositories\Auth\LoginRepository;
 use App\Repositories\Base\BaseRepository;
 use App\Repositories\Client\ClientRepository;
@@ -34,7 +35,7 @@ class LoginController extends Controller
 
             return response()->json([
                 'success' => $data['success'],
-                'user' => isset($data['user']) ? new ClientUserResource($data['user']) : null,
+                'user' => isset($data['user']) ? new UserResource($data['user']) : null,
                 'token' => $data['token'] ?? null,
                 'errors' => $data['errors'] ?? null,
                 'error_code' => $data['error_code'] ?? null,

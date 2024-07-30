@@ -11,8 +11,8 @@ class CreateClientsTable extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->string('hash', 50)->unique();
-            $table->foreignId('my_company_id')->nullable();
-            $table->foreignId('default_credit_card_id')->nullable();
+            $table->unsignedBigInteger('my_company_id')->nullable();
+            $table->unsignedBigInteger('default_credit_card_id')->nullable();
             $table->string('company_name')->nullable();
             $table->string('company_address')->nullable();
             $table->string('company_phone')->nullable();
@@ -28,6 +28,9 @@ class CreateClientsTable extends Migration
             $table->text('notes')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('my_company_id')->references('id')->on('my_companies');
+            //$table->foreign('default_credit_card_id')->references('id')->on('credit_cards');
         });
     }
 

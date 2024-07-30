@@ -3,15 +3,15 @@
 namespace App\Repositories\Client;
 
 use App\Models\Client;
-use App\Models\ClientUser;
+use App\Models\User;
 use App\Repositories\Base\BaseRepository;
 use Illuminate\Support\Facades\Hash;
 
 class ClientUserRepository
 {
-    public function clientUser(): ClientUser
+    public function clientUser(): User
     {
-        return new ClientUser();
+        return new User();
     }
 
     public function client(): Client
@@ -24,13 +24,18 @@ class ClientUserRepository
         $input = $request;
         $client = $this->client()->where('hash', $clientHash)->first();
 
+        $firstName = explode(' ', $input['name'])[0];
+        $lastName = explode(' ', $input['name'])[1] ?? '';
+
         $user = $this->clientUser()->create([
             'hash' => BaseRepository::randomCharacters(30, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'),
             'client_id' => $client->id,
-            'name' => $input['name'],
+            'first_name' => $firstName,
+            'last_name' => $lastName,
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'system_access' => $input['system_access'],
+            'role' => 'client-user'
         ]);
 
         return [
@@ -55,7 +60,11 @@ class ClientUserRepository
 
         $input = $request;
 
-        $user->name = $input['name'];
+        $firstName = explode(' ', $input['name'])[0];
+        $lastName = explode(' ', $input['name'])[1] ?? '';
+
+        $user->first_name = $firstName;
+        $user->last_name = $lastName;
         $user->email = $input['email'];
 
         if(!empty($input['password'])) {

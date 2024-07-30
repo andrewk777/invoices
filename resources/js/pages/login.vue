@@ -48,6 +48,7 @@ const submitLogin = async () => {
         name: response.data.user.first_name + ' ' + response.data.user.last_name,
         email: response.data.user.email,
         token: response.data.token,
+        role: response.data.role,
         authenticated: true,
       };
       // Store logged-in user in local storage
@@ -67,9 +68,6 @@ const submitLogin = async () => {
   loading.value = false;
 }
 
-onBeforeMount(() => {
-
-});
 </script>
 
 <template>

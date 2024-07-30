@@ -3,6 +3,7 @@
 namespace App\Repositories\Auth;
 
 use App\Http\Resources\Client\ClientUserResource;
+use App\Http\Resources\User\UserResource;
 use App\Repositories\Client\ClientRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -42,16 +43,15 @@ class LoginRepository
 
             // Delete already existing tokens for user
             PersonalAccessToken::where('name', $request->email)->delete();
-            // Create new token
+
             $token = $user->createToken($request->email, [$apiGuard])->plainTextToken;
-            // Last login
             $queryBuilder->where('email', $request->email)->update([
                 'last_login' => Carbon::now()->format('Y-m-d h:i:s'),
             ]);
 
             return [
                 'success' => true,
-                'user' => $user,
+                'user' => new UserResource($user),
                 'token' => $token,
             ];
         }

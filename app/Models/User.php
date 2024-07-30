@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -22,9 +23,10 @@ class User extends Authenticatable
     protected $fillable = [
         'first_name',
         'last_name',
-        'hash',
         'client_id',
+        'hash',
         'email',
+        'password',
         'role',
         'last_login',
         'system_access',
@@ -63,6 +65,12 @@ class User extends Authenticatable
 
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id', 'id');
+        return $this->belongsTo(Client::class, 'client_id', 'id')
+            ->where('role', 'client-user');
+    }
+
+    public function user_type(): HasOne
+    {
+        return $this->hasOne(UserType::class, 'user_id', 'id');
     }
 }

@@ -33,8 +33,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'system_access' => true,
             'hash' => Str::random(50),
-            'role' => 'supper-admin',
-            'client_id' => Client::factory()->create()->id,
+            'role' => $this->faker->randomElement(['admin', 'client-user']),
         ];
     }
 

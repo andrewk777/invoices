@@ -1,4 +1,6 @@
 <script setup>
+import apiClientAuto from "@/utils/apiCLientAuto.js";
+
 definePage({
   meta: {
     layout: 'blank',
@@ -8,6 +10,7 @@ definePage({
 import { ref, reactive, onBeforeMount } from 'vue';
 import axios from 'axios';
 import validationService from '@/utils/validation-service'
+import handleErrors from "@/utils/handleErrors.js";
 
 let errors = reactive({});
 const loading = ref(false);
@@ -18,17 +21,13 @@ const form = reactive({
 });
 
 const submitLogin = async () => {
-
   loading.value = true;
   localStorage.removeItem("invoice-client-token");
 
   validationService.deleteErrorsInObject(errors, null, true);
 
   try {
-    const response = await axios.post('/api/login', form,
-      {
-        headers: {"Accept": "application/json"}
-      });
+    const response = await apiClientAuto.post('/login', form);
 
     if(response.data.success) {
       // Store relevant user details in local storage
@@ -40,21 +39,16 @@ const submitLogin = async () => {
       };
       // Store logged-in user in local storage
       localStorage.setItem('invoice-client-token', JSON.stringify(user));
+
+      if(import.meta.env.VITE_APP_ENV === 'local') {
+        console.log(response.data);
+      }
+
       window.location.href = '/invoices';
     }
 
   } catch (error) {
-
-    if (error?.response?.data.success === false) {
-      if(error.response.data.server_error) {
-
-        errors.server_error = 'Oh oh, error occurred. please contact the admin';
-      }
-
-      if (error.response?.data?.errors) {
-        errors = error.response?.data?.errors;
-      }
-    }
+    handleErrors(error, errors);
   }
 
   loading.value = false;
