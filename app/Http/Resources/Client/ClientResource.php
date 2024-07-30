@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Client;
 
 use App\Http\Resources\CreditCard\CreditCardResource;
+use App\Http\Resources\User\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -40,7 +41,7 @@ class ClientResource extends JsonResource
 
             'credit_cards' => $this->creditCards && count($this->creditCards) > 0 ? CreditCardResource::collection($this->creditCards) : [],
 
-            'users' => $this->users && count($this->users) > 0 ? $this->users : [],
+            'users' => $this->users && count($this->users) > 0 ? UserResource::collection($this->users) : [],
 
             'notes' => $this->notes,
             'created_at' => $this->created_at,

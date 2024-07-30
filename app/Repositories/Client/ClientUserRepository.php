@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Client;
 
+use App\Http\Resources\User\UserResource;
 use App\Models\Client;
 use App\Models\User;
 use App\Repositories\Base\BaseRepository;
@@ -40,7 +41,7 @@ class ClientUserRepository
 
         return [
             'success' => true,
-            'client_user' => $user,
+            'client_user' => new UserResource($user),
         ];
     }
 
@@ -75,7 +76,7 @@ class ClientUserRepository
 
         return [
             'success' => true,
-            'client_user' => $user,
+            'client_user' => new UserResource($user),
             'message' => $user->name.' updated successfully.'
         ];
     }
@@ -87,7 +88,7 @@ class ClientUserRepository
 
         return [
             'success' => true,
-            'client_users' => $users,
+            'client_users' => UserResource::collection($users),
         ];
     }
 
