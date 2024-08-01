@@ -31,6 +31,7 @@ const form = reactive({
 
 const errors = ref({});
 const loading = ref(false);
+const token = computed(() => baseService.getTokenFromLocalStorage());
 
 const submitLogin = async () => {
   loading.value = true;
@@ -67,6 +68,31 @@ const submitLogin = async () => {
 
   loading.value = false;
 }
+
+// const checkSession = async () => {
+//   try {
+//     let params = {
+//       token: token.value
+//     }
+//     const response = await apiClientAuto.get('/authenticate', { params });
+//
+//     if(import.meta.env.VITE_APP_ENV === 'local') {
+//       console.log("RESPONSE", response.data);
+//       console.log("PARAMS", params);
+//     }
+//
+//     if(response.data.success) {
+//       window.location.href = '/invoices';
+//     }
+//
+//   } catch (error) {
+//     handleErrors(error, errors);
+//   }
+// }
+
+onBeforeMount(async() => {
+  // await checkSession();
+});
 
 </script>
 

@@ -1,6 +1,7 @@
 import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import RouteService from "@/utils/route-service.js";
+import BaseService from "@/utils/base-service.js";
 
 function recursiveLayouts(route) {
     if (route.children) {
@@ -135,6 +136,7 @@ const unauthenticatedRoutes = [
         name: 'LoginView',
         component: () => import('@/views/pages/authentication/LoginView.vue'),
         meta: { title: 'Login' },
+
     }
 ];
 
@@ -160,6 +162,7 @@ const router = createRouter({
     ],
 });
 
+// Check each route for authentication
 // Set up navigation guard to update page title
 router.beforeEach((to, from, next) => {
     const pageTitle = to.meta.title;
@@ -168,6 +171,11 @@ router.beforeEach((to, from, next) => {
     } else {
         document.title = 'OAD SOFT';
     }
+
+    if((to.path === '/' || to.path === '/login') && RouteService.checkSession()) {
+        next({ name: 'InvoicesView' });
+    }
+
     next();
 });
 

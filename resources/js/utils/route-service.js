@@ -1,4 +1,6 @@
 import axios from "axios"
+import apiClientAuto from "@/utils/apiCLientAuto.js";
+import handleErrors from "@/utils/handleErrors.js";
 
 const RouteService = {
 
@@ -36,6 +38,30 @@ const RouteService = {
             }
         });
     },
+
+    async checkSession(){
+
+        if(import.meta.env.VITE_APP_ENV === 'local') {
+            console.log("Check session");
+        }
+
+        try {
+            let params = {
+                token: baseService.getTokenFromLocalStorage()
+            }
+            const response = await apiClientAuto.get('/authenticate', { params });
+
+            if(import.meta.env.VITE_APP_ENV === 'local') {
+                console.log("RESPONSE", response.data);
+                console.log("PARAMS", params);
+            }
+
+            return response.data?.success === true;
+
+        } catch (error) {
+            handleErrors(error, errors);
+        }
+    }
 
 }
 
