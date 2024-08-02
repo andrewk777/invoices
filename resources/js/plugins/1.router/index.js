@@ -162,9 +162,7 @@ const router = createRouter({
     ],
 });
 
-// Check each route for authentication
-// Set up navigation guard to update page title
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     const pageTitle = to.meta.title;
     if (pageTitle) {
         document.title = pageTitle + ' - OAD SOFT';
@@ -172,14 +170,11 @@ router.beforeEach((to, from, next) => {
         document.title = 'OAD SOFT';
     }
 
-    if((to.path === '/' || to.path === '/login') && RouteService.checkSession()) {
-        if(from.path !== '/login' && from.path !== '/') {
-            if(import.meta.env.VITE_APP_ENV === 'local') {
-                console.log("Redirecting to", from.path);
-            }
-            next(from.path);
-        }else{
-            next('/invoices');
+    if ((to.path === '/' || to.path === '/login')) {
+        const isLoggedIn = await RouteService.checkSession();
+        if (isLoggedIn) {
+            next({ name: 'InvoicesView' });
+            return;
         }
     }
 

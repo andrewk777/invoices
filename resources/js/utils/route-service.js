@@ -43,6 +43,10 @@ const RouteService = {
 
     async checkSession(){
 
+        if(!baseService.getTokenFromLocalStorage()){
+            return false;
+        }
+
         if(import.meta.env.VITE_APP_ENV === 'local') {
             console.log("Check session");
         }
@@ -62,6 +66,7 @@ const RouteService = {
 
         } catch (error) {
             handleErrors(error, errors);
+            return false;
         }
     }
 

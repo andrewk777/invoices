@@ -1,9 +1,6 @@
 <script setup>
-import { ref, defineProps, reactive } from 'vue'
+import { ref, defineProps} from 'vue'
 import moment from 'moment';
-import DocumentLicenseIcon from "@/components/icons/DocumentLicenseIcon.vue";
-import axios from "axios";
-import apiClientAuto from "@/utils/apiCLientAuto.js";
 
 const props = defineProps({
   invoice: {
@@ -12,7 +9,7 @@ const props = defineProps({
   },
 });
 
-const token = computed(() => baseService.getTokenFromLocalStorage());
+const user = computed(() => baseService.getUserFromLocalStorage());
 const invoice = ref(props.invoice);
 const actionItems = [
   { title: 'Download Receipt' },
@@ -111,8 +108,7 @@ const actionItems = [
 
     <td>
 
-      <v-menu>
-
+      <v-menu v-if="user.role === 'admin'">
         <template v-slot:activator="{ props }">
           <v-btn-toggle
             variant="text"
@@ -139,8 +135,16 @@ const actionItems = [
             </a>
           </v-list-item>
         </v-list>
-
       </v-menu>
+
+      <v-menu v-else>
+        <template v-slot:activator="{ props }">
+          <a class="btn btn-warning waves-effect waves-light" :href="`/view-invoice/${invoice.hash}`" target="_blank">
+            <VBtn class="mt-2 mb-2 w-100" variant="tonal" > View </VBtn>
+          </a>
+        </template>
+      </v-menu>
+
 
     </td>
 
