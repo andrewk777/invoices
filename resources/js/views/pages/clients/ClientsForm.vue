@@ -135,13 +135,18 @@ const updateClient = async (hash, action = null) => {
   submitted.value = false;
   loading.value = true;
 
-  const formData = new FormData();
-  // iterate and add forms.client data
-  Object.keys(forms.client).forEach(function (key) {
+  if(import.meta.env.VITE_APP_ENV === 'local') {
+    console.log("FORMS", forms.client);
+  }
 
-    if (forms.client[key] !== null && forms.client[key] !== '') {
-      formData.append(key, forms.client[key]);
-    }
+  if(forms.client.default_credit_card_id === null || forms.client.default_credit_card_id === ''){
+    forms.client.default_credit_card = null;
+  }
+
+  const formData = new FormData();
+
+  Object.keys(forms.client).forEach(function (key) {
+    formData.append(key, forms.client[key]);
   });
 
   try {
@@ -192,6 +197,11 @@ const getClient = async (hash) => {
   }
   loading.value = false;
 }
+
+const clearDefaultCC = () => {
+  forms.client.default_credit_card_id = '';
+  console.log('Cleared Default CC', forms.client.default_credit_card_id);
+};
 
 onMounted(async () => {
   if (hash.value) {
@@ -420,11 +430,7 @@ defineExpose({
             </VRow>
         </v-card>
 
-
         <VRow class="p-2">
-          
-
-
           <!-- 👉 Notes -->
           <VCol cols="12">
             <VTextarea
@@ -482,6 +488,7 @@ defineExpose({
 
             <VSelect
               v-if="creditCards?.length > 0"
+              @click:clear="clearDefaultCC"
               v-model="forms.client.default_credit_card_id"
               :items="creditCards"
               item-title="cc_last_4_digits"

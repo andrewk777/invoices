@@ -173,7 +173,14 @@ router.beforeEach((to, from, next) => {
     }
 
     if((to.path === '/' || to.path === '/login') && RouteService.checkSession()) {
-        next({ name: 'InvoicesView' });
+        if(from.path !== '/login' && from.path !== '/') {
+            if(import.meta.env.VITE_APP_ENV === 'local') {
+                console.log("Redirecting to", from.path);
+            }
+            next(from.path);
+        }else{
+            next('/invoices');
+        }
     }
 
     next();

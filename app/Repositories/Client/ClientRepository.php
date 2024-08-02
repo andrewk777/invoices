@@ -38,6 +38,7 @@ class ClientRepository
     {
         $client = $this->client()->where('hash', $hash)->first();
         $inputs = $request;
+
         $client->update($inputs);
 
         return [

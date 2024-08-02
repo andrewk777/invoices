@@ -7,7 +7,9 @@ const RouteService = {
     // Authenticate each api request
     authenticateUser(url, next, logout){
 
-        console.log("Before auth", baseService.getTokenFromLocalStorage());
+        if(import.meta.env.VITE_APP_ENV === 'local') {
+            console.log("Before auth", baseService.getTokenFromLocalStorage());
+        }
 
         if(!baseService.getTokenFromLocalStorage()){
             window.location.href = logout;
