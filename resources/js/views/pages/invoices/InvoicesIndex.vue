@@ -249,7 +249,7 @@ onBeforeMount(() => {
         <h1 class="card-header">Invoices</h1>
       </VCol>
 
-      <VCol col="6" class="text-right mt-4">
+      <VCol v-if="user.role === 'admin'" col="6" class="text-right mt-4">
         <router-link
           class="btn btn-info waves-effect waves-light"
           exact
