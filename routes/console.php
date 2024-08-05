@@ -9,5 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::command('subscription:schedule')
-    ->monthly()
-    ->description('Schedule tasks based on the selected month and day for subscriptions');
+    ->daily()
+    ->description('Schedule tasks based on the selected day of the month for subscriptions');
