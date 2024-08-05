@@ -64,22 +64,22 @@ const filteredNavItems = computed(() => {
   });
 });
 
-// // Custom loading indicator
-// const router = useRouter()
-// const showProgressIndicator = ref(true)
-//
-// // Show loader before each router component load
-// router.beforeEach((to, from, next) => {
-//   showProgressIndicator.value = true
-//   next()
-// })
-//
-// // Hide loader after each router component load
-// router.afterEach(() => {
-//   setTimeout(() => {
-//     showProgressIndicator.value = false
-//   }, 1000)
-// })
+// Custom loading indicator
+const router = useRouter()
+const showProgressIndicator = ref(true)
+
+// Show loader before each router component load
+router.beforeEach((to, from, next) => {
+  showProgressIndicator.value = true
+  next()
+})
+
+// Hide loader after each router component load
+router.afterEach(() => {
+  setTimeout(() => {
+    showProgressIndicator.value = false
+  }, 1000)
+})
 
 onBeforeMount(() => {
 // show loader before each page load
