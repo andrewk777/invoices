@@ -1,5 +1,5 @@
 const handleObjectErrors = (error, errors) => {
-    if (error.response) {
+    if (error?.response) {
 
        if(config.APP_ENV === 'local'){
            console.log("Error response", error.response);

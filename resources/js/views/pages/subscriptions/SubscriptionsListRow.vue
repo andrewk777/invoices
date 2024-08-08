@@ -106,30 +106,20 @@ const deleteSubscription = async () => {
     <td>
 
       <v-menu>
-
         <template v-slot:activator="{ props }">
           <v-btn-toggle
-            variant="text"
             density="compact"
-            class="pa-0 h-auto rounded-1"
+            class="pa-0 pl-0 pr-0 h-auto rounded-1"
           >
             <router-link
+              :rounded="0"
               :to="{ name: 'SubscriptionsEdit', params: { hash: subscription.hash } }"
-              class="btn btn-primary btn-sm mr-2  pl-2"
             >
-              <v-btn class="ma-0 rounded-0 btn-view">View</v-btn>
+              <VBtn class="px-8" variant="tonal" :rounded="0"> View </VBtn>
             </router-link>
 
-            <v-btn
-              color="primary"
-              v-bind="props"
-              density="compact"
-              class="rounded-0 px-2 btn-dropdown"
-              variant="tonal"
-            >
-            <VIcon
-              icon="tabler-dots-vertical"
-            />
+            <v-btn variant="tonal" class="btn-tableDropDownAction text-primary" v-bind="props" >
+              <VIcon icon="tabler-dots-vertical"/>
             </v-btn>
           </v-btn-toggle>
 
@@ -179,7 +169,6 @@ const deleteSubscription = async () => {
             </VDialog>
           </v-list-item>
         </v-list>
-
       </v-menu>
 
     </td>
